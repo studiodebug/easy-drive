@@ -1,0 +1,94 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "folderTemplates.structures": [
+    {
+      "name": "Default Component (with style)",
+      "structure": [
+        {
+          "fileName": "<FTName>.tsx",
+          "template": "import { styles as s} from './<FTName | pascalcase>.styles';\n\nexport default function <FTName | pascalcase>() {\n  return (\n    <div className={s().container()} >\n      {/* content of the component */}\n    </div>\n  );\n}"
+        },
+        {
+          "fileName": "<FTName>.styles.ts",
+          "template": "import { tv } from 'tailwind-variants';\n\nexport const styles = tv({\n  slots: {\n    container: \"\"\n  }\n});"
+        },
+        {
+          "fileName": "index.ts",
+          "template": "export { default } from './<FTName>';"
+        },
+        {
+          "fileName": "<FTName>.types.ts",
+          "template": "export interface <FTName | pascalcase>Props {\n  // props of the component\n}"
+        }
+      ]
+    },
+    {
+      "name": "Default Component",
+      "structure": [
+        {
+          "fileName": "<FTName>.tsx",
+          "template": "export default function <FTName | pascalcase>() {\n  return (\n    <div>\n      {/* content of the component */}\n    </div>\n  );\n}"
+        },
+        {
+          "fileName": "index.ts",
+          "template": "export { default } from './<FTName>';"
+        },
+        {
+          "fileName": "<FTName>.types.ts",
+          "template": "export interface <FTName | pascalcase>Props {\n  // props of the component\n}"
+        }
+      ]
+    }
+  ],
+  "cSpell.words": ["lottie", "shadcn"],
+  "cSpell.customDictionaries": {
+    "custom-dictionary-workspace": {
+      "name": "custom-dictionary-workspace",
+      "path": "${workspaceFolder:keoto-app-ui}/.cspell/custom-dictionary-workspace.txt",
+      "addWords": true,
+      "scope": "workspace"
+    }
+  },
+  "tailwindCSS.experimental.classRegex": [
+    [
+      "(?:slots|base|variants|compoundVariants|defaultVariants)\\s*:\\s*\\{[^}]*[\"'`]([^\"'`]*)[\"'`]"
+    ],
+    ["(?:className|class|classNames)\\s*[:=]\\s*[\"'`]([^\"'`]*)[\"'`]"],
+    ["[\"'`]([^\"'`]*)[\"'`]"]
+  ],
+  "tailwindCSS.includeLanguages": {
+    "typescript": "typescript",
+    "typescriptreact": "typescriptreact"
+  },
+  "tailwindCSS.emmetCompletions": true,
+  "tailwindCSS.validate": true,
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+  "css.validate": false,
+  "tailwindCSS.files.exclude": ["**/.git/**", "**/node_modules/**", "**/.next/**"]
+}
