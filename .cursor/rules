@@ -1,0 +1,318 @@
+# Regras do Projeto EasyDrive
+
+## 📚 Documentação Principal (Fonte Única da Verdade)
+
+**SEMPRE consulte a documentação completa antes de qualquer alteração:**
+
+1. **[`./ai/AI-GUIDE.md`](./ai/AI-GUIDE.md)** - GUIA MESTRE com instruções completas
+2. **[`./ai/00-project-overview.md`](./ai/00-project-overview.md)** - Contexto detalhado do projeto
+3. **[`./ai/supabase-declarative-database-schema.md`](./ai/supabase-declarative-database-schema.md)** - Workflow OBRIGATÓRIO para banco de dados
+4. **[`./ai/supabase-create-migration.md`](./ai/supabase-create-migration.md)** - Diretrizes de migração
+
+---
+
+## 🚨 Regras Críticas NÃO-NEGOCIÁVEIS
+
+### 1. DTOs São OBRIGATÓRIOS
+
+```typescript
+// ❌ NUNCA exponha entidades do banco diretamente
+export function getUser() {
+  return supabase.from("users").select("*");
+}
+
+// ✅ SEMPRE use DTOs (Public/Private)
+export function getUser(): UserPublicDTO {
+  const user = await supabase.from("users").select("*");
+  return toUserPublicDTO(user);
+}
+```
+
+**Regra:** NUNCA exponha entidades do banco de dados diretamente. SEMPRE use DTOs com variantes Public/Private.
+
+### 2. Validação com Zod
+
+```typescript
+// ✅ SEMPRE valide TODA entrada com Zod
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
+const result = loginSchema.safeParse(data);
+```
+
+**Regra:** TODA entrada de dados DEVE ser validada com schemas Zod.
+
+### 3. Workflow Supabase (DECLARATIVO)
+
+```
+supabase/
+├── schemas/          ← Arquivos SQL declarativos AQUI
+│   ├── tables/
+│   ├── functions/
+│   └── policies/
+└── migrations/       ← Gerado automaticamente via CLI
+```
+
+**Regras:**
+
+- ❌ NUNCA crie migrations manualmente em `supabase/migrations/`
+- ✅ SEMPRE crie schemas em `supabase/schemas/`
+- ✅ SEMPRE use `supabase db diff` para gerar migrations
+- ✅ CONSULTE [`./ai/supabase-declarative-database-schema.md`](./ai/supabase-declarative-database-schema.md) ANTES de qualquer alteração no DB
+
+### 4. Segurança
+
+**NUNCA exponha:**
+
+- Senhas ou hashes
+- CPF completo (use `XXX.XXX.XXX-XX`)
+- Tokens de autenticação
+- Telefones completos (use `(XX) XXXXX-XXXX`)
+- Dados financeiros sem criptografia
+
+### 5. Componentes Server/Client
+
+```typescript
+// Server Component (padrão)
+export default async function Page() {
+  const data = await fetchData()
+  return <div>{data}</div>
+}
+
+// Client Component (interativo)
+'use client'
+export default function InteractiveComponent() {
+  const [state, setState] = useState()
+  return <button onClick={...}>Click</button>
+}
+```
+
+**Regra:** Separação clara entre Server e Client Components. Use `'use client'` SOMENTE quando necessário.
+
+### 6. Type Safety
+
+```typescript
+// ❌ NUNCA use any
+function process(data: any) {}
+
+// ✅ SEMPRE use tipos específicos
+function process(data: User) {}
+```
+
+**Regra:** NUNCA use `any`. Mantenha type safety end-to-end.
+
+---
+
+## 🎯 Guia Rápido por Tarefa
+
+### Criando uma Nova Feature
+
+1. Consulte [`./ai/AI-GUIDE.md`](./ai/AI-GUIDE.md) seção "Arquitetura"
+2. Crie estrutura em `features/[feature-name]/`:
+
+```
+features/[feature-name]/
+├── components/
+│   ├── client/
+│   ├── server/
+│   └── shared/
+├── queries/
+│   ├── queries.ts
+│   └── mutations.ts
+├── api/
+├── dtos/
+├── types/
+├── validations/
+└── services/
+```
+
+### Alterações no Banco de Dados
+
+**WORKFLOW OBRIGATÓRIO:**
+
+1. Leia [`./ai/supabase-declarative-database-schema.md`](./ai/supabase-declarative-database-schema.md)
+2. Edite/crie schema em `supabase/schemas/`
+3. Execute `supabase db diff --use-migra -f [nome-descritivo]`
+4. Revise a migration gerada
+5. Execute `supabase db reset` para testar
+
+### Criando Componentes
+
+1. **Server Components**: `features/[feature]/components/server/`
+2. **Client Components**: `features/[feature]/components/client/` (adicione `'use client'`)
+3. **Shared**: `features/[feature]/components/shared/`
+4. Use RetroUI da pasta [`components/retroui/`](./components/retroui/)
+
+### API Routes
+
+1. Crie em `features/[feature]/api/[route]/route.ts`
+2. Valide input com Zod
+3. Use DTOs para output
+4. Exemplo:
+
+```typescript
+// features/users/api/profile/route.ts
+import { z } from "zod";
+import { NextResponse } from "next/server";
+
+const updateProfileSchema = z.object({
+  name: z.string(),
+  phone: z.string(),
+});
+
+export async function POST(request: Request) {
+  const body = await request.json();
+  const result = updateProfileSchema.safeParse(body);
+
+  if (!result.success) {
+    return NextResponse.json({ error: result.error }, { status: 400 });
+  }
+
+  // Processar...
+  return NextResponse.json({ data: userPublicDTO });
+}
+```
+
+### Queries e Mutations (React Query)
+
+1. Queries em `features/[feature]/queries/queries.ts`
+2. Mutations em `features/[feature]/queries/mutations.ts`
+3. Sempre retorne DTOs
+
+---
+
+## 🏗️ Arquitetura do Projeto
+
+### Papéis de Usuário
+
+- **Aluno**: Estudante de direção
+- **Instrutor**: Instrutor certificado
+- **Admin**: Administrador da plataforma
+
+### Tech Stack
+
+- **Framework**: Next.js 14+ (App Router)
+- **Linguagem**: TypeScript
+- **Estilo**: Tailwind CSS v4 + RetroUI
+- **Banco de Dados**: Supabase (PostgreSQL)
+- **Validação**: Zod
+- **Data Fetching**: React Query
+- **Autenticação**: Supabase Auth
+
+### Path Aliases
+
+```typescript
+"@/*"           → "./"
+"@features/*"   → "./features/*"
+"@components/*" → "./components/*"
+"@lib/*"        → "./lib/*"
+```
+
+### Convenções de Nomenclatura
+
+- **Pages**: `page.tsx`
+- **Layouts**: `layout.tsx`
+- **API Routes**: `route.ts`
+- **Components**: `PascalCase.tsx`
+- **Services**: `*.service.ts`
+- **DTOs**: `*.dto.ts`
+- **Schemas**: `*.schema.ts`
+- **Types**: `*.types.ts`
+
+---
+
+## 🎨 RetroUI Design System
+
+### Componentes Disponíveis
+
+Consulte [`./components/retroui/`](./components/retroui/) para componentes:
+
+**Básicos:**
+
+- Button, Input, Label, Text, Card
+- Badge, Avatar, Alert
+
+**Formulários:**
+
+- Checkbox, Radio, Switch, Select, Slider
+
+**Navegação:**
+
+- Menu, Breadcrumb, Command
+
+**Feedback:**
+
+- Dialog, Popover, Tooltip, Loader, Progress
+
+**Data:**
+
+- Table, Calendar, Accordion
+
+**Charts:**
+
+- AreaChart, BarChart, LineChart, PieChart
+
+### Uso
+
+```typescript
+import { Button } from '@/components/retroui/Button'
+import { Card } from '@/components/retroui/Card'
+
+<Button variant="primary">Salvar</Button>
+<Card>Conteúdo</Card>
+```
+
+---
+
+## 📁 Estrutura de Pastas
+
+```
+easy-drive/
+├── app/                    # Next.js App Router
+│   ├── (marketing)/       # Grupo de rotas públicas
+│   ├── auth/              # Autenticação
+│   └── protected/         # Rotas protegidas
+├── features/              # Features modulares
+│   ├── auth/
+│   ├── marketing/
+│   └── [feature-name]/
+├── components/
+│   ├── retroui/          # Design System
+│   └── supabase/         # Componentes Supabase
+├── lib/
+│   ├── supabase/         # Clientes Supabase
+│   └── utils.ts
+├── supabase/
+│   ├── schemas/          # ⚠️ SCHEMAS DECLARATIVOS AQUI
+│   └── migrations/       # Gerado automaticamente
+└── ai/                   # 📚 DOCUMENTAÇÃO PRINCIPAL
+```
+
+---
+
+## 🔗 Links Importantes
+
+- **Documentação Completa**: [`./ai/AI-GUIDE.md`](./ai/AI-GUIDE.md)
+- **Visão Geral**: [`./ai/00-project-overview.md`](./ai/00-project-overview.md)
+- **Workflow Supabase**: [`./ai/supabase-declarative-database-schema.md`](./ai/supabase-declarative-database-schema.md)
+- **Migrations**: [`./ai/supabase-create-migration.md`](./ai/supabase-create-migration.md)
+
+---
+
+## ⚠️ Antes de Qualquer Alteração
+
+1. ✅ Consulte a documentação em [`./ai/`](./ai/)
+2. ✅ Verifique se está seguindo as regras não-negociáveis
+3. ✅ Use DTOs para expor dados
+4. ✅ Valide com Zod
+5. ✅ Para DB: use workflow declarativo do Supabase
+6. ✅ Mantenha type safety (sem `any`)
+7. ✅ Separe Server/Client components corretamente
+
+---
+
+**Lembre-se:** A documentação em [`./ai/`](./ai/) é a FONTE ÚNICA DA VERDADE. Em caso de dúvida, SEMPRE consulte primeiro.
