@@ -1,12 +1,12 @@
-import { Badge } from '@/components/retroui/Badge';
-import { Button } from '@/components/retroui/Button';
-import { Card } from '@/components/retroui/Card';
-import { Input } from '@/components/retroui/Input';
-import { Text } from '@/components/retroui/Text';
-import { cn } from '@/lib/utils';
+import { Badge } from "@/components/retroui/Badge";
+import { Button } from "@/components/retroui/Button";
+import { Card } from "@/components/retroui/Card";
+import { Input } from "@/components/retroui/Input";
+import { Text } from "@/components/retroui/Text";
+import { cn } from "@/lib/utils";
 
-import { styles as s } from './Home.styles';
-import type { HomeProps } from './Home.types';
+import { styles as s } from "./Home.styles";
+import type { HomeProps } from "./Home.types";
 
 export default function Home({ className }: HomeProps) {
   return (
@@ -58,9 +58,9 @@ export default function Home({ className }: HomeProps) {
             </Text>
 
             <Text as="p" className={s().subtitle()}>
-              O EasyDrive conecta instrutores de direção certificados com pessoas que querem
-              aprender a dirigir — combinando por localização, agenda, tipo de carro e objetivos de
-              aprendizado.
+              O EasyDrive conecta instrutores de direção certificados com
+              pessoas que querem aprender a dirigir — combinando por
+              localização, agenda, tipo de carro e objetivos de aprendizado.
             </Text>
 
             <Button asChild className={s().cta()}>
@@ -71,18 +71,22 @@ export default function Home({ className }: HomeProps) {
               <Card.Header>
                 <Card.Title>Comece pela sua cidade</Card.Title>
                 <Card.Description>
-                  Vamos mostrar instrutores próximos e os próximos horários disponíveis para aula.
+                  Vamos mostrar instrutores próximos e os próximos horários
+                  disponíveis para aula.
                 </Card.Description>
               </Card.Header>
               <Card.Content className={s().searchContent()}>
                 <div className={s().searchRow()}>
-                  <Input placeholder="Digite sua cidade (ex.: São Paulo)" aria-label="Cidade" />
+                  <Input
+                    placeholder="Digite sua cidade (ex.: São Paulo)"
+                    aria-label="Cidade"
+                  />
                   <Button className={s().searchButton()} type="button">
                     Encontrar instrutores
                   </Button>
                 </div>
                 <Text as="p" className={s().helperText()}>
-                  Quer ensinar?{' '}
+                  Quer ensinar?{" "}
                   <Text as="a" href="#teachers">
                     Candidate-se como instrutor
                   </Text>
@@ -96,7 +100,9 @@ export default function Home({ className }: HomeProps) {
             <Card className={s().sideCard()}>
               <Card.Header>
                 <Card.Title>Para alunos</Card.Title>
-                <Card.Description>Agende aulas no seu ritmo e no seu horário.</Card.Description>
+                <Card.Description>
+                  Agende aulas no seu ritmo e no seu horário.
+                </Card.Description>
               </Card.Header>
               <Card.Content className="grid gap-3">
                 <ul className={s().list()}>
@@ -116,7 +122,9 @@ export default function Home({ className }: HomeProps) {
             <Card className={s().sideCard()}>
               <Card.Header>
                 <Card.Title>Para instrutores</Card.Title>
-                <Card.Description>Seja encontrado por novos alunos na sua região.</Card.Description>
+                <Card.Description>
+                  Seja encontrado por novos alunos na sua região.
+                </Card.Description>
               </Card.Header>
               <Card.Content className="grid gap-3">
                 <ul className={s().list()}>
@@ -153,7 +161,8 @@ export default function Home({ className }: HomeProps) {
                 </Badge>
                 <Card.Title className="mt-2">Buscar</Card.Title>
                 <Card.Description>
-                  Encontre instrutores perto de você com o tipo de carro que você prefere.
+                  Encontre instrutores perto de você com o tipo de carro que
+                  você prefere.
                 </Card.Description>
               </Card.Header>
             </Card>
@@ -175,7 +184,8 @@ export default function Home({ className }: HomeProps) {
                 </Badge>
                 <Card.Title className="mt-2">Dirigir</Card.Title>
                 <Card.Description>
-                  Aprenda com segurança, acompanhe seu progresso e ganhe confiança.
+                  Aprenda com segurança, acompanhe seu progresso e ganhe
+                  confiança.
                 </Card.Description>
               </Card.Header>
             </Card>
@@ -187,12 +197,14 @@ export default function Home({ className }: HomeProps) {
             <Card.Header>
               <Card.Title>Seja instrutor no EasyDrive</Card.Title>
               <Card.Description>
-                Crie um perfil, defina disponibilidade e comece a receber pedidos de aula.
+                Crie um perfil, defina disponibilidade e comece a receber
+                pedidos de aula.
               </Card.Description>
             </Card.Header>
             <Card.Content className={s().teacherCTAContent()}>
               <Text as="p" className={s().teacherCTAText()}>
-                Estamos lançando cidade por cidade. Entre na lista de espera para ser o primeiro.
+                Estamos lançando cidade por cidade. Entre na lista de espera
+                para ser o primeiro.
               </Text>
               <Button variant="secondary" type="button">
                 Entrar na lista de espera
@@ -204,7 +216,8 @@ export default function Home({ className }: HomeProps) {
             <Card.Header>
               <Card.Title>O que verificamos</Card.Title>
               <Card.Description>
-                Vamos manter isso rigoroso — qualidade e segurança em primeiro lugar.
+                Vamos manter isso rigoroso — qualidade e segurança em primeiro
+                lugar.
               </Card.Description>
             </Card.Header>
             <Card.Content className={s().verifyContent()}>
@@ -226,21 +239,23 @@ export default function Home({ className }: HomeProps) {
             <Card.Header>
               <Card.Title>Segurança e confiança</Card.Title>
               <Card.Description>
-                A plataforma é projetada para reduzir a incerteza para ambos os lados.
+                A plataforma é projetada para reduzir a incerteza para ambos os
+                lados.
               </Card.Description>
             </Card.Header>
             <Card.Content className={s().safetyGrid()}>
               <div className={s().safetyBlock()}>
                 <Text as="h4">Perfis verificados</Text>
                 <Text as="p" className={s().safetyBlockText()}>
-                  Instrutores e alunos constroem credibilidade com verificação e histórico.
+                  Instrutores e alunos constroem credibilidade com verificação e
+                  histórico.
                 </Text>
               </div>
               <div className={s().safetyBlock()}>
                 <Text as="h4">Objetivos claros da aula</Text>
                 <Text as="p" className={s().safetyBlockText()}>
-                  Cada aula pode focar em habilidades específicas como baliza, conversões ou
-                  preparação para prova.
+                  Cada aula pode focar em habilidades específicas como baliza,
+                  conversões ou preparação para prova.
                 </Text>
               </div>
               <div className={s().safetyBlock()}>
@@ -256,7 +271,8 @@ export default function Home({ className }: HomeProps) {
         <footer className={s().footer()}>
           <div className={s().footerInner()}>
             <Text as="p" className={s().footerText()}>
-              © {new Date().getFullYear()} EasyDrive. Todos os direitos reservados.
+              © {new Date().getFullYear()} EasyDrive. Todos os direitos
+              reservados.
             </Text>
             <div className={s().footerLinks()}>
               <Text as="a" href="#" className={s().footerText()}>
