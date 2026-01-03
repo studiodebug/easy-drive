@@ -1,19 +1,22 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/retroui/Button';
-import { Card } from '@/components/retroui/Card';
-import { Input } from '@/components/retroui/Input';
-import { Label } from '@/components/retroui/Label';
-import { createClient } from '@/lib/supabase/client';
-import { cn } from '@/lib/utils';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { Button } from "@/components/retroui/Button";
+import { Card } from "@/components/retroui/Card";
+import { Input } from "@/components/retroui/Input";
+import { Label } from "@/components/retroui/Label";
+import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [repeatPassword, setRepeatPassword] = useState('');
+export function SignUpForm({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<"div">) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [repeatPassword, setRepeatPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -25,7 +28,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
     setError(null);
 
     if (password !== repeatPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       setIsLoading(false);
       return;
     }
@@ -35,20 +38,20 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/protected`,
+          emailRedirectTo: `${window.location.origin}/dashboard`,
         },
       });
       if (error) throw error;
-      router.push('/auth/sign-up-success');
+      router.push("/auth/sign-up-success");
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'An error occurred');
+      setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className={cn('flex flex-col gap-6', className)} {...props}>
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <Card.Header>
           <Card.Title className="text-2xl">Sign up</Card.Title>
@@ -94,11 +97,11 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Creating an account...' : 'Sign up'}
+                {isLoading ? "Creating an account..." : "Sign up"}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-              Already have an account?{' '}
+              Already have an account?{" "}
               <Link href="/auth/login" className="underline underline-offset-4">
                 Login
               </Link>
