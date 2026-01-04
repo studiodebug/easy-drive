@@ -1,7 +1,7 @@
 import { Button } from "@/components/retroui/Button";
 import { createClient } from "@/shared/supabase/server";
 import Link from "next/link";
-import { LogoutButton } from "../client/LogoutButton";
+import { LogoutButton } from "./LogoutButton";
 
 export async function AuthButton() {
   const supabase = await createClient();
