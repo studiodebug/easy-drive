@@ -29,5 +29,8 @@ export { updateUserSchema, userSchema } from "./validations/user.schema";
 export type { UpdateUserSchema, UserSchema } from "./validations/user.schema";
 
 // Services
-export { getCurrentUserProfile } from "./services/user.service";
+export {
+  getCurrentUserProfile,
+  updateCurrentUser,
+} from "./services/user.service";
 export type { UserProfileResponse } from "./services/user.service";

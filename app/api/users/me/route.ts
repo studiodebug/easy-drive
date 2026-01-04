@@ -1,27 +1,17 @@
 /**
- * User "me" API Route
+ * API Route: /api/users/me
  *
- * GET  /api/users/me - returns the authenticated user's profile (DTOs only)
- * PUT  /api/users/me - upserts the authenticated user's profile fields
+ * Gerencia dados do perfil do usuário autenticado.
+ * Segue arquitetura Feature-based do projeto.
  */
 
-import { toUserPrivateDTO } from "@/features/users/dtos/user.dto";
-import type { UserEntity } from "@/features/users/entities/user.entity";
-import { getCurrentUserProfile } from "@/features/users/services/user.service";
+import {
+  getCurrentUserProfile,
+  updateCurrentUser,
+} from "@/features/users/services/user.service";
+import { updateUserSchema } from "@/features/users/validations/user.schema";
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
-
-const upsertMeSchema = z.object({
-  name: z.string().min(3).max(100),
-  photoUrl: z.string().url().nullable().optional(),
-  documentType: z.enum(["CPF", "RG", "CNH"]).nullable().optional(),
-  document: z.string().nullable().optional(),
-  addressId: z.string().uuid().nullable().optional(),
-  instructorId: z.string().uuid().nullable().optional(),
-  studentId: z.string().uuid().nullable().optional(),
-  walletId: z.string().uuid().nullable().optional(),
-});
 
 /**
  * GET /api/users/me
@@ -55,53 +45,44 @@ export async function GET() {
  * Atualiza dados do perfil do usuário autenticado.
  */
 export async function PUT(request: NextRequest) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
+    // 1. Validar autenticação
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // 2. Validar input
     const body = await request.json();
-    const parsed = upsertMeSchema.safeParse(body);
+    const parsed = updateUserSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error }, { status: 400 });
+      return NextResponse.json(
+        { error: "Validation failed", details: parsed.error },
+        { status: 400 }
+      );
     }
 
-    const payload = parsed.data;
+    // 3. Executar lógica de negócio através do service
+    const updatedUser = await updateCurrentUser(parsed.data);
 
-    const upsertRow = {
-      id: user.id,
-      name: payload.name,
-      photo_url: payload.photoUrl ?? null,
-      document_type: payload.documentType ?? null,
-      document: payload.document ?? null,
-      address_id: payload.addressId ?? null,
-      instructor_id: payload.instructorId ?? null,
-      student_id: payload.studentId ?? null,
-      wallet_id: payload.walletId ?? null,
-    };
-
-    const { data: upserted, error: upsertError } = await supabase
-      .from("users")
-      .upsert(upsertRow, { onConflict: "id" })
-      .select(
-        "id, created_at, name, photo_url, document_type, document, address_id, instructor_id, student_id, wallet_id"
-      )
-      .single();
-
-    if (upsertError) {
-      return NextResponse.json({ error: upsertError.message }, { status: 400 });
-    }
-
-    const userDTO = toUserPrivateDTO(upserted as unknown as UserEntity);
-    return NextResponse.json({ user: userDTO });
+    return NextResponse.json({ user: updatedUser });
   } catch (error) {
-    console.error("[API /users/me] Error updating user profile:", error);
+    console.error("[API PUT /users/me] Error updating user profile:", error);
+
+    // Tratar erros específicos
+    if (error instanceof Error) {
+      if (error.message === "Unauthorized") {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
     return NextResponse.json(
       { error: "Failed to update profile" },
       { status: 500 }

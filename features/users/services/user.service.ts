@@ -16,6 +16,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { UserPrivateDTO } from "../dtos/user.dto";
 import { toUserPrivateDTO } from "../dtos/user.dto";
 import type { UserEntity } from "../entities/user.entity";
+import type { UpdateUserSchema } from "../validations/user.schema";
 
 export interface UserProfileResponse {
   user: UserPrivateDTO;
@@ -135,4 +136,71 @@ export async function getCurrentUserProfile(): Promise<UserProfileResponse | nul
     user: userDTO,
     instructor: instructorDTO,
   };
+}
+
+/**
+ * Atualiza o perfil do usuário autenticado atual
+ *
+ * @param updateData - Dados validados para atualização
+ * @returns Perfil atualizado do usuário
+ * @throws Error se não houver usuário autenticado ou se houver falha na atualização
+ */
+export async function updateCurrentUser(
+  updateData: UpdateUserSchema
+): Promise<UserPrivateDTO> {
+  const supabase = await createClient();
+
+  // 1. Verificar autenticação
+  const {
+    data: { user: authUser },
+  } = await supabase.auth.getUser();
+
+  if (!authUser) {
+    throw new Error("Unauthorized");
+  }
+
+  // 2. Preparar payload para upsert
+  const upsertRow = {
+    id: authUser.id,
+    ...(updateData.name !== undefined && { name: updateData.name }),
+    ...(updateData.photoUrl !== undefined && {
+      photo_url: updateData.photoUrl,
+    }),
+    ...(updateData.documentType !== undefined && {
+      document_type: updateData.documentType,
+    }),
+    ...(updateData.document !== undefined && { document: updateData.document }),
+    ...(updateData.addressId !== undefined && {
+      address_id: updateData.addressId,
+    }),
+    ...(updateData.instructorId !== undefined && {
+      instructor_id: updateData.instructorId,
+    }),
+    ...(updateData.studentId !== undefined && {
+      student_id: updateData.studentId,
+    }),
+    ...(updateData.walletId !== undefined && {
+      wallet_id: updateData.walletId,
+    }),
+  };
+
+  // 3. Executar upsert
+  const { data: upserted, error: upsertError } = await supabase
+    .from("users")
+    .upsert(upsertRow, { onConflict: "id" })
+    .select(
+      "id, created_at, name, photo_url, document_type, document, address_id, instructor_id, student_id, wallet_id"
+    )
+    .single();
+
+  if (upsertError) {
+    throw new Error(`Failed to update user: ${upsertError.message}`);
+  }
+
+  if (!upserted) {
+    throw new Error("Update returned no data");
+  }
+
+  // 4. Transformar para DTO
+  return toUserPrivateDTO(upserted as unknown as UserEntity);
 }
