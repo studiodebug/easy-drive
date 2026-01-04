@@ -1,4 +1,4 @@
-import { AuthButton } from "@/features/auth";
+import { AuthButton } from "@/shared";
 import { createClient } from "@/shared/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";

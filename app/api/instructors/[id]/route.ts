@@ -6,9 +6,9 @@
  * DELETE /api/instructors/[id] - Deletar instrutor (protegido)
  */
 
-import { toInstructorPublicDTO } from "@/features/instructors/dtos/instructor.dto";
-import { instructorService } from "@/features/instructors/services/instructor.service";
-import { updateInstructorSchema } from "@/features/instructors/validations/instructor.schema";
+import { toInstructorPublicDTO } from "@/shared/dtos/instructor.dto";
+import { instructorService } from "@/shared/services/instructor.service";
+import { updateInstructorSchema } from "@/shared/validations/instructor.schema";
 import { NextRequest, NextResponse } from "next/server";
 
 type Params = {

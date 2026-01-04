@@ -8,12 +8,12 @@
 import {
   toInstructorPublicDTO,
   toInstructorPublicDTOs,
-} from "@/features/instructors/dtos/instructor.dto";
-import { instructorService } from "@/features/instructors/services/instructor.service";
+} from "@/shared/dtos/instructor.dto";
+import { instructorService } from "@/shared/services/instructor.service";
 import {
   instructorFiltersSchema,
   instructorSchema,
-} from "@/features/instructors/validations/instructor.schema";
+} from "@/shared/validations/instructor.schema";
 import { NextRequest, NextResponse } from "next/server";
 
 /**

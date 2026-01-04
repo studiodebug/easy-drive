@@ -8,8 +8,8 @@
 import {
   getCurrentUserProfile,
   updateCurrentUser,
-} from "@/features/users/services/user.service";
-import { updateUserSchema } from "@/features/users/validations/user.schema";
+} from "@/shared/services/user.service";
+import { updateUserSchema } from "@/shared/validations/user.schema";
 import { createClient } from "@/shared/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
