@@ -95,27 +95,26 @@ Uma plataforma centralizada que:
 ### Frontend
 
 - **Framework**: Next.js 14+ (App Router)
-- **Linguagem**: TypeScript
+- **Linguagem**: TypeScript (Strict Mode)
 - **Estilização**: Tailwind CSS v4
 - **UI Components**: RetroUI (custom design system)
-- **Formulários**: React Hook Form + Zod
-- **State Management**: React Query (TanStack Query)
+- **Validação**: Zod
+- **Data Fetching**: Server Actions + React Query (quando necessário)
 - **Ícones**: Lucide React
 
 ### Backend
 
-- **Runtime**: Next.js API Routes (serverless)
-- **Database**: PostgreSQL (Prisma ORM)
-- **Autenticação**: NextAuth.js v5 ou Lucia
+- **Runtime**: Next.js Server Actions + API Routes (webhooks, cron)
+- **Database**: Supabase (PostgreSQL)
+- **Autenticação**: Supabase Auth
 - **Validação**: Zod
-- **Rate Limiting**: Upstash Redis
 - **Pagamentos**: Stripe (futuro)
 
 ### DevOps & Tools
 
 - **Versionamento**: Git + GitHub
 - **Deploy**: Vercel
-- **Logging**: Pino + Axiom (futuro)
+- **Database Management**: Supabase CLI (declarative schemas)
 - **Testes**: Vitest + Playwright (futuro)
 
 ---
@@ -345,35 +344,18 @@ Sistema de componentes com visual retrô/nostálgico:
 ### Públicas (Não autenticadas)
 
 - `/` - Landing page
-- `/about` - Sobre o EasyDrive
-- `/how-it-works` - Como funciona
-- `/login` - Login
-- `/register` - Registro
+- `/auth/login` - Login
+- `/auth/sign-up` - Registro
+- `/auth/forgot-password` - Recuperação de senha
 
-### Aluno Autenticado
+### Aluno/Instrutor Autenticado
 
-- `/app/dashboard` - Dashboard do aluno
-- `/app/instructors` - Busca de instrutores
-- `/app/instructors/[id]` - Perfil do instrutor
-- `/app/lessons` - Minhas aulas
-- `/app/lessons/[id]` - Detalhes da aula
-- `/app/profile` - Meu perfil
-- `/app/profile/settings` - Configurações
-
-### Instrutor Autenticado
-
-- `/app/dashboard` - Dashboard do instrutor
-- `/app/lessons` - Aulas agendadas
-- `/app/availability` - Gerenciar disponibilidade
-- `/app/profile` - Meu perfil profissional
-- `/app/earnings` - Ganhos/Financeiro
-
-### Admin
-
-- `/admin/dashboard` - Dashboard admin
-- `/admin/instructors` - Gerenciar instrutores
-- `/admin/users` - Gerenciar usuários
-- `/admin/reports` - Relatórios
+- `/dashboard` - Dashboard (dinâmico por role)
+- `/instructors` - Busca de instrutores
+- `/instructors/[id]` - Perfil do instrutor
+- `/lessons` - Minhas aulas
+- `/lessons/[id]` - Detalhes da aula
+- `/profile` - Meu perfil
 
 ---
 
@@ -467,11 +449,11 @@ Nunca exponha em APIs públicas:
 
 Depois de ler este documento:
 
-1. Leia [`../general-rules/architecture.md`](../general-rules/architecture.md) - Arquitetura detalhada e estrutura do código
+1. Leia [`architecture.md`](architecture.md) - Arquitetura detalhada e estrutura do código
 2. Consulte [`../general-rules/`](../general-rules/) - Todas as regras e convenções de código
 3. Explore componentes em [`../../components/retroui/`](../../components/retroui/) - Catálogo de componentes disponíveis
 4. Leia [`../libs/supabase-declarative-database-schema.md`](../libs/supabase-declarative-database-schema.md) - Se precisar modificar o database
 
 ---
 
-**Última atualização**: 2026-01-03
+**Última atualização**: 2026-01-04

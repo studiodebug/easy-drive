@@ -28,7 +28,7 @@ Este arquivo é o **índice mestre** que contém:
 
 1. **[`./ai/README.md`](./ai/README.md)** ⭐ - ÍNDICE MESTRE (comece aqui)
 2. **[`./ai/project/00-project-overview.md`](./ai/project/00-project-overview.md)** - Visão geral do EasyDrive
-3. **[`./ai/general-rules/architecture.md`](./ai/general-rules/architecture.md)** - Estrutura e padrões
+3. **[`./ai/project/architecture.md`](./ai/project/architecture.md)** - Estrutura e padrões
 4. **[`./ai/libs/supabase-declarative-database-schema.md`](./ai/libs/supabase-declarative-database-schema.md)** - Workflow OBRIGATÓRIO para database
 
 ---
@@ -138,7 +138,7 @@ function process(data: User) {}
 
 1. **Consulte:** [`./ai/README.md`](./ai/README.md) → "Criar Nova Feature"
 2. **Leia:**
-   - [`./ai/general-rules/architecture.md`](./ai/general-rules/architecture.md)
+   - [`./ai/project/architecture.md`](./ai/project/architecture.md)
    - [`./ai/general-rules/dto.md`](./ai/general-rules/dto.md)
    - [`./ai/general-rules/validation.md`](./ai/general-rules/validation.md)
 3. **Implemente** seguindo a estrutura de features
@@ -155,39 +155,41 @@ function process(data: User) {}
 
 ### Criando Componentes
 
-1. **Server Components:** `features/[feature]/components/server/`
-2. **Client Components:** `features/[feature]/components/client/` (adicione `'use client'`)
-3. **Shared:** `features/[feature]/components/shared/`
-4. **Design System:** Use RetroUI de [`components/retroui/`](./components/retroui/)
+**Regra de Colocation:** Mantenha componentes próximos de onde são usados.
+
+1. **Componentes específicos de rota:** `app/(authenticated)/[rota]/_components/`
+2. **Componentes compartilhados (3+ lugares):** `components/shared/`
+3. **Design System:** Use RetroUI de [`components/retroui/`](./components/retroui/)
+
+```typescript
+// ✅ Server Component (padrão - sem diretiva)
+export async function ProfileHeader() { ... }
+
+// ✅ Client Component (quando necessário)
+'use client';
+export function ProfileForm() { ... }
+```
 
 **Documentação:** [`./ai/general-rules/styling.md`](./ai/general-rules/styling.md)
 
-### Criando API Routes
+### Criando Server Actions (Preferencial)
 
-1. Crie em `features/[feature]/api/[route]/route.ts`
-2. Valide input com Zod
-3. Use DTOs para output
+**Prefira Server Actions em vez de API Routes:**
 
 ```typescript
-import { z } from "zod";
-import { NextResponse } from "next/server";
+// app/(authenticated)/profile/_actions.ts
+"use server";
 
-const schema = z.object({
-  name: z.string(),
-});
+import { createClient } from "@/shared/supabase/server";
 
-export async function POST(request: Request) {
-  const body = await request.json();
-  const result = schema.safeParse(body);
-
-  if (!result.success) {
-    return NextResponse.json({ error: result.error }, { status: 400 });
-  }
-
-  // Processar e retornar DTO
-  return NextResponse.json({ data: userPublicDTO });
+export async function updateProfile(formData: FormData) {
+  // Validar com Zod
+  // Processar
+  // Retornar DTO
 }
 ```
+
+**API Routes apenas para:** webhooks, cron jobs, integrações third-party
 
 ---
 
@@ -200,16 +202,15 @@ export async function POST(request: Request) {
 - **Database:** Supabase (PostgreSQL)
 - **UI:** RetroUI Design System + Tailwind CSS v4
 - **Validação:** Zod
-- **Data Fetching:** React Query
+- **Data Fetching:** Server Actions + React Query (quando necessário)
 - **Autenticação:** Supabase Auth
 
 ### Path Aliases
 
 ```typescript
 "@/*"           → "./"
-"@features/*"   → "./features/*"
 "@components/*" → "./components/*"
-"@lib/*"        → "./lib/*"
+"@shared/*"     → "./shared/*"
 ```
 
 ### Papéis de Usuário
@@ -222,32 +223,42 @@ export async function POST(request: Request) {
 
 ## 📁 Estrutura de Pastas
 
-**Para detalhes completos, consulte:** [`./ai/general-rules/architecture.md`](./ai/general-rules/architecture.md)
+**Para detalhes completos, consulte:** [`./ai/project/architecture.md`](./ai/project/architecture.md)
 
 ```
 easy-drive/
 ├── app/                    # Next.js App Router
-│   ├── (marketing)/       # Rotas públicas
-│   ├── auth/              # Autenticação
-│   └── (app)/             # Rotas protegidas
-├── features/              # Features modulares
-│   └── [feature-name]/
-│       ├── components/
-│       │   ├── client/
-│       │   ├── server/
-│       │   └── shared/
-│       ├── types/
-│       ├── dtos/
-│       ├── validations/
-│       ├── services/
-│       ├── queries/
-│       └── api/
+│   ├── (public)/          # 🌐 Rotas públicas
+│   │   ├── page.tsx
+│   │   ├── _components/   # Componentes privados
+│   │   └── _hooks/
+│   ├── (authenticated)/   # 🔐 Rotas autenticadas
+│   │   ├── dashboard/
+│   │   │   ├── page.tsx
+│   │   │   ├── loading.tsx
+│   │   │   ├── _components/
+│   │   │   ├── _hooks/
+│   │   │   └── _actions.ts
+│   │   ├── profile/
+│   │   ├── instructors/
+│   │   └── lessons/
+│   ├── auth/              # 🔑 Autenticação
+│   │   ├── login/
+│   │   ├── sign-up/
+│   │   └── _components/
+│   └── api/               # 🔌 API Routes (webhooks, cron)
 ├── components/
-│   ├── retroui/          # Design System
-│   └── supabase/         # Componentes Supabase
-├── lib/
-│   ├── supabase/         # Clientes Supabase
+│   ├── retroui/          # 🎨 Design System
+│   ├── shared/           # Componentes compartilhados (3+ lugares)
+│   └── layouts/          # Layouts reutilizáveis
+├── shared/
+│   ├── supabase/         # Cliente Supabase
+│   ├── validations/      # Schemas Zod compartilhados
+│   ├── types/            # Types globais
+│   ├── dtos/             # DTOs compartilhados
 │   └── utils.ts
+├── types/
+│   └── supabase.ts       # Types gerados do Supabase
 ├── supabase/
 │   ├── schemas/          # ⚠️ SCHEMAS DECLARATIVOS AQUI
 │   └── migrations/       # Gerado automaticamente
@@ -304,7 +315,7 @@ O README.md contém:
 
 ### Para Features
 
-- ✅ Siga a estrutura em [`./ai/general-rules/architecture.md`](./ai/general-rules/architecture.md)
+- ✅ Siga a estrutura em [`./ai/project/architecture.md`](./ai/project/architecture.md)
 - ✅ Use DTOs conforme [`./ai/general-rules/dto.md`](./ai/general-rules/dto.md)
 - ✅ Valide conforme [`./ai/general-rules/validation.md`](./ai/general-rules/validation.md)
 - ✅ Aplique segurança conforme [`./ai/general-rules/security.md`](./ai/general-rules/security.md)
@@ -316,7 +327,7 @@ O README.md contém:
 
 - **📚 ÍNDICE MESTRE:** [`./ai/README.md`](./ai/README.md) ⭐ (COMECE AQUI)
 - **Visão Geral:** [`./ai/project/00-project-overview.md`](./ai/project/00-project-overview.md)
-- **Arquitetura:** [`./ai/general-rules/architecture.md`](./ai/general-rules/architecture.md)
+- **Arquitetura:** [`./ai/project/architecture.md`](./ai/project/architecture.md)
 - **Workflow Supabase:** [`./ai/libs/supabase-declarative-database-schema.md`](./ai/libs/supabase-declarative-database-schema.md)
 - **DTOs:** [`./ai/general-rules/dto.md`](./ai/general-rules/dto.md)
 - **Validação:** [`./ai/general-rules/validation.md`](./ai/general-rules/validation.md)
@@ -334,15 +345,17 @@ Consultei ./ai/README.md e li a documentação relevante:
 
 CONTEXTO:
 - ai/project/00-project-overview.md - Visão geral
-- ai/general-rules/architecture.md - Estrutura
+- ai/project/architecture.md - Estrutura
 - ai/general-rules/dto.md - DTOs
 - ai/general-rules/validation.md - Validação
 - ai/libs/supabase-declarative-database-schema.md - Database (se necessário)
 
 TAREFA: [descreva a tarefa]
 
-Para FEATURE:
-- Seguir estrutura de features
+Para IMPLEMENTAÇÃO:
+- Usar colocation (código próximo ao uso)
+- Prefixo _ para arquivos privados
+- Server Actions > API Routes
 - Usar DTOs obrigatórios
 - Validar com Zod
 - Aplicar segurança
