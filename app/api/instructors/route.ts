@@ -13,7 +13,7 @@ import { instructorService } from "@/shared/services/instructor.service";
 import {
   instructorFiltersSchema,
   instructorSchema,
-} from "@/shared/validations/instructor.schema";
+} from "@/shared/validations/instructor";
 import { NextRequest, NextResponse } from "next/server";
 
 /**

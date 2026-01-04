@@ -9,7 +9,7 @@ import {
   getCurrentUserProfile,
   updateCurrentUser,
 } from "@/shared/services/user.service";
-import { updateUserSchema } from "@/shared/validations/user.schema";
+import { updateUserSchema } from "@/shared/validations/user";
 import { createClient } from "@/shared/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
