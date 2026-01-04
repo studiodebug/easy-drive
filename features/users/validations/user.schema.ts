@@ -5,20 +5,17 @@
 import { z } from "zod";
 
 export const userSchema = z.object({
-  email: z.string().email(),
   name: z.string().min(3).max(100),
-  role: z.enum(["student", "instructor", "admin"]),
-  phone: z
-    .string()
-    .regex(/^\d{11}$/)
-    .optional(),
-  cpf: z
-    .string()
-    .regex(/^\d{11}$/)
-    .optional(),
+  photoUrl: z.string().url().nullable().optional(),
+  documentType: z.enum(["CPF", "RG", "CNH"]).nullable().optional(),
+  document: z.string().nullable().optional(),
+  addressId: z.string().uuid().nullable().optional(),
+  instructorId: z.string().uuid().nullable().optional(),
+  studentId: z.string().uuid().nullable().optional(),
+  walletId: z.string().uuid().nullable().optional(),
 });
 
-export const updateUserSchema = userSchema.partial().omit({ email: true });
+export const updateUserSchema = userSchema.partial();
 
 export type UserSchema = z.infer<typeof userSchema>;
 export type UpdateUserSchema = z.infer<typeof updateUserSchema>;

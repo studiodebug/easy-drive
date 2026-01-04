@@ -32,15 +32,6 @@ export const instructorService = {
   },
 
   /**
-   * Buscar instrutor por userId
-   */
-  async findByUserId(userId: string): Promise<Instructor | null> {
-    // TODO: Implementar query no Supabase
-    console.log("Finding instructor by userId:", userId);
-    return null;
-  },
-
-  /**
    * Criar novo instrutor
    */
   async create(data: CreateInstructorInput): Promise<Instructor> {

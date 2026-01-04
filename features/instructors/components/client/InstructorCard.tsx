@@ -24,25 +24,31 @@ export function InstructorCard({ instructor, onSelect }: InstructorCardProps) {
           <div>
             <Card.Title>Instrutor ID: {instructor.id}</Card.Title>
             <Card.Description>
-              {instructor.city}, {instructor.state}
+              {instructor.profile?.specialty ?? "Especialidade não informada"}
             </Card.Description>
           </div>
-          {instructor.verified && <Badge>Verificado</Badge>}
+          {instructor.isActive ? <Badge>Ativo</Badge> : <Badge>Inativo</Badge>}
         </div>
       </Card.Header>
 
       <Card.Content>
         <div className="space-y-2">
-          <p className="text-sm">{instructor.bio}</p>
+          {instructor.profile?.description ? (
+            <p className="text-sm">{instructor.profile.description}</p>
+          ) : (
+            <p className="text-sm text-muted-foreground">Sem descrição</p>
+          )}
 
           <div className="flex items-center gap-4 text-sm">
-            <span>⭐ {instructor.rating.toFixed(1)}</span>
-            <span>🚗 {instructor.vehicle.type}</span>
-            <span>💰 R$ {instructor.pricePerHour}/h</span>
+            <span>
+              ⭐{" "}
+              {typeof instructor.rating === "number" ? instructor.rating : "—"}
+            </span>
+            <span>🪪 {instructor.driversLicense ?? "—"}</span>
           </div>
 
           <p className="text-xs text-muted-foreground">
-            {instructor.totalLessons} aulas ministradas
+            Perfil: {instructor.profileId ?? "—"}
           </p>
         </div>
       </Card.Content>

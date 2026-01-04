@@ -24,9 +24,19 @@ export type {
   Instructor,
   InstructorFilters,
   UpdateInstructorInput,
-  Vehicle,
-  VehicleType,
 } from "./types/instructor.types";
+
+// Entities
+export type {
+  InstructorEntity,
+  InstructorInsertEntity,
+  InstructorUpdateEntity,
+} from "./entities/instructor.entity";
+export type {
+  InstructorProfileEntity,
+  InstructorProfileInsertEntity,
+  InstructorProfileUpdateEntity,
+} from "./entities/instructor-profile.entity";
 
 // DTOs
 export type {
@@ -40,11 +50,21 @@ export {
   toInstructorPublicDTOs,
 } from "./dtos/instructor.dto";
 
+export type {
+  InstructorProfilePrivateDTO,
+  InstructorProfilePublicDTO,
+} from "./dtos/instructor-profile.dto";
+
+export {
+  toInstructorProfilePrivateDTO,
+  toInstructorProfilePublicDTO,
+  toInstructorProfilePublicDTOs,
+} from "./dtos/instructor-profile.dto";
+
 // Constants
 export {
   BRAZILIAN_STATES,
   INSTRUCTOR_CONSTANTS,
-  VEHICLE_TYPES,
 } from "./constants/instructor.constants";
 
 // Schemas
@@ -52,7 +72,6 @@ export {
   instructorFiltersSchema,
   instructorSchema,
   updateInstructorSchema,
-  vehicleSchema,
 } from "./validations/instructor.schema";
 
 export type {
