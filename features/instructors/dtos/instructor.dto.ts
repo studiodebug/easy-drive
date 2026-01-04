@@ -5,7 +5,7 @@
  * NUNCA exponha entidades do banco diretamente.
  */
 
-import type { AddressPublicDTO } from "@features/addresses";
+import type { AddressPublicDTO } from "@/features/addresses";
 import type { InstructorEntity } from "../entities/instructor.entity";
 import type { InstructorProfilePublicDTO } from "./instructor-profile.dto";
 

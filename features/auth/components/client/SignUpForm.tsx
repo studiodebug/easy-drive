@@ -4,6 +4,7 @@ import { Button } from "@/components/retroui/Button";
 import { Card } from "@/components/retroui/Card";
 import { Input } from "@/components/retroui/Input";
 import { Label } from "@/components/retroui/Label";
+import { Select } from "@/components/retroui/Select";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -17,6 +18,12 @@ export function SignUpForm({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
+  const [name, setName] = useState("");
+  const [photoUrl, setPhotoUrl] = useState<string>("");
+  const [documentType, setDocumentType] = useState<
+    "CPF" | "RG" | "CNH" | undefined
+  >(undefined);
+  const [document, setDocument] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -42,6 +49,25 @@ export function SignUpForm({
         },
       });
       if (error) throw error;
+
+      // Try to create/update the user's `public.users` row (best-effort).
+      // If email confirmation is required, this may 401 (no session cookie yet).
+      try {
+        await fetch("/api/users/me", {
+          method: "PUT",
+          headers: { "content-type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            name,
+            photoUrl: photoUrl.trim() ? photoUrl.trim() : null,
+            documentType: documentType ?? null,
+            document: document.trim() ? document.trim() : null,
+          }),
+        });
+      } catch {
+        // ignore (best-effort)
+      }
+
       router.push("/auth/sign-up-success");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "Ocorreu um erro");
@@ -61,6 +87,16 @@ export function SignUpForm({
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
+                <Label htmlFor="name">Nome</Label>
+                <Input
+                  id="name"
+                  placeholder="Seu nome"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
                 <Label htmlFor="email">E-mail</Label>
                 <Input
                   id="email"
@@ -69,6 +105,43 @@ export function SignUpForm({
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="photoUrl">Foto (URL)</Label>
+                <Input
+                  id="photoUrl"
+                  type="url"
+                  placeholder="https://..."
+                  value={photoUrl}
+                  onChange={(e) => setPhotoUrl(e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="documentType">Tipo de documento</Label>
+                <Select
+                  value={documentType}
+                  onValueChange={(v) =>
+                    setDocumentType(v as "CPF" | "RG" | "CNH")
+                  }
+                >
+                  <Select.Trigger id="documentType">
+                    <Select.Value placeholder="Selecione..." />
+                  </Select.Trigger>
+                  <Select.Content>
+                    <Select.Item value="CPF">CPF</Select.Item>
+                    <Select.Item value="RG">RG</Select.Item>
+                    <Select.Item value="CNH">CNH</Select.Item>
+                  </Select.Content>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="document">Documento</Label>
+                <Input
+                  id="document"
+                  placeholder="Somente números (recomendado)"
+                  value={document}
+                  onChange={(e) => setDocument(e.target.value)}
                 />
               </div>
               <div className="grid gap-2">

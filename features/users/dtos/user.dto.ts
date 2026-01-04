@@ -5,7 +5,7 @@
  */
 
 import type { Enums } from "@/types/supabase";
-import type { AddressPublicDTO } from "@features/addresses";
+import type { AddressPublicDTO } from "@/features/addresses";
 import type { UserEntity } from "../entities/user.entity";
 
 type DocumentType = Enums<"document_type">;
