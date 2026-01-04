@@ -1,8 +1,8 @@
-import { AuthButton } from "@/shared";
 import { createClient } from "@/shared/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { AuthButton } from "../auth/_components/AuthButton";
 
 export default async function AppLayout({
   children,
