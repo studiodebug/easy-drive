@@ -13,7 +13,7 @@ type UserMeApiState =
 
 type UserMeResponse = {
   user: UserPrivateDTO;
-  instructor?: InstructorPublicDTO | null;
+  instructor: InstructorPublicDTO | null;
 };
 
 export function UserMeApiRequest() {
