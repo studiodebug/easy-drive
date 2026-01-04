@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { Card } from "@/components/retroui/Card";
+import { UserMeApiRequest } from "@/features/users/components/client/UserMeApiRequest";
 import { createClient } from "@/lib/supabase/server";
 import { CarIcon, CheckCircleIcon, InfoIcon, UserIcon } from "lucide-react";
 import { Suspense } from "react";
@@ -81,6 +82,8 @@ export default function DashboardPage() {
             </Suspense>
           </pre>
         </div>
+
+        <UserMeApiRequest />
       </div>
     </div>
   );
