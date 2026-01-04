@@ -1,90 +1,89 @@
 /**
  * API Route: /api/users/me
  *
- * Gerencia dados do perfil do usuário autenticado.
- * Segue arquitetura Feature-based do projeto.
+ * Retorna dados completos do usuário autenticado com dados de instrutor (se aplicável)
  */
 
-import {
-  getCurrentUserProfile,
-  updateCurrentUser,
-} from "@/features/users/services/user.service";
-import { updateUserSchema } from "@/features/users/validations/user.schema";
-import { createClient } from "@/lib/supabase/server";
-import { NextRequest, NextResponse } from "next/server";
+import { toAddressPublicDTO } from "@/shared/dtos/address.dto";
+import { toInstructorProfilePublicDTO } from "@/shared/dtos/instructor-profile.dto";
+import { toInstructorPublicDTO } from "@/shared/dtos/instructor.dto";
+import { toUserPrivateDTO } from "@/shared/dtos/user.dto";
+import { createClient } from "@/shared/supabase/server";
+import { NextResponse } from "next/server";
 
-/**
- * GET /api/users/me
- *
- * Retorna o perfil completo do usuário autenticado com dados relacionados.
- * Usa Service Layer para encapsular lógica de negócio.
- */
 export async function GET() {
   try {
-    const profile = await getCurrentUserProfile();
-
-    if (!profile) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    return NextResponse.json(profile);
-  } catch (error) {
-    console.error("[API /users/me] Error fetching user profile:", error);
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
-    return NextResponse.json(
-      { error: "Failed to fetch profile", details: errorMessage },
-      { status: 500 }
-    );
-  }
-}
-
-/**
- * PUT /api/users/me
- *
- * Atualiza dados do perfil do usuário autenticado.
- */
-export async function PUT(request: NextRequest) {
-  try {
-    // 1. Validar autenticação
     const supabase = await createClient();
+
+    // 1. Verificar autenticação
     const {
-      data: { user },
+      data: { user: authUser },
+      error: authError,
     } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (authError || !authUser) {
+      return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
 
-    // 2. Validar input
-    const body = await request.json();
-    const parsed = updateUserSchema.safeParse(body);
+    // 2. Buscar dados do usuário com endereço
+    const { data: userData, error: userError } = await supabase
+      .from("users")
+      .select("*, addresses(*)")
+      .eq("id", authUser.id)
+      .single();
 
-    if (!parsed.success) {
+    if (userError || !userData) {
       return NextResponse.json(
-        { error: "Validation failed", details: parsed.error },
-        { status: 400 }
+        { error: "Usuário não encontrado" },
+        { status: 404 }
       );
     }
 
-    // 3. Executar lógica de negócio através do service
-    const updatedUser = await updateCurrentUser(parsed.data);
+    // 3. Converter endereço para DTO (se existir)
+    const addressDTO = userData.addresses
+      ? toAddressPublicDTO(userData.addresses)
+      : null;
 
-    return NextResponse.json({ user: updatedUser });
-  } catch (error) {
-    console.error("[API PUT /users/me] Error updating user profile:", error);
+    // 4. Converter usuário para DTO privado
+    const userDTO = toUserPrivateDTO(userData, { address: addressDTO });
 
-    // Tratar erros específicos
-    if (error instanceof Error) {
-      if (error.message === "Unauthorized") {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // 5. Verificar se o usuário é instrutor
+    let instructorDTO = null;
+
+    if (userData.instructor_id) {
+      const { data: instructorData, error: instructorError } = await supabase
+        .from("instructors")
+        .select("*, instructor_profiles(*), addresses(*)")
+        .eq("id", userData.instructor_id)
+        .single();
+
+      if (!instructorError && instructorData) {
+        // Converter dados relacionados para DTOs
+        const instructorProfileDTO = instructorData.instructor_profiles
+          ? toInstructorProfilePublicDTO(instructorData.instructor_profiles)
+          : null;
+
+        const instructorAddressDTO = instructorData.addresses
+          ? toAddressPublicDTO(instructorData.addresses)
+          : null;
+
+        // Converter instrutor para DTO
+        instructorDTO = toInstructorPublicDTO(instructorData, {
+          profile: instructorProfileDTO,
+          address: instructorAddressDTO,
+        });
       }
-
-      return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
+    // 6. Retornar resposta
+    return NextResponse.json({
+      user: userDTO,
+      instructor: instructorDTO,
+    });
+  } catch (error) {
+    console.error("Error in /api/users/me:", error);
     return NextResponse.json(
-      { error: "Failed to update profile" },
+      { error: "Erro interno do servidor" },
       { status: 500 }
     );
   }

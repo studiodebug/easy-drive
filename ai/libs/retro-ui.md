@@ -400,7 +400,7 @@ const salesData = [
 Helper function for merging Tailwind CSS classes with proper precedence handling.
 
 ```tsx
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/utils";
 
 // Merge multiple class names
 <div className={cn("px-4 py-2", "bg-primary", className)} />

@@ -1,4 +1,4 @@
-import AuthLayout from "@/components/layouts/AuthLayout";
+import AuthLayout from "@/components/layouts/AuthLayout/AuthLayout";
 import { Card } from "@/components/retroui/Card";
 import { Suspense } from "react";
 

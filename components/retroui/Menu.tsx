@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/utils";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import React, { ComponentPropsWithoutRef } from "react";
 

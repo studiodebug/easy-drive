@@ -1,7 +1,7 @@
 import { HtmlHTMLAttributes } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/utils";
 import { Text } from "@/components/retroui/Text";
 
 const alertVariants = cva("relative w-full rounded border-2 p-4", {

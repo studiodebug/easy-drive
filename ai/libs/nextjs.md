@@ -6947,7 +6947,7 @@ This example showcases a Next.js Server Component (`app/[id]/page.tsx`) responsi
 
 ```TypeScript
 import LikeButton from'@/app/ui/like-button'
-import { getPost } from'@/lib/data'
+import { getPost } from'@/shared/data'
 exportdefaultasyncfunctionPage({
   params,
 }: {
@@ -8238,7 +8238,7 @@ Create nested routes by organizing folders within the `app` directory, where eac
 
 ```TypeScript
 // Dummy imports
-import { getPosts } from '@/lib/posts'
+import { getPosts } from '@/shared/posts'
 import { Post } from '@/ui/post'
 export default async function Page() {
 const posts = await getPosts()
@@ -8362,7 +8362,7 @@ Correct pattern using useEffect hook in a client component to ensure side-effect
 ```TypeScript
 'use client'
 import { useEffect } from 'react'
-import { trackPageView } from '@/lib/analytics'
+import { trackPageView } from '@/shared/analytics'
 export function AnalyticsTracker() {
   useEffect(() => {
     trackPageView()
@@ -8416,7 +8416,7 @@ Source: https://nextjs.org/docs/app/guides/prefetching
 Demonstrates the problematic pattern where side-effects (e.g., analytics tracking) are executed at the layout component level during prefetch, before the user actually visits the page. This causes unintended tracking calls and should be avoided.
 
 ```TypeScript
-import { trackPageView } from '@/lib/analytics'
+import { trackPageView } from '@/shared/analytics'
 export default function Layout({ children }: { children: React.ReactNode }) {
   // This runs during prefetch
   trackPageView()
@@ -8607,7 +8607,7 @@ This example demonstrates how to apply the `use server` directive at the very to
 
 ```TypeScript
 'use server'
-import { db } from'@/lib/db'// Your database client
+import { db } from'@/shared/db'// Your database client
 exportasyncfunctioncreateUser(data: { name:string; email:string }) {
 constuser=awaitdb.user.create({ data })
 return user
@@ -11388,7 +11388,7 @@ This set of examples illustrates how to define a server function in a dedicated 
 
 ```TypeScript
 'use server'
-import { db } from'@/lib/db'// Your database client
+import { db } from'@/shared/db'// Your database client
 exportasyncfunctionfetchUsers() {
 constusers=awaitdb.user.findMany()
 return users
@@ -13274,8 +13274,8 @@ This example showcases how to integrate authentication and authorization checks 
 
 ```TypeScript
 'use server'
-import { db } from'@/lib/db'// Your database client
-import { authenticate } from'@/lib/auth'// Your authentication library
+import { db } from'@/shared/db'// Your database client
+import { authenticate } from'@/shared/auth'// Your authentication library
 exportasyncfunctioncreateUser(
   data: { name:string; email:string },
   token:string
@@ -14798,7 +14798,7 @@ Source: https://nextjs.org/docs/app/api-reference/file-conventions/parallel-rout
 This example showcases how Parallel Routes can be used for conditional rendering based on specific criteria, such as a user's role. The `app/dashboard/layout.tsx` checks a user's role and renders either an 'admin' or 'user' specific component, providing flexible UI based on state.
 
 ```TypeScript
-import { checkUserRole } from'@/lib/auth'
+import { checkUserRole } from'@/shared/auth'
 exportdefaultfunctionLayout({
   user,
   admin,
@@ -16034,7 +16034,7 @@ Source: https://nextjs.org/docs/app/guides/backend-for-frontend
 This example showcases a `POST` Route Handler that incorporates robust error handling using a `try/catch` block for operations that may throw exceptions. It returns a 204 status for successful submissions and a 500 status with a generic error message upon failure, preventing the exposure of sensitive internal information to the client.
 
 ```TypeScript
-import { submit } from '@/lib/submit';
+import { submit } from '@/shared/submit';
 
 export async function POST(request: Request) {
   try {
@@ -16049,7 +16049,7 @@ export async function POST(request: Request) {
 ```
 
 ```JavaScript
-import { submit } from '@/lib/submit';
+import { submit } from '@/shared/submit';
 
 export async function POST(request: Request) {
   try {
@@ -16143,7 +16143,7 @@ Source: https://nextjs.org/docs/app/api-reference/components/form
 This example shows how to retrieve search query parameters from the URL within a Next.js page component. The `searchParams` prop, provided by Next.js, is used to access the submitted form data for fetching relevant information on the results page.
 
 ```TypeScript
-import { getSearchResults } from'@/lib/search'
+import { getSearchResults } from'@/shared/search'
 
 exportdefaultasyncfunctionSearchPage({
   searchParams,
@@ -16797,7 +16797,7 @@ Manage component execution context using 'use server' and 'use client' directive
 #### Server Component Example
 ```typescript
 // app/page.tsx
-import { db } from '@/lib/db'
+import { db } from '@/shared/db'
 
 export default async function Page() {
   const data = await db.query('SELECT * FROM posts')
@@ -16849,7 +16849,7 @@ export default function Counter() {
 ```typescript
 'use server'
 
-import { db } from '@/lib/db'
+import { db } from '@/shared/db'
 
 export async function createPost(formData: FormData) {
   const title = formData.get('title')
@@ -16899,7 +16899,7 @@ export async function getUser(id: string) {
 ```typescript
 // app/page.tsx (Server Component)
 import ClientCounter from '@/components/counter'
-import { getPostData } from '@/lib/posts'
+import { getPostData } from '@/shared/posts'
 
 export default async function Page() {
   const posts = await getPostData()
@@ -16936,7 +16936,7 @@ Shows how to use React's cache function to wrap ORM or database queries for requ
 
 ```TypeScript
 import { cache } from 'react'
-import { db, posts, eq } from '@/lib/db'
+import { db, posts, eq } from '@/shared/db'
 export const getPost = cache(async (id: string) => {
   const post = await db.query.posts.findFirst({
     where: eq(posts.id, parseInt(id))

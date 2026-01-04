@@ -104,7 +104,7 @@ SEMPRE proteja rotas que requerem autenticação:
 ```typescript
 // app/protected/layout.tsx
 import { redirect } from "next/navigation";
-import { createServerClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/shared/supabase/server";
 
 export default async function ProtectedLayout({
   children,

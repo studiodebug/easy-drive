@@ -1,5 +1,5 @@
-import { HomePage } from "@/features/marketing";
+import { HomePage } from "./(public)/_components/HomePage";
 
-export default function Page() {
+export default function RootPage() {
   return <HomePage />;
 }

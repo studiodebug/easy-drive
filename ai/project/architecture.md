@@ -1,3 +1,11 @@
+# ⚠️ DOCUMENTO OBSOLETO
+
+Esta documentação foi substituída por [`architecture-simplified.md`](architecture-simplified.md).
+
+**Mantenha este arquivo apenas para referência histórica.**
+
+---
+
 # 🏗️ Arquitetura do Projeto
 
 Este documento define as regras de arquitetura e organização do código no projeto EasyDrive.
