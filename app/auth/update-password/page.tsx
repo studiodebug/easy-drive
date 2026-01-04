@@ -1,5 +1,5 @@
 import AuthLayout from "@/components/layouts/AuthLayout";
-import { UpdatePasswordForm } from "@/features/auth";
+import { UpdatePasswordForm } from "../_components";
 
 export default function Page() {
   return (

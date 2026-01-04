@@ -1,7 +1,7 @@
 import AuthLayout from "@/components/layouts/AuthLayout";
-import { LoginForm } from "@/features/auth";
+import { LoginForm } from "../_components/LoginForm";
 
-export default function Page() {
+export default function LoginPage() {
   return (
     <AuthLayout>
       <LoginForm />
