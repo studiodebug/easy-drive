@@ -3,8 +3,8 @@
 import { Card } from "@/components/retroui/Card";
 import { useEffect, useState } from "react";
 
-import type { InstructorPublicDTO } from "@/shared";
-import type { UserPrivateDTO } from "@/shared";
+import type { InstructorPublicDTO } from "@/shared/dtos/instructor.dto";
+import type { UserPrivateDTO } from "@/shared/dtos/user.dto";
 
 type UserMeApiState =
   | { status: "idle" | "loading" }
