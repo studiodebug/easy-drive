@@ -1,6 +1,6 @@
 "use client"
 
-import { cn } from "@/shared/utils"
+import { cn } from "@/lib/utils"
 import React from "react"
 import {
   Bar,

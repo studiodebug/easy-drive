@@ -1,4 +1,4 @@
-import { cn } from "@/shared/utils";
+import { cn } from "@/lib/utils";
 import * as RadioPrimitive from "@radix-ui/react-radio-group";
 import { cva, VariantProps } from "class-variance-authority";
 
