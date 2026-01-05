@@ -27,7 +27,7 @@ export default function Page() {
     setError(null);
 
     if (password !== repeatPassword) {
-      setError("Passwords do not match");
+      setError("Senhas não coincidem");
       setIsLoading(false);
       return;
     }
