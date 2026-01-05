@@ -8,6 +8,7 @@ import {
 import { ScheduleClassTab } from "./components/ScheduleClassTab";
 import { InstructorsTab } from "./components/InstructorsTab";
 import { MyScheduleTab } from "./components/MyScheduleTab";
+import { HistoryTab } from "./components/HistoryTab";
 
 export function StudentDashboard() {
   return (
@@ -29,7 +30,9 @@ export function StudentDashboard() {
           <TabsContent>
             <MyScheduleTab />
           </TabsContent>
-          <TabsContent>histórico</TabsContent>
+          <TabsContent>
+            <HistoryTab />
+          </TabsContent>
         </TabsPanels>
       </Tabs>
     </div>

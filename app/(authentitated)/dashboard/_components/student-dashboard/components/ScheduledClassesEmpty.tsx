@@ -1,4 +1,4 @@
-import { Card } from "@/components/retroui/Card";
+import { EmptyState } from "./EmptyState";
 
 interface ScheduledClassesEmptyProps {
   startDate?: string;
@@ -21,18 +21,11 @@ export function ScheduledClassesEmpty({
         .
       </p>
 
-      <Card className="w-full p-12 bg-white">
-        <div className="flex flex-col items-center justify-center gap-4">
-          <div className="text-6xl">🎉</div>
-          <h3 className="text-2xl font-bold text-primary">
-            Você não tem aulas agendadas
-          </h3>
-          <p className="text-muted-foreground text-center max-w-2xl">
-            As aulas agendadas aparecem aqui, clique no botão "agendar uma aula"
-            e marque agora!
-          </p>
-        </div>
-      </Card>
+      <EmptyState
+        icon={<div className="text-6xl">🎉</div>}
+        title="Você não tem aulas agendadas"
+        description='As aulas agendadas aparecem aqui, clique no botão "agendar uma aula" e marque agora!'
+      />
     </div>
   );
 }

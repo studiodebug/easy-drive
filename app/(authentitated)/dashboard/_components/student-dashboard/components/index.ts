@@ -11,3 +11,6 @@ export { InstructorsFilters } from "./InstructorsFilters";
 export { MyScheduleTab } from "./MyScheduleTab";
 export { MyScheduleEmpty } from "./MyScheduleEmpty";
 export { ScheduledClassCardForSchedule } from "./ScheduledClassCardForSchedule";
+export { EmptyState } from "./EmptyState";
+export { HistoryTab } from "./HistoryTab";
+export { HistoryClassCard } from "./HistoryClassCard";
