@@ -8,3 +8,6 @@ export { ScheduleClassTab } from "./ScheduleClassTab";
 export { InstructorsTab } from "./InstructorsTab";
 export { InstructorCard } from "./InstructorCard";
 export { InstructorsFilters } from "./InstructorsFilters";
+export { MyScheduleTab } from "./MyScheduleTab";
+export { MyScheduleEmpty } from "./MyScheduleEmpty";
+export { ScheduledClassCardForSchedule } from "./ScheduledClassCardForSchedule";

@@ -7,6 +7,7 @@ import {
 } from "@/components/retroui/Tab";
 import { ScheduleClassTab } from "./components/ScheduleClassTab";
 import { InstructorsTab } from "./components/InstructorsTab";
+import { MyScheduleTab } from "./components/MyScheduleTab";
 
 export function StudentDashboard() {
   return (
@@ -25,7 +26,9 @@ export function StudentDashboard() {
           <TabsContent>
             <InstructorsTab />
           </TabsContent>
-          <TabsContent>minha agenda</TabsContent>
+          <TabsContent>
+            <MyScheduleTab />
+          </TabsContent>
           <TabsContent>histórico</TabsContent>
         </TabsPanels>
       </Tabs>
