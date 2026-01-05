@@ -45,9 +45,7 @@ export default function Page() {
       <Card>
         <Card.Header>
           <Card.Title className="text-2xl">Acesse sua conta</Card.Title>
-          <Card.Description>
-            Insira seu email e senha ou entre sua conta Google.
-          </Card.Description>
+          <Card.Description>Insira seu email e senha.</Card.Description>
         </Card.Header>
         <Card.Content>
           <form onSubmit={handleLogin}>
