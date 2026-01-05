@@ -4,15 +4,13 @@ export default function Page() {
   return (
     <Card>
       <Card.Header>
-        <Card.Title className="text-2xl">Thank you for signing up!</Card.Title>
-        <Card.Description>Check your email to confirm</Card.Description>
+        <Card.Title className="text-2xl">
+          Parabéns, você deu o primeiro passo!
+        </Card.Title>
+        <Card.Description>
+          Verifique seu email para confirmar sua conta
+        </Card.Description>
       </Card.Header>
-      <Card.Content>
-        <p className="text-sm text-muted-foreground">
-          You&apos;ve successfully signed up. Please check your email to confirm
-          your account before signing in.
-        </p>
-      </Card.Content>
     </Card>
   );
 }
