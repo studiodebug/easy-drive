@@ -1,7 +1,8 @@
 import { Card } from "@/components/retroui/Card";
 import { WeekCalendar } from "./WeekCalendar";
 import { CreditsSection } from "./CreditsSection";
-import { ScheduledClassesEmpty } from "./ScheduledClassesEmpty";
+import { ScheduledClassesSection } from "./ScheduledClassesSection";
+import { scheduledClassesMock } from "../data/scheduled-classes-mock";
 
 const WEEK_DAYS = [
   { name: "Segunda", date: "5" },
@@ -31,7 +32,7 @@ export function ScheduleClassTab() {
       </Card>
 
       {/* Scheduled Classes Section */}
-      <ScheduledClassesEmpty />
+      <ScheduledClassesSection scheduledClasses={scheduledClassesMock} />
     </div>
   );
 }

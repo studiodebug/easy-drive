@@ -1,6 +1,9 @@
 export { WeekCalendar } from "./WeekCalendar";
 export { CreditsSection } from "./CreditsSection";
 export { ScheduledClassesEmpty } from "./ScheduledClassesEmpty";
+export { ScheduledClassCard } from "./ScheduledClassCard";
+export { ScheduledClassesList } from "./ScheduledClassesList";
+export { ScheduledClassesSection } from "./ScheduledClassesSection";
 export { ScheduleClassTab } from "./ScheduleClassTab";
 export { InstructorsTab } from "./InstructorsTab";
 export { InstructorCard } from "./InstructorCard";
