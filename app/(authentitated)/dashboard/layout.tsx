@@ -4,6 +4,7 @@ import { AuthButton } from "@/components/auth-button";
 import { hasEnvVars } from "@/lib/utils";
 import Link from "next/link";
 import { Suspense } from "react";
+import { Copyright } from "@/components/Copyright";
 
 export default function ProtectedLayout({
   children,
@@ -35,7 +36,7 @@ export default function ProtectedLayout({
         </div>
 
         <footer className="w-full flex items-center justify-center border-t border-t-foreground/10 mx-auto text-center text-xs gap-8 py-8">
-          <p>© {new Date().getFullYear()} Easy Drive. All rights reserved.</p>
+          <Copyright />
         </footer>
       </div>
     </main>

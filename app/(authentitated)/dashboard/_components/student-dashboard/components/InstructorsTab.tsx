@@ -1,6 +1,5 @@
-"use client";
-
 import { InstructorCard } from "./InstructorCard";
+import { InstructorsMobileFilters } from "./InstructorsMobileFilters";
 import { InstructorsFilters } from "./InstructorsFilters";
 import { instructorsMock } from "../data/instructors-mock";
 
@@ -21,20 +20,21 @@ export function InstructorsTab({ selectedDate }: InstructorsTabProps) {
           <InstructorsFilters selectedDate={selectedDate} />
         </aside>
 
-        {/* Instructors List */}
-        {/* Instructors List */}
-        <main className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          {instructorsMock.map((instructor) => (
-            <div key={instructor.id} className="h-full">
-              <InstructorCard instructor={instructor} />
-            </div>
-          ))}
-        </main>
-      </div>
+        <div className="flex flex-col">
+          {/* Mobile Filters */}
+          <div className="lg:hidden">
+            <InstructorsMobileFilters selectedDate={selectedDate} />
+          </div>
 
-      {/* Mobile Filters - Could be implemented as a drawer/modal */}
-      <div className="lg:hidden">
-        <InstructorsFilters selectedDate={selectedDate} />
+          {/* Instructors List */}
+          <main className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            {instructorsMock.map((instructor) => (
+              <div key={instructor.id} className="h-full">
+                <InstructorCard instructor={instructor} />
+              </div>
+            ))}
+          </main>
+        </div>
       </div>
     </div>
   );

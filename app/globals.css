@@ -1,6 +1,31 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 14px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+  border-left: 2px solid var(--border);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border: 2px solid var(--border);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
+/* Firefox Support */
+html {
+  scrollbar-width: auto;
+  scrollbar-color: var(--primary) var(--background);
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -119,9 +144,11 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   button {
     cursor: pointer;
   }
