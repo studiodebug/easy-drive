@@ -7,7 +7,6 @@ export interface MyScheduleClass {
   date: Date;
   startTime: string;
   endTime: string;
-  type: "Aula em grupo" | "Aula individual";
   instructor: {
     name: string;
     avatar: string;
@@ -26,7 +25,6 @@ export const myScheduleMock: MyScheduleClass[] = [
     date: new Date("2026-01-09T07:00:00"),
     startTime: "07:00",
     endTime: "08:00",
-    type: "Aula em grupo",
     instructor: {
       name: "Carlos Silva",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos",
@@ -43,7 +41,6 @@ export const myScheduleMock: MyScheduleClass[] = [
     date: new Date("2026-01-12T14:30:00"),
     startTime: "14:30",
     endTime: "15:30",
-    type: "Aula individual",
     instructor: {
       name: "John Smith",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=John",
@@ -60,7 +57,6 @@ export const myScheduleMock: MyScheduleClass[] = [
     date: new Date("2026-01-15T10:00:00"),
     startTime: "10:00",
     endTime: "11:30",
-    type: "Aula em grupo",
     instructor: {
       name: "Mariana Oliveira",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Mariana",

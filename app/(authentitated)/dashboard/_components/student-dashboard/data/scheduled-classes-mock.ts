@@ -4,7 +4,6 @@ export interface ScheduledClass {
   date: Date;
   time: string;
   language: "pt-BR" | "en-US" | "es-ES";
-  isGroup: boolean;
   instructor: {
     name: string;
     avatar: string;
@@ -20,7 +19,6 @@ export const scheduledClassesMock: ScheduledClass[] = [
     date: new Date("2026-01-08T14:00:00"),
     time: "14:00",
     language: "pt-BR",
-    isGroup: false,
     instructor: {
       name: "Carlos Silva",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos",
@@ -34,7 +32,6 @@ export const scheduledClassesMock: ScheduledClass[] = [
     date: new Date("2026-01-10T10:00:00"),
     time: "10:00",
     language: "pt-BR",
-    isGroup: true,
     instructor: {
       name: "Mariana Oliveira",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Mariana",

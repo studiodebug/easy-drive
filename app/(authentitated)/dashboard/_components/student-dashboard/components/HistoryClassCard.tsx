@@ -1,7 +1,6 @@
 import { Card } from "@/components/retroui/Card";
 import { Avatar } from "@/components/retroui/Avatar";
-import { Badge } from "@/components/retroui/Badge";
-import { Users, User, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { HistoryClass } from "../data/history-mock";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -67,34 +66,12 @@ export function HistoryClassCard({ historyClass }: HistoryClassCardProps) {
           </div>
         </div>
 
-        {/* Subject and Type Badge */}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl" aria-hidden="true">
-              {historyClass.subject.icon}
-            </span>
-            <h3 className="text-lg font-bold">{historyClass.subject.name}</h3>
-          </div>
-          <Badge
-            className={
-              historyClass.type === "group"
-                ? "bg-blue-100 text-blue-700 border-2 border-black"
-                : "bg-purple-100 text-purple-700 border-2 border-black"
-            }
-            size="sm"
-          >
-            {historyClass.type === "group" ? (
-              <>
-                <Users className="w-3 h-3 inline-block mr-1" />
-                Aula em grupo
-              </>
-            ) : (
-              <>
-                <User className="w-3 h-3 inline-block mr-1" />
-                Aula individual
-              </>
-            )}
-          </Badge>
+        {/* Subject */}
+        <div className="flex items-center gap-2">
+          <span className="text-2xl" aria-hidden="true">
+            {historyClass.subject.icon}
+          </span>
+          <h3 className="text-lg font-bold">{historyClass.subject.name}</h3>
         </div>
 
         {/* Date and Time */}

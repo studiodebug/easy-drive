@@ -102,21 +102,6 @@ export function ScheduledClassCardForSchedule({
           </div>
         </div>
 
-        {/* Type */}
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Tipo:</span>
-          <Badge
-            className={
-              scheduledClass.type === "Aula em grupo"
-                ? "bg-blue-100 text-blue-700 border-2 border-black"
-                : "bg-green-100 text-green-700 border-2 border-black"
-            }
-            size="sm"
-          >
-            {scheduledClass.type}
-          </Badge>
-        </div>
-
         {/* Date and Time */}
         <div className="flex items-center gap-2">
           <span className="text-sm font-semibold">{formattedDate}</span>

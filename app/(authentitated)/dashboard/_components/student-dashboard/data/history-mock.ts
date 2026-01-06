@@ -8,7 +8,6 @@ export interface HistoryClass {
     name: string;
     avatar: string;
   };
-  type: "group" | "individual";
   date: Date;
   startTime: string;
   endTime: string;
@@ -27,7 +26,6 @@ export const historyClassesMock: HistoryClass[] = [
       name: "Carlos Silva",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos",
     },
-    type: "individual",
     date: new Date("2026-03-29T09:00:00"),
     startTime: "09:00",
     endTime: "10:00",
@@ -44,7 +42,6 @@ export const historyClassesMock: HistoryClass[] = [
       name: "Mariana Oliveira",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Mariana",
     },
-    type: "group",
     date: new Date("2026-03-25T14:00:00"),
     startTime: "14:00",
     endTime: "15:30",
@@ -61,7 +58,6 @@ export const historyClassesMock: HistoryClass[] = [
       name: "Roberto Santos",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Roberto",
     },
-    type: "individual",
     date: new Date("2026-03-20T10:00:00"),
     startTime: "10:00",
     endTime: "11:00",
@@ -77,7 +73,6 @@ export const historyClassesMock: HistoryClass[] = [
       name: "Ana Costa",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ana",
     },
-    type: "group",
     date: new Date("2026-03-15T16:00:00"),
     startTime: "16:00",
     endTime: "17:30",
@@ -94,7 +89,6 @@ export const historyClassesMock: HistoryClass[] = [
       name: "Pedro Almeida",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Pedro",
     },
-    type: "individual",
     date: new Date("2026-03-10T19:00:00"),
     startTime: "19:00",
     endTime: "20:00",

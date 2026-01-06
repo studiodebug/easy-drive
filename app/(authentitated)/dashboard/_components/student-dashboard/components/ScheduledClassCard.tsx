@@ -2,7 +2,7 @@ import { Card } from "@/components/retroui/Card";
 import { Button } from "@/components/retroui/Button";
 import { Avatar } from "@/components/retroui/Avatar";
 import { Badge } from "@/components/retroui/Badge";
-import { Clock, Users, FileText } from "lucide-react";
+import { Clock, FileText } from "lucide-react";
 import { ScheduledClass } from "../data/scheduled-classes-mock";
 import {
   formatDateAsDDMM,
@@ -52,20 +52,9 @@ export function ScheduledClassCard({
     <Card className="p-6 bg-white hover:shadow-lg transition-all">
       <div className="flex flex-col gap-4">
         {/* Header: Status Badge */}
-        <div className="flex items-center justify-between">
-          <Badge className={statusBadge.className} size="sm">
-            {statusBadge.text}
-          </Badge>
-          {scheduledClass.isGroup && (
-            <Badge
-              className="bg-blue-100 text-blue-700 border-2 border-black"
-              size="sm"
-            >
-              <Users className="w-3 h-3 inline-block mr-1" />
-              Aula em grupo
-            </Badge>
-          )}
-        </div>
+        <Badge className={statusBadge.className} size="sm">
+          {statusBadge.text}
+        </Badge>
 
         {/* Date and Time */}
         <div className="flex items-center gap-2">
