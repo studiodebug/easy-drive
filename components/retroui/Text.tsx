@@ -30,7 +30,7 @@ type TextProps<TAs extends TextAs = "p"> = {
 
 export const Text = <TAs extends TextAs = "p">(props: TextProps<TAs>) => {
   const { className, as, ...otherProps } = props;
-  const Tag: ElementType = as as ElementType;
+  const Tag: ElementType = (as || "p") as ElementType;
 
   return (
     <Tag className={cn(textVariants({ as }), className)} {...otherProps} />
