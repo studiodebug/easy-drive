@@ -16,7 +16,7 @@ const navItems = [
   { name: "Contato", href: "#" },
 ];
 
-function TopNavTwo() {
+function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<{
     name: string;
@@ -37,12 +37,10 @@ function TopNavTwo() {
     fetchUser();
   }, []);
 
-  console.log(user);
-
   return (
     <div className="w-full">
       {/* Top contact bar */}
-      <div className="bg-primary border-b-2 border-black">
+      <div className="bg-primary border-y-2 border-black">
         <div className="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center text-sm">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
@@ -144,4 +142,4 @@ function TopNavTwo() {
   );
 }
 
-export default TopNavTwo;
+export default Header;

@@ -248,3 +248,8 @@ html {
   border: none;
   display: block;
 }
+
+body {
+  background-color: #fefce8;
+  background-image: url("/assets/box_bg.svg");
+}

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Copyright } from "@/components/Copyright";
 import Header from "@/components/blocks/Header/Header";
+import Footer from "@/components/blocks/Footer/Footer";
 
 export default function ProtectedLayout({
   children,
@@ -20,9 +21,7 @@ export default function ProtectedLayout({
           {children}
         </div>
 
-        <footer className="w-full flex items-center justify-center border-t border-t-foreground/10 mx-auto text-center text-xs gap-8 py-8">
-          <Copyright />
-        </footer>
+      <Footer />
       </div>
     </main>
   );
