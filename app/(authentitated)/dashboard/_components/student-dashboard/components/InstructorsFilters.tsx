@@ -1,14 +1,61 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card } from "@/components/retroui/Card";
 import { RadioGroup } from "@/components/retroui/Radio";
 import { Checkbox } from "@/components/retroui/Checkbox";
 import { Label } from "@/components/retroui/Label";
+import { Input } from "@/components/retroui/Input";
+import {
+  formatDateAsDDMMYYYY,
+  getDayOfWeekInPortuguese,
+} from "../utils/date-utils";
 
-export function InstructorsFilters() {
+interface InstructorsFiltersProps {
+  selectedDate?: Date | null;
+}
+
+export function InstructorsFilters({ selectedDate }: InstructorsFiltersProps) {
+  const [dateInputValue, setDateInputValue] = useState("");
+
+  useEffect(() => {
+    if (selectedDate) {
+      setDateInputValue(formatDateAsDDMMYYYY(selectedDate));
+    }
+  }, [selectedDate]);
+
   return (
     <Card className="p-6 bg-white h-fit sticky top-4">
       <h3 className="text-lg font-bold mb-6">Filtros</h3>
+
+      {/* Selected Date Display */}
+      {selectedDate && (
+        <>
+          <div className="mb-6 p-3 bg-accent rounded border-2 border-border">
+            <h4 className="font-semibold mb-2 text-sm">Data selecionada</h4>
+            <p className="text-sm text-primary">
+              {getDayOfWeekInPortuguese(selectedDate)},{" "}
+              {formatDateAsDDMMYYYY(selectedDate)}
+            </p>
+          </div>
+          <div className="border-t-2 border-border mb-6" />
+        </>
+      )}
+
+      {/* Date Input */}
+      <div className="mb-6">
+        <h4 className="font-semibold mb-3">Data da aula</h4>
+        <Input
+          type="text"
+          placeholder="DD/MM/AAAA"
+          value={dateInputValue}
+          onChange={(e) => setDateInputValue(e.target.value)}
+          className="w-full"
+        />
+      </div>
+
+      {/* Separator */}
+      <div className="border-t-2 border-border mb-6" />
 
       {/* Disponibilidade */}
       <div className="mb-6">
