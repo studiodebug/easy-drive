@@ -29,7 +29,7 @@ export function ScheduledClassCardForSchedule({
         {/* Header: Countdown Badge and Menu */}
         <div className="flex items-center justify-between">
           <Badge
-            className="bg-purple-100 text-purple-700 border-2 border-black"
+            className="bg-purple-200 text-black border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
             size="sm"
           >
             Começa em {scheduledClass.startsInDays} dias
@@ -113,13 +113,13 @@ export function ScheduledClassCardForSchedule({
 
         {/* Actions */}
         <div className="flex flex-col gap-2 pt-2 border-t-2 border-gray-200">
-          <Button className="w-full" size="sm">
+          <Button className="w-full font-bold border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all bg-green-400 text-black hover:bg-green-500" size="sm">
             Entrar na sala
           </Button>
           {scheduledClass.hasMaterial && (
             <a
               href="#"
-              className="text-sm text-primary font-semibold hover:underline flex items-center justify-center gap-2"
+              className="text-sm font-bold text-black border-b-2 border-yellow-400 hover:bg-yellow-400 transition-all flex items-center justify-center gap-2 px-1"
             >
               <FileDown className="w-4 h-4" />
               Baixar material

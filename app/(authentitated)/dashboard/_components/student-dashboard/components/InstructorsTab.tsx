@@ -22,9 +22,12 @@ export function InstructorsTab({ selectedDate }: InstructorsTabProps) {
         </aside>
 
         {/* Instructors List */}
-        <main className="space-y-4">
+        {/* Instructors List */}
+        <main className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           {instructorsMock.map((instructor) => (
-            <InstructorCard key={instructor.id} instructor={instructor} />
+            <div key={instructor.id} className="h-full">
+              <InstructorCard instructor={instructor} />
+            </div>
           ))}
         </main>
       </div>

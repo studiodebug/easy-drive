@@ -44,14 +44,14 @@ export function HistoryTab() {
   return (
     <div className="w-full">
       {/* Filter Buttons */}
-      <div className="mb-6">
+      <div className="mb-6 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
         <ToggleGroup
           type="single"
           value={activeFilter}
           onValueChange={(value) => {
             if (value) setActiveFilter(value as FilterType);
           }}
-          className="justify-start"
+          className="justify-start inline-flex min-w-full sm:min-w-0"
         >
           <ToggleGroupItem value="all" aria-label="Mostrar todas as aulas">
             Todas

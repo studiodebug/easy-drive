@@ -20,15 +20,15 @@ export function ScheduledClassCard({
     const badges = {
       confirmada: {
         text: "Confirmada",
-        className: "bg-green-500 text-white border-2 border-black",
+        className: "bg-green-400 text-black border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
       },
       pendente: {
         text: "Pendente",
-        className: "bg-yellow-500 text-white border-2 border-black",
+        className: "bg-yellow-400 text-black border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
       },
       cancelada: {
         text: "Cancelada",
-        className: "bg-red-500 text-white border-2 border-black",
+        className: "bg-red-400 text-black border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
       },
     };
     return badges[status as keyof typeof badges];
@@ -49,7 +49,7 @@ export function ScheduledClassCard({
   const formattedDate = formatDateAsDDMM(scheduledClass.date);
 
   return (
-    <Card className="p-6 bg-white hover:shadow-lg transition-all">
+    <Card className="p-4 sm:p-6 bg-white hover:shadow-lg transition-all">
       <div className="flex flex-col gap-4">
         {/* Header: Status Badge */}
         <Badge className={statusBadge.className} size="sm">
@@ -103,13 +103,13 @@ export function ScheduledClassCard({
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-between pt-2 border-t-2 border-gray-200">
-          <Button size="sm" variant="secondary" className="flex-1 mr-2">
+        <div className="flex flex-col sm:flex-row items-center justify-between pt-2 border-t-2 border-gray-200 gap-3 sm:gap-0">
+          <Button size="sm" variant="secondary" className="w-full sm:w-auto flex-1 sm:mr-2">
             Começa em {scheduledClass.startsInDays} dias
           </Button>
           <a
             href="#"
-            className="text-sm text-primary font-semibold hover:underline flex items-center gap-1"
+            className="text-sm font-bold text-black border-b-2 border-yellow-400 hover:bg-yellow-400 transition-all flex items-center justify-center gap-1 px-1 w-full sm:w-auto"
           >
             <FileText className="w-4 h-4" />
             Ver material

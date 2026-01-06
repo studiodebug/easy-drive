@@ -70,11 +70,10 @@ export function WeekCalendar({
                 <Popover.Trigger asChild>
                   <button
                     onClick={() => handleDayClick(day, index)}
-                    className={`relative w-12 h-12 flex items-center justify-center rounded-full font-semibold transition-all ${
-                      isTodayDate
-                        ? "border-2 border-dashed border-primary text-primary"
-                        : "text-primary hover:bg-accent"
-                    }`}
+                    className={`relative w-12 h-12 flex items-center justify-center rounded-full font-bold transition-all border-2 ${isTodayDate
+                        ? "bg-primary text-black border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                        : "border-transparent text-black hover:bg-gray-100 hover:border-black"
+                      }`}
                   >
                     {day.date}
                     {hasClasses && (
@@ -97,11 +96,10 @@ export function WeekCalendar({
                     </h4>
                     <p className="text-xs text-muted-foreground">
                       {hasClasses
-                        ? `${day.classCount} ${
-                            day.classCount === 1
-                              ? "aula agendada"
-                              : "aulas agendadas"
-                          }`
+                        ? `${day.classCount} ${day.classCount === 1
+                          ? "aula agendada"
+                          : "aulas agendadas"
+                        }`
                         : "Nenhuma aula agendada"}
                     </p>
                   </div>

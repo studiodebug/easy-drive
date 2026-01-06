@@ -19,7 +19,7 @@ export function ScheduledClassesList({
       <p className="text-sm text-muted-foreground mb-4">
         Entre os dias {startDateFormatted} a {endDateFormatted}. Para ver outras
         datas, avance para a próxima semana ou acesse{" "}
-        <a href="#" className="text-primary underline font-semibold">
+        <a href="#" className="text-black underline decoration-primary decoration-4 font-bold hover:bg-primary hover:text-black transition-all">
           minhas aulas
         </a>
         .
