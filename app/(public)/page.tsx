@@ -7,19 +7,25 @@ import { Input } from "@/components/retroui/Input";
 import { Text } from "@/components/retroui/Text";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export type HomePageProps = {
   className?: string;
 };
 
 export default function HomePage({ className }: HomePageProps) {
+  const router = useRouter();
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    router.push("/vitrine");
+  };
+
   return (
     <div className={cn("min-h-screen bg-white", className)}>
       <main>
-        {/* Hero Section */}
         <section className="bg-white py-20 lg:py-32">
           <div className="max-w-6xl mx-auto px-4 lg:px-8">
-            {/* Header with badges */}
             <div className="text-center mb-12">
               <div className="flex gap-2 flex-wrap justify-center mb-8">
                 <span className="font-semibold bg-black text-white px-2.5 py-1.5 text-sm inline-block border-2 border-black">
@@ -44,7 +50,6 @@ export default function HomePage({ className }: HomePageProps) {
               </Text>
             </div>
 
-            {/* Search Card */}
             <div className="max-w-2xl mx-auto mb-12">
               <Card id="buscar" className="border-4 border-black shadow-lg">
                 <Card.Header className="p-6">
@@ -55,7 +60,7 @@ export default function HomePage({ className }: HomePageProps) {
                   </Card.Description>
                 </Card.Header>
                 <Card.Content className="p-6 pt-0 space-y-4">
-                  <form className="flex flex-col lg:flex-row gap-4">
+                  <form onSubmit={handleSearch} className="flex flex-col lg:flex-row gap-4">
                     <Input
                       placeholder="Digite sua cidade (ex.: São Paulo)"
                       aria-label="Cidade"
@@ -77,7 +82,6 @@ export default function HomePage({ className }: HomePageProps) {
               </Card>
             </div>
 
-            {/* Feature Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
               <Card className="border-4 border-black shadow-lg hover:shadow-md transition-all hover:translate-y-1 hover:translate-x-1 group">
                 <div className="h-40 border-b-4 border-black relative overflow-hidden bg-primary/10">
@@ -162,7 +166,6 @@ export default function HomePage({ className }: HomePageProps) {
           </div>
         </section>
 
-        {/* How It Works */}
         <section id="how" className="py-24 bg-muted/20">
           <div className="max-w-6xl mx-auto max-lg:px-4 px-4">
             <div className="text-center mb-16">
@@ -219,7 +222,6 @@ export default function HomePage({ className }: HomePageProps) {
           </div>
         </section>
 
-        {/* For Teachers */}
         <section id="teachers" className="py-24">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
@@ -272,7 +274,6 @@ export default function HomePage({ className }: HomePageProps) {
           </div>
         </section>
 
-        {/* Safety */}
         <section id="safety" className="py-24 bg-muted/20">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
@@ -323,7 +324,6 @@ export default function HomePage({ className }: HomePageProps) {
           </div>
         </section>
 
-        {/* CTA Section */}
         <section className="flex items-center justify-center max-lg:px-4 py-24">
           <div className="max-w-4xl w-full mx-auto relative">
             <div className="bg-white border-4 border-black p-8 lg:p-16 shadow-lg rounded-lg relative">
@@ -344,7 +344,7 @@ export default function HomePage({ className }: HomePageProps) {
               </Text>
               <div className="flex justify-center relative z-10">
                 <Button asChild size="lg" variant="secondary">
-                  <a href="#buscar">
+                  <a href="/vitrine">
                     Buscar instrutores
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </a>
@@ -354,7 +354,6 @@ export default function HomePage({ className }: HomePageProps) {
           </div>
         </section>
 
-        {/* Footer */}
         <footer className="border-t-4 border-black py-12 bg-muted/30">
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">

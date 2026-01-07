@@ -7,10 +7,11 @@ import { createClient } from "@/lib/supabase/client";
 import { hasEnvVars } from "@/lib/utils";
 import { Phone, Mail, ShoppingCart, User, History, MapPin } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
+import Link from "next/link";
 
 const navItems = [
-  { name: "Início", href: "#" },
-  { name: "Catelog", href: "#" },
+  { name: "Início", href: "/" },
+  { name: "Vitrine", href: "/vitrine" },
   { name: "Locais", href: "#" },
   { name: "Blog", href: "#" },
   { name: "Contato", href: "#" },
@@ -68,17 +69,19 @@ function Header() {
       {/* Main navigation */}
       <nav className="border-b-2 border-black bg-white">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="text-2xl font-head font-bold">LOGO</div>
+          <Link href="/" className="text-2xl font-head font-bold">
+            LOGO
+          </Link>
 
           <div className="hidden md:flex items-center gap-8 font-medium">
             {navItems.map((item, index) => (
-              <a
+              <Link
                 key={index}
-                href="#"
+                href={item.href}
                 className="hover:underline underline-offset-4 decoration-primary decoration-2"
               >
                 {item.name}
-              </a>
+              </Link>
             ))}
           </div>
           <div className="flex items-center gap-4">
@@ -126,13 +129,13 @@ function Header() {
           <div className="md:hidden border-t-2 border-black bg-white animate-in fade-in duration-300">
             <div className="px-4 py-4 flex flex-col gap-4">
               {navItems.map((item, index) => (
-                <a
+                <Link
                   key={index}
-                  href="#"
+                  href={item.href}
                   className="text-lg font-medium hover:underline underline-offset-4 decoration-primary decoration-2"
                 >
                   {item.name}
-                </a>
+                </Link>
               ))}
             </div>
           </div>

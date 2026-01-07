@@ -1,3 +1,24 @@
+export interface TimeSlot {
+  hour: number;
+  minute: number;
+  available: boolean;
+}
+
+export interface DaySchedule {
+  day: string;
+  dayNumber: number; // 0-6 (0 = domingo, 1 = segunda, etc)
+  slots: TimeSlot[];
+}
+
+export interface Review {
+  id: string;
+  studentName: string;
+  studentAvatar: string;
+  rating: number;
+  comment: string;
+  date: string; // ISO date string
+}
+
 export interface Instructor {
   id: string;
   name: string;
@@ -8,6 +29,301 @@ export interface Instructor {
   totalClasses: number;
   availability: "disponivel" | "ocupado" | "indisponivel";
   bio?: string;
+  city: string;
+  state: string;
+  hourlyRate: number;
+  carPhotos: string[];
+  carModel: string;
+  carYear: number;
+  carTransmission: "manual" | "automatico";
+  schedule: DaySchedule[];
+  phone?: string;
+  email?: string;
+  address?: string;
+  reviews?: Review[];
+}
+
+// Helper function to generate schedule
+function generateSchedule(): DaySchedule[] {
+  const days = [
+    { name: "Domingo", number: 0 },
+    { name: "Segunda-feira", number: 1 },
+    { name: "Terça-feira", number: 2 },
+    { name: "Quarta-feira", number: 3 },
+    { name: "Quinta-feira", number: 4 },
+    { name: "Sexta-feira", number: 5 },
+    { name: "Sábado", number: 6 },
+  ];
+
+  return days.map((day) => {
+    const slots: TimeSlot[] = [];
+    // Generate slots from 6h to 22h (every hour)
+    for (let hour = 6; hour <= 22; hour++) {
+      // Some random availability
+      const available = Math.random() > 0.3; // 70% chance of being available
+      slots.push({ hour, minute: 0, available });
+      if (hour < 22) {
+        slots.push({ hour, minute: 30, available });
+      }
+    }
+    return { day: day.name, dayNumber: day.number, slots };
+  });
+}
+
+// Helper function to generate reviews
+function generateReviews(instructorId: string): Review[] {
+  const reviewTemplates: Record<string, Review[]> = {
+    "1": [
+      {
+        id: "r1-1",
+        studentName: "Maria Santos",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Maria",
+        rating: 5,
+        comment: "Excelente instrutor! Muito paciente e didático. Aprendi tudo sobre direção defensiva e agora me sinto muito mais segura ao volante.",
+        date: "2024-12-15",
+      },
+      {
+        id: "r1-2",
+        studentName: "João Oliveira",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Joao",
+        rating: 5,
+        comment: "Carlos é incrível! Consegui passar na prova de baliza de primeira graças às técnicas que ele me ensinou. Super recomendo!",
+        date: "2024-12-10",
+      },
+      {
+        id: "r1-3",
+        studentName: "Fernanda Costa",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Fernanda",
+        rating: 4,
+        comment: "Ótimo instrutor, muito profissional. A única coisa é que às vezes ele fala muito rápido, mas no geral foi excelente.",
+        date: "2024-12-05",
+      },
+      {
+        id: "r1-4",
+        studentName: "Pedro Almeida",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Pedro",
+        rating: 5,
+        comment: "Melhor instrutor que já tive! Paciente, calmo e muito experiente. Consegui tirar minha habilitação sem nenhuma dificuldade.",
+        date: "2024-11-28",
+      },
+      {
+        id: "r1-5",
+        studentName: "Juliana Lima",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Juliana",
+        rating: 5,
+        comment: "Super recomendo! Carlos tem uma didática incrível e sempre me deixou à vontade. Aprendi muito sobre estacionamento.",
+        date: "2024-11-20",
+      },
+    ],
+    "2": [
+      {
+        id: "r2-1",
+        studentName: "Lucas Ferreira",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Lucas",
+        rating: 5,
+        comment: "Ana Paula é simplesmente incrível! Tinha muito medo de dirigir e ela me ajudou a superar isso com muita paciência e carinho.",
+        date: "2024-12-18",
+      },
+      {
+        id: "r2-2",
+        studentName: "Beatriz Souza",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Beatriz",
+        rating: 5,
+        comment: "A melhor instrutora! Superou todas as minhas expectativas. Ela realmente entende a ansiedade dos alunos iniciantes.",
+        date: "2024-12-12",
+      },
+      {
+        id: "r2-3",
+        studentName: "Rafael Martins",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rafael",
+        rating: 5,
+        comment: "Ana Paula é muito calma e paciente. Consegui tirar minha primeira habilitação graças a ela. Recomendo demais!",
+        date: "2024-12-08",
+      },
+      {
+        id: "r2-4",
+        studentName: "Camila Rocha",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Camila",
+        rating: 4,
+        comment: "Ótima instrutora! Me ajudou muito com a direção urbana. Só achei que poderia ter mais aulas práticas.",
+        date: "2024-12-01",
+      },
+    ],
+    "3": [
+      {
+        id: "r3-1",
+        studentName: "Gabriel Silva",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Gabriel",
+        rating: 5,
+        comment: "Roberto é excelente para quem quer aprender direção em rodovias. Muito experiente e seguro. Fiz uma viagem longa com ele e foi perfeito!",
+        date: "2024-12-14",
+      },
+      {
+        id: "r3-2",
+        studentName: "Isabela Torres",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Isabela",
+        rating: 4,
+        comment: "Bom instrutor para direção avançada. Aprendi muito sobre direção noturna e segurança em rodovias.",
+        date: "2024-12-07",
+      },
+      {
+        id: "r3-3",
+        studentName: "Thiago Araújo",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Thiago",
+        rating: 5,
+        comment: "Excelente! Roberto me ensinou técnicas avançadas que eu não sabia. Super recomendo para quem já tem experiência.",
+        date: "2024-11-25",
+      },
+    ],
+    "4": [
+      {
+        id: "r4-1",
+        studentName: "Amanda Ribeiro",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Amanda",
+        rating: 5,
+        comment: "Mariana é perfeita! Aprendi a fazer baliza em 3 aulas. Ela tem uma didática incrível e muita paciência.",
+        date: "2024-12-16",
+      },
+      {
+        id: "r4-2",
+        studentName: "Bruno Carvalho",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Bruno",
+        rating: 5,
+        comment: "Melhor instrutora que já tive! Ela domina todas as técnicas de manobra. Consegui passar na prova prática de primeira.",
+        date: "2024-12-11",
+      },
+      {
+        id: "r4-3",
+        studentName: "Larissa Mendes",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Larissa",
+        rating: 5,
+        comment: "Mariana é incrível! Ela me ensinou manobras complexas que eu achava impossíveis. Super recomendo!",
+        date: "2024-12-04",
+      },
+      {
+        id: "r4-4",
+        studentName: "Diego Nunes",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Diego",
+        rating: 5,
+        comment: "Excelente instrutora! Aprendi muito sobre conversões e manobras. Ela realmente sabe o que está fazendo.",
+        date: "2024-11-27",
+      },
+      {
+        id: "r4-5",
+        studentName: "Patricia Alves",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Patricia",
+        rating: 5,
+        comment: "Mariana é perfeita! Consegui aprender tudo sobre estacionamento e baliza. Muito profissional e paciente.",
+        date: "2024-11-19",
+      },
+    ],
+    "5": [
+      {
+        id: "r5-1",
+        studentName: "Marcos Dias",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Marcos",
+        rating: 4,
+        comment: "Fernando é muito bom! Aprendi técnicas de economia de combustível que realmente funcionam. Recomendo!",
+        date: "2024-12-13",
+      },
+      {
+        id: "r5-2",
+        studentName: "Vanessa Correia",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vanessa",
+        rating: 5,
+        comment: "Ótimo instrutor! Me ensinou muito sobre direção defensiva e manutenção preventiva. Muito útil!",
+        date: "2024-12-06",
+      },
+      {
+        id: "r5-3",
+        studentName: "Rodrigo Barros",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rodrigo",
+        rating: 4,
+        comment: "Bom instrutor, focado em economia e segurança. Aprendi bastante sobre direção eficiente.",
+        date: "2024-11-30",
+      },
+    ],
+    "6": [
+      {
+        id: "r6-1",
+        studentName: "Tatiana Freitas",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Tatiana",
+        rating: 5,
+        comment: "Juliana é maravilhosa! Tinha muito medo de dirigir e ela me ajudou a superar isso completamente. Agora dirijo com confiança!",
+        date: "2024-12-17",
+      },
+      {
+        id: "r6-2",
+        studentName: "André Gomes",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Andre",
+        rating: 5,
+        comment: "Melhor instrutora para iniciantes! Juliana tem uma paciência incrível e sempre me deixou à vontade. Super recomendo!",
+        date: "2024-12-09",
+      },
+      {
+        id: "r6-3",
+        studentName: "Renata Lopes",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Renata",
+        rating: 5,
+        comment: "Juliana é perfeita! Ela realmente entende a ansiedade dos alunos e sabe como ajudar. Consegui tirar minha habilitação graças a ela.",
+        date: "2024-12-02",
+      },
+      {
+        id: "r6-4",
+        studentName: "Felipe Castro",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Felipe",
+        rating: 4,
+        comment: "Ótima instrutora! Me ajudou muito com a direção urbana. Aprendi bastante sobre como dirigir no trânsito.",
+        date: "2024-11-24",
+      },
+    ],
+    "7": [
+      {
+        id: "r7-1",
+        studentName: "Ricardo Monteiro",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ricardo",
+        rating: 5,
+        comment: "Paulo é incrível para quem quer aprender direção esportiva! Ele realmente entende de alta performance e técnicas avançadas.",
+        date: "2024-12-03",
+      },
+      {
+        id: "r7-2",
+        studentName: "Carla Barbosa",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Carla",
+        rating: 4,
+        comment: "Bom instrutor para direção avançada. Aprendi muito sobre técnicas de alta performance.",
+        date: "2024-11-26",
+      },
+    ],
+    "8": [
+      {
+        id: "r8-1",
+        studentName: "Sandra Teixeira",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sandra",
+        rating: 5,
+        comment: "Camila é excelente! Aprendi a fazer baliza perfeitamente em poucas aulas. Ela tem técnicas muito eficientes.",
+        date: "2024-12-19",
+      },
+      {
+        id: "r8-2",
+        studentName: "Eduardo Ramos",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Eduardo",
+        rating: 5,
+        comment: "Melhor instrutora para estacionamento! Camila me ensinou técnicas que funcionam em qualquer lugar. Super recomendo!",
+        date: "2024-12-15",
+      },
+      {
+        id: "r8-3",
+        studentName: "Mariana Cardoso",
+        studentAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Mariana",
+        rating: 4,
+        comment: "Ótima instrutora! Aprendi muito sobre manobras e estacionamento. Ela é muito paciente e didática.",
+        date: "2024-12-08",
+      },
+    ],
+  };
+
+  return reviewTemplates[instructorId] || [];
 }
 
 export const instructorsMock: Instructor[] = [
@@ -20,7 +336,23 @@ export const instructorsMock: Instructor[] = [
     rating: 4.8,
     totalClasses: 245,
     availability: "disponivel",
-    bio: "Instrutor experiente com mais de 10 anos de experiência.",
+    bio: "Instrutor experiente com mais de 10 anos de experiência. Formado em Pedagogia e especializado em ensino de direção defensiva. Trabalho com paciência e dedicação para garantir que meus alunos aprendam com segurança e confiança.",
+    city: "Salvador",
+    state: "BA",
+    hourlyRate: 80,
+    carPhotos: [
+      "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800",
+      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800",
+      "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800",
+    ],
+    carModel: "Chevrolet Onix",
+    carYear: 2020,
+    carTransmission: "manual",
+    schedule: generateSchedule(),
+    phone: "(71) 98765-4321",
+    email: "carlos.silva@example.com",
+    address: "Rua das Flores, 123 - Salvador, BA",
+    reviews: generateReviews("1"),
   },
   {
     id: "2",
@@ -35,7 +367,22 @@ export const instructorsMock: Instructor[] = [
     rating: 4.9,
     totalClasses: 312,
     availability: "disponivel",
-    bio: "Especialista em ensinar iniciantes com paciência e dedicação.",
+    bio: "Especialista em ensinar iniciantes com paciência e dedicação. Tenho mais de 8 anos de experiência ajudando pessoas a superar o medo de dirigir. Minha abordagem é calma e encorajadora, focada em construir confiança passo a passo.",
+    city: "Iquexique",
+    state: "BA",
+    hourlyRate: 75,
+    carPhotos: [
+      "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800",
+      "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800",
+    ],
+    carModel: "Fiat Uno",
+    carYear: 2019,
+    carTransmission: "manual",
+    schedule: generateSchedule(),
+    phone: "(75) 99876-5432",
+    email: "ana.costa@example.com",
+    address: "Av. Principal, 456 - Iquexique, BA",
+    reviews: generateReviews("2"),
   },
   {
     id: "3",
@@ -46,7 +393,22 @@ export const instructorsMock: Instructor[] = [
     rating: 4.7,
     totalClasses: 189,
     availability: "ocupado",
-    bio: "Instrutor especializado em direção avançada e viagens.",
+    bio: "Instrutor especializado em direção avançada e viagens. Com experiência em rodovias e direção noturna.",
+    city: "São Paulo",
+    state: "SP",
+    hourlyRate: 90,
+    carPhotos: [
+      "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=800",
+      "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800",
+    ],
+    carModel: "Volkswagen Gol",
+    carYear: 2021,
+    carTransmission: "manual",
+    schedule: generateSchedule(),
+    phone: "(11) 98765-4321",
+    email: "roberto.santos@example.com",
+    address: "Av. Paulista, 1000 - São Paulo, SP",
+    reviews: generateReviews("3"),
   },
   {
     id: "4",
@@ -57,7 +419,22 @@ export const instructorsMock: Instructor[] = [
     rating: 5.0,
     totalClasses: 428,
     availability: "disponivel",
-    bio: "Instrutora com excelente didática e paciência.",
+    bio: "Instrutora com excelente didática e paciência. Especializada em técnicas avançadas de manobra.",
+    city: "Rio de Janeiro",
+    state: "RJ",
+    hourlyRate: 85,
+    carPhotos: [
+      "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=800",
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800",
+    ],
+    carModel: "Renault Kwid",
+    carYear: 2022,
+    carTransmission: "automatico",
+    schedule: generateSchedule(),
+    phone: "(21) 98765-4321",
+    email: "mariana.oliveira@example.com",
+    address: "Rua Copacabana, 500 - Rio de Janeiro, RJ",
+    reviews: generateReviews("4"),
   },
   {
     id: "5",
@@ -72,7 +449,21 @@ export const instructorsMock: Instructor[] = [
     rating: 4.6,
     totalClasses: 156,
     availability: "disponivel",
-    bio: "Foco em direção econômica e segura.",
+    bio: "Foco em direção econômica e segura. Ensino técnicas de economia de combustível.",
+    city: "Belo Horizonte",
+    state: "MG",
+    hourlyRate: 70,
+    carPhotos: [
+      "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800",
+    ],
+    carModel: "Fiat Mobi",
+    carYear: 2020,
+    carTransmission: "manual",
+    schedule: generateSchedule(),
+    phone: "(31) 98765-4321",
+    email: "fernando.lima@example.com",
+    address: "Av. Afonso Pena, 2000 - Belo Horizonte, MG",
+    reviews: generateReviews("5"),
   },
   {
     id: "6",
@@ -87,7 +478,22 @@ export const instructorsMock: Instructor[] = [
     rating: 4.9,
     totalClasses: 278,
     availability: "disponivel",
-    bio: "Especialista em ajudar alunos a superar o medo de dirigir.",
+    bio: "Especialista em ajudar alunos a superar o medo de dirigir. Abordagem calma e encorajadora.",
+    city: "Iquexique",
+    state: "BA",
+    hourlyRate: 75,
+    carPhotos: [
+      "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800",
+      "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800",
+    ],
+    carModel: "Chevrolet Onix",
+    carYear: 2021,
+    carTransmission: "automatico",
+    schedule: generateSchedule(),
+    phone: "(75) 99876-5432",
+    email: "juliana.pereira@example.com",
+    address: "Rua Central, 789 - Iquexique, BA",
+    reviews: generateReviews("6"),
   },
   {
     id: "7",
@@ -98,7 +504,22 @@ export const instructorsMock: Instructor[] = [
     rating: 4.8,
     totalClasses: 201,
     availability: "indisponivel",
-    bio: "Instrutor de alta performance e direção esportiva.",
+    bio: "Instrutor de alta performance e direção esportiva. Especializado em técnicas avançadas.",
+    city: "Curitiba",
+    state: "PR",
+    hourlyRate: 120,
+    carPhotos: [
+      "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800",
+      "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=800",
+    ],
+    carModel: "Honda Civic",
+    carYear: 2023,
+    carTransmission: "manual",
+    schedule: generateSchedule(),
+    phone: "(41) 98765-4321",
+    email: "paulo.henrique@example.com",
+    address: "Av. Sete de Setembro, 3000 - Curitiba, PR",
+    reviews: generateReviews("7"),
   },
   {
     id: "8",
@@ -109,6 +530,20 @@ export const instructorsMock: Instructor[] = [
     rating: 4.7,
     totalClasses: 193,
     availability: "disponivel",
-    bio: "Especialista em manobras e estacionamento.",
+    bio: "Especialista em manobras e estacionamento. Ensino técnicas precisas para estacionar em qualquer lugar.",
+    city: "Maceió",
+    state: "AL",
+    hourlyRate: 80,
+    carPhotos: [
+      "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=800",
+    ],
+    carModel: "Hyundai HB20",
+    carYear: 2020,
+    carTransmission: "manual",
+    schedule: generateSchedule(),
+    phone: "(82) 98765-4321",
+    email: "camila.rodrigues@example.com",
+    address: "Av. Beira Mar, 1500 - Maceió, AL",
+    reviews: generateReviews("8"),
   },
 ];
