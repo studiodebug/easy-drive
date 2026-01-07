@@ -23,10 +23,12 @@ export function WeeklySchedule({ schedule }: WeeklyScheduleProps) {
   const [selectedSlots, setSelectedSlots] = useState<SelectedSlot[]>([]);
   const [weekOffset, setWeekOffset] = useState(0);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
   const supabase = createClient();
 
   useEffect(() => {
+    setIsMounted(true);
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setIsAuthenticated(!!user);
@@ -52,6 +54,10 @@ export function WeeklySchedule({ schedule }: WeeklyScheduleProps) {
   };
 
   const getCurrentDate = () => {
+    // Only calculate date after component mounts to avoid prerendering issues
+    if (!isMounted) {
+      return new Date(0); // Return a placeholder date during SSR
+    }
     const today = new Date();
     today.setDate(today.getDate() + weekOffset * 7);
     return today;
@@ -129,6 +135,17 @@ export function WeeklySchedule({ schedule }: WeeklyScheduleProps) {
   };
 
   const weekdays = schedule.filter((day) => day.dayNumber >= 1 && day.dayNumber <= 6);
+
+  // Don't render date-dependent content until mounted
+  if (!isMounted) {
+    return (
+      <div className="w-full">
+        <div className="flex items-center justify-center py-8">
+          <div className="text-muted-foreground">Carregando agenda...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">

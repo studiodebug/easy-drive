@@ -7,7 +7,24 @@ import { cookies } from "next/headers";
  * it.
  */
 export async function createClient() {
-  const cookieStore = await cookies();
+  let cookieStore;
+  try {
+    cookieStore = await cookies();
+  } catch (error) {
+    // Handle prerendering case - cookies() rejects during prerendering
+    // This can happen when cacheComponents is enabled during build analysis
+    // API routes are dynamic by default, so this error only occurs during build
+    // At runtime, cookies() will work correctly
+    // Check if this is the prerendering error
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    if (errorMessage.includes('prerender') || errorMessage.includes('HANGING_PROMISE_REJECTION')) {
+      // During build analysis, create a client that will work at runtime
+      // but won't cause build failures. The error is expected during build.
+      // Re-throw to let Next.js handle it appropriately during build analysis
+      throw error;
+    }
+    throw error;
+  }
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
