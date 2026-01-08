@@ -23,5 +23,5 @@ export default async function InstructorPage({ params }: InstructorPageProps) {
     notFound();
   }
 
-  return <InstructorProfile instructor={instructor} />;
+  return <InstructorProfile instructor={instructor} isLoggedIn={false} />;
 }
