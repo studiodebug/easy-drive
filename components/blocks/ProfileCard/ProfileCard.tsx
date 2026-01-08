@@ -8,6 +8,7 @@ import { Card } from "@/components/retroui/Card";
 import React from "react";
 import { cn } from "@/lib/utils";
 import { StarRating } from "@/components/StarRating";
+import { MapPin } from "lucide-react";
 
 // ============================================================================
 // Types
@@ -36,8 +37,8 @@ interface ProfileCardContentProps extends React.HTMLAttributes<HTMLDivElement> {
 
 interface ProfileCardHeaderProps {
   name: string;
-  role?: string;
-  status?: React.ReactNode;
+  city?: string;
+  state?: string;
   availability?: "disponivel" | "ocupado" | "indisponivel";
 }
 
@@ -74,6 +75,7 @@ const ProfileCardRoot = ({
       } w-full mx-auto border-4 border-black p-0 overflow-hidden bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 ${className}`}
       {...props}
     >
+      <ProfileCardCover />
       {children}
     </Card>
   );
@@ -86,7 +88,22 @@ const ProfileCardCover = ({
 }: ProfileCardCoverProps) => {
   return (
     <div
-      className={`h-20 bg-accent border-b-4 border-black relative pattern-dots pattern-black pattern-bg-white pattern-size-4 pattern-opacity-10 ${className}`}
+      className={`h-[72px] bg-accent border-b-4 border-black relative pattern-dots pattern-black pattern-bg-white pattern-size-4 pattern-opacity-10 ${className}`}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+};
+
+const ProfileCardContent = ({
+  children,
+  className = "",
+  ...props
+}: ProfileCardContentProps) => {
+  return (
+    <div
+      className={`flex flex-col gap-3 px-6 pb-6 relative ${className}`}
       {...props}
     >
       {children}
@@ -113,26 +130,11 @@ const ProfileCardAvatar = ({
   );
 };
 
-const ProfileCardContent = ({
-  children,
-  className = "",
-  ...props
-}: ProfileCardContentProps) => {
-  return (
-    <div
-      className={`flex flex-col gap-4 px-6 pb-6 relative ${className}`}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-};
-
 const ProfileCardHeader = ({
   name,
-  role,
-  status,
   availability,
+  city,
+  state,
 }: ProfileCardHeaderProps) => {
   const getAvailabilityBadge = (availability?: string) => {
     if (!availability) return;
@@ -159,23 +161,38 @@ const ProfileCardHeader = ({
   const availabilityBadge = getAvailabilityBadge(availability);
 
   return (
-    <div className="pt-16">
-      <div className="flex justify-between items-start">
-        <div>
+    <div className="pt-16 w-full">
+      <div className="w-full flex justify-between items-start">
+        <div className="w-full">
           <Text
             as="h3"
             className="text-2xl font-black uppercase tracking-tight"
           >
             {name}
           </Text>
-          {availabilityBadge && (
-            <div className="flex gap-3 items-center">
-              <span
-                className={cn("w-4 h-4 mb-0.5", availabilityBadge.className)}
-              />
-              <Text>{availabilityBadge.text}</Text>
-            </div>
-          )}
+          <div className="w-full flex items-center justify-between gap-3">
+            {availabilityBadge && (
+              <>
+                <div className="flex gap-3 items-center">
+                  <span
+                    className={cn(
+                      "w-4 h-4 mb-0.5",
+                      availabilityBadge.className
+                    )}
+                  />
+                  <Text>{availabilityBadge.text}</Text>
+                </div>
+              </>
+            )}
+            {city && state && (
+              <div className="flex items-center gap-1">
+                <MapPin className="h-4 w-4" />
+                <Text>
+                  {city}, {state}
+                </Text>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

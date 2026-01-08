@@ -1,42 +1,14 @@
-import { Card } from "@/components/retroui/Card";
-import { Button } from "@/components/retroui/Button";
-import { Avatar } from "@/components/retroui/Avatar";
-import { Badge } from "@/components/retroui/Badge";
-import { Instructor } from "../data/instructors-mock";
-import { StarRating } from "@/components/StarRating";
 import { ProfileCard } from "@/components/blocks/ProfileCard/ProfileCard";
+import { Button } from "@/components/retroui/Button";
+import { Instructor } from "../data/instructors-mock";
 
 interface InstructorCardProps {
   instructor: Instructor;
 }
 
 export function InstructorCard({ instructor }: InstructorCardProps) {
-  const getAvailabilityBadge = (availability: string) => {
-    const badges = {
-      disponivel: {
-        text: "Disponível",
-        className:
-          "bg-green-400 text-black border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
-      },
-      ocupado: {
-        text: "Ocupado",
-        className:
-          "bg-yellow-400 text-black border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
-      },
-      indisponivel: {
-        text: "Indisponível",
-        className:
-          "bg-gray-400 text-black border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
-      },
-    };
-    return badges[availability as keyof typeof badges];
-  };
-
-  const availabilityBadge = getAvailabilityBadge(instructor.availability);
-
   return (
     <ProfileCard fullWidth className="h-full">
-      <ProfileCard.Cover />
       <ProfileCard.Content className="flex-1">
         <ProfileCard.Avatar
           src={instructor.avatar}
@@ -50,6 +22,8 @@ export function InstructorCard({ instructor }: InstructorCardProps) {
         <ProfileCard.Header
           name={instructor.name}
           availability={instructor.availability}
+          city={instructor.city}
+          state={instructor.state}
         />
         <ProfileCard.Rating
           rating={instructor.rating}

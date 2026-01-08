@@ -51,51 +51,56 @@ export function VitrineInstructors() {
       <div className="w-full flex flex-col gap-4 items-center px-5 py-6">
         {(selectedState || selectedCity) && (
           <div className="w-full max-w-7xl text-sm text-muted-foreground">
-            {filteredInstructors.length} instrutor{filteredInstructors.length !== 1 ? "es" : ""} encontrado{filteredInstructors.length !== 1 ? "s" : ""}
+            {filteredInstructors.length} instrutor
+            {filteredInstructors.length !== 1 ? "es" : ""} encontrado
+            {filteredInstructors.length !== 1 ? "s" : ""}
             {selectedState && ` em ${selectedState}`}
             {selectedCity && ` - ${selectedCity}`}
           </div>
         )}
 
         <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
-        <aside className="hidden lg:block">
-          <VitrineFilters
-            selectedState={selectedState}
-            selectedCity={selectedCity}
-            onStateChange={setSelectedState}
-            onCityChange={setSelectedCity}
-          />
-        </aside>
-
-        <div className="flex flex-col">
-          <div className="lg:hidden">
-            <VitrineMobileFilters
+          <aside className="hidden lg:block">
+            <VitrineFilters
               selectedState={selectedState}
               selectedCity={selectedCity}
               onStateChange={setSelectedState}
               onCityChange={setSelectedCity}
             />
-          </div>
+          </aside>
 
-          {filteredInstructors.length > 0 ? (
-            <main className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-              {filteredInstructors.map((instructor) => (
-                <div key={instructor.id} className="h-full">
-                  <VitrineInstructorCard instructor={instructor} />
-                </div>
-              ))}
-            </main>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-lg text-muted-foreground mb-2">
-                Nenhum instrutor encontrado
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Tente ajustar os filtros para encontrar mais resultados
-              </p>
+          <div className="flex flex-col">
+            <div className="lg:hidden">
+              <VitrineMobileFilters
+                selectedState={selectedState}
+                selectedCity={selectedCity}
+                onStateChange={setSelectedState}
+                onCityChange={setSelectedCity}
+              />
             </div>
-          )}
-        </div>
+
+            {filteredInstructors.length > 0 ? (
+              <main className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                {filteredInstructors.map((instructor) => (
+                  <div key={instructor.id} className="h-full">
+                    <VitrineInstructorCard
+                      instructor={instructor}
+                      isLoggedIn={false}
+                    />
+                  </div>
+                ))}
+              </main>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-lg text-muted-foreground mb-2">
+                  Nenhum instrutor encontrado
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Tente ajustar os filtros para encontrar mais resultados
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
