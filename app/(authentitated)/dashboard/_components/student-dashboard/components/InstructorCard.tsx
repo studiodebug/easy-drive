@@ -51,16 +51,17 @@ export function InstructorCard({ instructor }: InstructorCardProps) {
           name={instructor.name}
           availability={instructor.availability}
         />
+        <ProfileCard.Rating
+          rating={instructor.rating}
+          totalClasses={instructor.totalClasses}
+        />
         <ProfileCard.Skills
           title="especialidades"
           skills={instructor.specialties}
         />
         <ProfileCard.Skills title="níveis" skills={instructor.levels} />
         <ProfileCard.Description>{instructor.bio}</ProfileCard.Description>
-        <ProfileCard.Rating
-          rating={instructor.rating}
-          totalClasses={instructor.totalClasses}
-        />
+
         <ProfileCard.Actions>
           <Button className="w-full" variant={"outline"}>
             Ver perfil

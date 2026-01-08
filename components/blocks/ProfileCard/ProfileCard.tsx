@@ -206,7 +206,7 @@ const ProfileCardRating = ({
   showText = true,
 }: ProfileRatingProps) => {
   return (
-    <div className="flex items-center gap-4 p-3 rounded-lg justify-between">
+    <div className="flex items-center gap-4 justify-between">
       <StarRating rating={rating} showText={showText} />
       <div className="h-4 w-0.5 bg-black/20" />
       <div className="text-sm font-bold text-black whitespace-nowrap">
