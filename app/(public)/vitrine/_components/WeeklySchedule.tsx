@@ -25,15 +25,29 @@ export function WeeklySchedule({ schedule }: WeeklyScheduleProps) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
 
   useEffect(() => {
     setIsMounted(true);
-    const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsAuthenticated(!!user);
-    };
-    checkAuth();
+    // Create client only on client side after component mounts
+    // Check if we're in the browser and env vars are available
+    if (typeof window === 'undefined') return;
+    
+    try {
+      const supabase = createClient();
+      const checkAuth = async () => {
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          setIsAuthenticated(!!user);
+        } catch (error) {
+          // Silently handle errors during SSR/prerendering
+          console.error("Error checking auth:", error);
+        }
+      };
+      checkAuth();
+    } catch (error) {
+      // Silently handle errors if env vars are not available during build
+      console.error("Error creating Supabase client:", error);
+    }
   }, []);
 
   const formatTime = (hour: number, minute: number) => {
@@ -114,18 +128,24 @@ export function WeeklySchedule({ schedule }: WeeklyScheduleProps) {
   const handleSchedule = async () => {
     if (selectedSlots.length === 0) return;
 
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      router.push("/auth/login");
-      return;
-    }
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        router.push("/auth/login");
+        return;
+      }
 
-    const slotsInfo = selectedSlots.map(
-      (slot) => `${slot.date.getDate()}/${slot.date.getMonth() + 1} às ${slot.time}`
-    ).join(", ");
-    
-    alert(`Horários adicionados ao carrinho: ${slotsInfo}`);
+      const slotsInfo = selectedSlots.map(
+        (slot) => `${slot.date.getDate()}/${slot.date.getMonth() + 1} às ${slot.time}`
+      ).join(", ");
+      
+      alert(`Horários adicionados ao carrinho: ${slotsInfo}`);
+    } catch (error) {
+      console.error("Error scheduling:", error);
+      router.push("/auth/login");
+    }
   };
 
   const formatDateDisplay = (date: Date) => {

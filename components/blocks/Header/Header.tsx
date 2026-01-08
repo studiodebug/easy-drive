@@ -24,18 +24,35 @@ function Header() {
     email: string;
     phone: string;
   } | null>(null);
-  const supabase = createClient();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const { data: user } = await supabase.auth.getUser();
-      setUser({
-        name: user.user?.user_metadata.name,
-        email: user.user?.email || "",
-        phone: user.user?.phone || "",
-      });
-    };
-    fetchUser();
+    // Create client only on client side after component mounts
+    // Check if we're in the browser and env vars are available
+    if (typeof window === 'undefined') return;
+    
+    try {
+      const supabase = createClient();
+      
+      const fetchUser = async () => {
+        try {
+          const { data: user } = await supabase.auth.getUser();
+          if (user?.user) {
+            setUser({
+              name: user.user.user_metadata?.name || "",
+              email: user.user.email || "",
+              phone: user.user.phone || "",
+            });
+          }
+        } catch (error) {
+          // Silently handle errors during SSR/prerendering
+          console.error("Error fetching user:", error);
+        }
+      };
+      fetchUser();
+    } catch (error) {
+      // Silently handle errors if env vars are not available during build
+      console.error("Error creating Supabase client:", error);
+    }
   }, []);
 
   return (
