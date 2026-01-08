@@ -44,10 +44,11 @@ export function VitrineInstructorCard({
         <ProfileCard.Actions>
           {isLoggedIn ? (
             <>
-              <Button className="w-full" variant={"outline"}>
-                Ver perfil
+              <Button asChild className="w-full">
+                <Link href={`/vitrine/instructor/${instructor.id}`}>
+                  Agendar aula
+                </Link>
               </Button>
-              <Button className="w-full">Agendar aula</Button>
             </>
           ) : (
             <>

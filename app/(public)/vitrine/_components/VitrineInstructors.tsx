@@ -9,7 +9,7 @@ import { instructorsMock } from "@/app/(authentitated)/dashboard/_components/stu
 import { Instructor } from "@/app/(authentitated)/dashboard/_components/student-dashboard/data/instructors-mock";
 import { brazilStates } from "./brazil-locations";
 
-export function VitrineInstructors() {
+export function VitrineInstructors({ isLoggedIn }: { isLoggedIn?: boolean }) {
   const [selectedState, setSelectedState] = useState<string>("");
   const [selectedCity, setSelectedCity] = useState<string>("");
 
@@ -85,7 +85,7 @@ export function VitrineInstructors() {
                   <div key={instructor.id} className="h-full">
                     <VitrineInstructorCard
                       instructor={instructor}
-                      isLoggedIn={false}
+                      isLoggedIn={!!isLoggedIn}
                     />
                   </div>
                 ))}

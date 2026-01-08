@@ -1,21 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { VitrineInstructors } from "@/app/(public)/vitrine/_components";
 import {
   Tabs,
+  TabsContent,
   TabsPanels,
   TabsTrigger,
-  TabsContent,
   TabsTriggerList,
 } from "@/components/retroui/Tab";
-import { ScheduleClassTab } from "./components/ScheduleClassTab";
-import { InstructorsTab } from "./components/InstructorsTab";
-import { MyScheduleTab } from "./components/MyScheduleTab";
-import { HistoryTab } from "./components/HistoryTab";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
+import { HistoryTab } from "./components/HistoryTab";
+import { MyScheduleTab } from "./components/MyScheduleTab";
+import { ScheduleClassTab } from "./components/ScheduleClassTab";
 
 export function StudentDashboard() {
-
   const queryParams = useSearchParams();
   const tab = queryParams.get("tab");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -25,7 +24,7 @@ export function StudentDashboard() {
   const handleSelectTab = (index: number) => {
     setSelectedTab(index);
     router.push(`/dashboard?tab=${index}`);
-  }
+  };
 
   const handleNavigateToInstructors = (date: Date) => {
     setSelectedDate(date);
@@ -52,7 +51,9 @@ export function StudentDashboard() {
             />
           </TabsContent>
           <TabsContent>
-            <InstructorsTab selectedDate={selectedDate} />
+            <Suspense fallback={<div>Loading...</div>}>
+              <VitrineInstructors isLoggedIn={true} />
+            </Suspense>
           </TabsContent>
           <TabsContent>
             <MyScheduleTab />
