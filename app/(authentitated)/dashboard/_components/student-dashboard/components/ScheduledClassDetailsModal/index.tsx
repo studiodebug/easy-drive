@@ -27,9 +27,18 @@ export function ScheduledClassDetailsModal({
   const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
   const [isCanceling, setIsCanceling] = useState(false);
 
+  // Reset cancellation state when modal opens/closes
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen) {
+      setShowCancelConfirmation(false);
+      setIsCanceling(false);
+    }
+    onOpenChange(newOpen);
+  };
+
   // Find instructor full details from mock data
   const instructorDetails = instructorsMock.find(
-    (i) => i.name === scheduledClass.instructor.name,
+    (i) => i.name === scheduledClass.instructor.name
   );
 
   // Get cancellation policy
@@ -49,24 +58,29 @@ export function ScheduledClassDetailsModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <Dialog.Content size="2xl" className="max-h-[90vh] overflow-hidden">
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <Dialog.Content
+        // size="2xl"
+        className="max-h-[90vh] min-h-[700px] overflow-y-auto max-w-2xl sm:max-w-3xl lg:max-w-4xl"
+      >
         <Dialog.Header>
           <Text variant="h4">Detalhes da Aula</Text>
         </Dialog.Header>
 
-        <div className="overflow-y-auto px-6 py-6 space-y-8">
-          {/* Class Information */}
-          <ClassInformation
-            scheduledClass={scheduledClass}
-            canCancel={canCancel}
-          />
+        {!showCancelConfirmation && (
+          <div className="overflow-y-auto px-6 py-6 space-y-8">
+            {/* Class Information */}
+            <ClassInformation
+              scheduledClass={scheduledClass}
+              canCancel={canCancel}
+            />
 
-          {/* Instructor Details */}
-          {instructorDetails && (
-            <InstructorDetails instructor={instructorDetails} />
-          )}
-        </div>
+            {/* Instructor Details */}
+            {instructorDetails && (
+              <InstructorDetails instructor={instructorDetails} />
+            )}
+          </div>
+        )}
 
         {/* Footer - Only show when not in cancellation mode */}
         {!showCancelConfirmation && (
@@ -83,7 +97,7 @@ export function ScheduledClassDetailsModal({
             )}
             <Button
               variant="default"
-              onClick={() => onOpenChange(false)}
+              onClick={() => handleOpenChange(false)}
               size="lg"
               className="order-1 md:order-2"
             >

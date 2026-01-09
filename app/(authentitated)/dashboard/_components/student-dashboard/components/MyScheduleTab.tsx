@@ -1,46 +1,124 @@
 "use client";
 
+import { useMemo } from "react";
+import { Text } from "@/components/retroui/Text";
+import { Card } from "@/components/retroui/Card";
+import { CalendarClock } from "lucide-react";
 import { myScheduleMock } from "../data/my-schedule-mock";
 import { MyScheduleEmpty } from "./MyScheduleEmpty";
-import { ScheduledClassCardForSchedule } from "./ScheduledClassCardForSchedule";
+import { MyScheduleClassCard } from "./MyScheduleClassCard";
+import { EmptyState } from "./EmptyState";
 
 export function MyScheduleTab() {
   const scheduledClasses = myScheduleMock;
   const hasClasses = scheduledClasses && scheduledClasses.length > 0;
 
-  // For demo purposes, you can toggle this to show empty state
-  const showEmptyState = false; // Change to true to see empty state
+  // Agrupar aulas por período
+  const groupedClasses = useMemo(() => {
+    const today = scheduledClasses.filter((c) => c.startsInDays === 0);
+    const tomorrow = scheduledClasses.filter((c) => c.startsInDays === 1);
+    const upcoming = scheduledClasses.filter((c) => c.startsInDays > 1);
 
-  if (showEmptyState || !hasClasses) {
+    return { today, tomorrow, upcoming };
+  }, [scheduledClasses]);
+
+  const hasAnyClasses =
+    groupedClasses.today.length > 0 ||
+    groupedClasses.tomorrow.length > 0 ||
+    groupedClasses.upcoming.length > 0;
+
+  if (!hasAnyClasses) {
     return (
-      <div className="w-full max-w-4xl mx-auto">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold mb-2">Próxima aula</h2>
-          <p className="text-sm text-muted-foreground">
-            Confira abaixo as informações da aula para não haver atrasos.
-          </p>
-        </div>
-        <MyScheduleEmpty />
+      <div className="space-y-6">
+        <Text variant="h3">Minha Agenda</Text>
+
+        <EmptyState
+          icon={
+            <div className="w-20 h-20 bg-purple-100 border-2 border-black flex items-center justify-center">
+              <CalendarClock
+                className="w-10 h-10 text-purple-600"
+                strokeWidth={2.5}
+              />
+            </div>
+          }
+          title="Nenhuma aula agendada"
+          description="Você ainda não possui aulas agendadas. Confira os instrutores disponíveis e agende sua próxima aula."
+        />
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-2">Próxima aula</h2>
-        <p className="text-sm text-muted-foreground">
-          Confira abaixo as informações da aula para não haver atrasos.
-        </p>
-      </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <Text variant="h3">Minha Agenda</Text>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {scheduledClasses.map((scheduledClass) => (
-          <ScheduledClassCardForSchedule
-            key={scheduledClass.id}
-            scheduledClass={scheduledClass}
-          />
-        ))}
+      {/* Aulas Hoje */}
+      {groupedClasses.today.length > 0 && (
+        <div className="space-y-4">
+          <Card className="w-full p-4 sm:p-6 bg-white">
+            <Text variant="body" className="font-semibold">
+              Aulas Hoje
+            </Text>
+          </Card>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {groupedClasses.today.map((scheduledClass) => (
+              <MyScheduleClassCard
+                key={scheduledClass.id}
+                scheduledClass={scheduledClass}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Aulas Amanhã */}
+      {groupedClasses.tomorrow.length > 0 && (
+        <div className="space-y-4">
+          <Card className="w-full p-4 sm:p-6 bg-white">
+            <Text variant="body" className="font-semibold">
+              Aulas Amanhã
+            </Text>
+          </Card>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {groupedClasses.tomorrow.map((scheduledClass) => (
+              <MyScheduleClassCard
+                key={scheduledClass.id}
+                scheduledClass={scheduledClass}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Próximas Aulas */}
+      {groupedClasses.upcoming.length > 0 && (
+        <div className="space-y-4">
+          <Card className="w-full p-4 sm:p-6 bg-white">
+            <Text variant="body" className="font-semibold">
+              Próximas Aulas
+            </Text>
+          </Card>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {groupedClasses.upcoming.map((scheduledClass) => (
+              <MyScheduleClassCard
+                key={scheduledClass.id}
+                scheduledClass={scheduledClass}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Resumo */}
+      <div className="text-center pt-4">
+        <Text variant="bodySm" className="text-muted-foreground">
+          Total de {scheduledClasses.length}{" "}
+          {scheduledClasses.length === 1 ? "aula agendada" : "aulas agendadas"}
+        </Text>
       </div>
     </div>
   );

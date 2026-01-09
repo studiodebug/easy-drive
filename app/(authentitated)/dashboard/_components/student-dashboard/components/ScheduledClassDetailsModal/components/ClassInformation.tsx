@@ -2,10 +2,8 @@ import { Badge } from "@/components/retroui/Badge";
 import { Text } from "@/components/retroui/Text";
 import { Calendar, Clock } from "lucide-react";
 import { ScheduledClass } from "../../../data/scheduled-classes-mock";
-import {
-  formatDateAsDDMM,
-  getDayOfWeekInPortuguese,
-} from "../../../utils/date-utils";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { getStatusBadge } from "@/lib/badge-utils";
 import { UrgentAlert } from "./UrgentAlert";
 
@@ -19,8 +17,13 @@ export function ClassInformation({
   canCancel,
 }: ClassInformationProps) {
   const statusBadge = getStatusBadge(scheduledClass.status);
-  const dayOfWeek = getDayOfWeekInPortuguese(scheduledClass.date);
-  const formattedDate = formatDateAsDDMM(scheduledClass.date);
+  const formattedDate = format(
+    scheduledClass.date,
+    "EEEE, dd 'de' MMMM 'de' yyyy",
+    {
+      locale: ptBR,
+    }
+  );
   const isUrgent = scheduledClass.startsInDays <= 1 && canCancel;
 
   return (
@@ -32,13 +35,15 @@ export function ClassInformation({
       <div className="space-y-4">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="flex-1 min-w-[200px]">
-            <Text variant="h5">{scheduledClass.subject}</Text>
+            <div className="mb-4">
+              <Text variant="h5">{scheduledClass.subject}</Text>
+            </div>
 
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Calendar className="w-5 h-5 shrink-0" />
-                <Text variant="bodyLg" className="font-semibold">
-                  {dayOfWeek}, {formattedDate}
+                <Text variant="bodyLg" className="font-semibold capitalize">
+                  {formattedDate}
                 </Text>
               </div>
               <div className="flex items-center gap-2">
