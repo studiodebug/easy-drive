@@ -71,8 +71,10 @@ export function ScheduledClassCard({
               </Avatar.Fallback>
             </Avatar>
             <div>
-              <p className="text-sm text-muted-foreground">Instrutor</p>
-              <p className="font-semibold">{scheduledClass.instructor.name}</p>
+              <Text variant="body">Instrutor</Text>
+              <Text variant="body" className="font-semibold">
+                {scheduledClass.instructor.name}
+              </Text>
             </div>
           </div>
 
