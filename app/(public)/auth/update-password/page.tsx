@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/retroui/Button";
 import { Card } from "@/components/retroui/Card";
 import { Input } from "@/components/retroui/Input";
@@ -20,7 +19,6 @@ export default function Page() {
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    const supabase = createClient();
     setIsLoading(true);
     setError(null);
 
@@ -31,8 +29,11 @@ export default function Page() {
     }
 
     try {
-      const { error } = await supabase.auth.updateUser({ password });
-      if (error) throw error;
+      // old supabase request:
+      // await supabase.auth.updateUser({ password })
+      //
+      // placeholder request: integrate with your backend update-password endpoint.
+      // await fetch("/api/auth/update-password", { method: "POST", body: JSON.stringify({ password }) })
       router.push("/dashboard");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "Ocorreu um erro");

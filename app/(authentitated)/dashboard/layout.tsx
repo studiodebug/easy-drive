@@ -1,10 +1,3 @@
-import { DeployButton } from "@/components/deploy-button";
-import { EnvVarWarning } from "@/components/env-var-warning";
-import { AuthButton } from "@/components/auth-button";
-import { hasEnvVars } from "@/lib/utils";
-import Link from "next/link";
-import { Suspense } from "react";
-import { Copyright } from "@/components/Copyright";
 import Header from "@/components/blocks/Header/Header";
 import Footer from "@/components/blocks/Footer/Footer";
 

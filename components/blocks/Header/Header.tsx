@@ -1,13 +1,12 @@
 "use client";
 
-import { AuthButton } from "@/components/auth-button";
-import { EnvVarWarning } from "@/components/env-var-warning";
 import { Button } from "@/components/retroui/Button";
-import { createClient } from "@/lib/supabase/client";
-import { hasEnvVars } from "@/lib/utils";
-import { Phone, Mail, ShoppingCart, User, History, MapPin } from "lucide-react";
-import { Suspense, useEffect, useState } from "react";
+import { ShoppingCart, User, MapPin } from "lucide-react";
+import { useState } from "react";
 import Link from "next/link";
+import { Menu } from "@/components/retroui/Menu";
+import { useAuth } from "@/providers/auth/AuthProvider";
+import { useRouter } from "next/navigation";
 
 const navItems = [
   { name: "Início", href: "/" },
@@ -19,41 +18,8 @@ const navItems = [
 
 function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [user, setUser] = useState<{
-    name: string;
-    email: string;
-    phone: string;
-  } | null>(null);
-
-  useEffect(() => {
-    // Create client only on client side after component mounts
-    // Check if we're in the browser and env vars are available
-    if (typeof window === 'undefined') return;
-    
-    try {
-      const supabase = createClient();
-      
-      const fetchUser = async () => {
-        try {
-          const { data: user } = await supabase.auth.getUser();
-          if (user?.user) {
-            setUser({
-              name: user.user.user_metadata?.name || "",
-              email: user.user.email || "",
-              phone: user.user.phone || "",
-            });
-          }
-        } catch (error) {
-          // Silently handle errors during SSR/prerendering
-          console.error("Error fetching user:", error);
-        }
-      };
-      fetchUser();
-    } catch (error) {
-      // Silently handle errors if env vars are not available during build
-      console.error("Error creating Supabase client:", error);
-    }
-  }, []);
+  const router = useRouter();
+  const { isAuthenticated, signOut } = useAuth();
 
   return (
     <div className="w-full">
@@ -70,15 +36,48 @@ function Header() {
           </div>
 
           <div className="flex items-center gap-3">
-            <a href="#" className="relative">
+            <a href="#" className="relative" aria-label="Carrinho">
               <ShoppingCart className="h-5 w-5" />
               <span className="font-medium text-[10px] text-white bg-black rounded-full h-[12px] w-[12px] flex items-center justify-center absolute -top-1 -right-1">
                 3
               </span>
             </a>
-            <a href="#">
-              <User className="h-5 w-5" />
-            </a>
+            {isAuthenticated ? (
+              <Menu>
+                <Menu.Trigger asChild>
+                  <a
+                    href="#"
+                    aria-label="Menu do usuário"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <User className="h-5 w-5" />
+                  </a>
+                </Menu.Trigger>
+                <Menu.Content>
+                  <Menu.Item
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      router.push("/dashboard");
+                    }}
+                  >
+                    Perfil
+                  </Menu.Item>
+                  <Menu.Item
+                    onSelect={async (e) => {
+                      e.preventDefault();
+                      await signOut();
+                      router.push("/auth/login");
+                    }}
+                  >
+                    Deslogar
+                  </Menu.Item>
+                </Menu.Content>
+              </Menu>
+            ) : (
+              <Button asChild size="sm" variant="secondary">
+                <Link href="/auth/login">Login</Link>
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -103,13 +102,13 @@ function Header() {
           </div>
           <div className="flex items-center gap-4">
             <div className="items-center">
-              {user ? (
+              {isAuthenticated ? (
                 <Button size="sm" variant="secondary">
                   Comece a dirigir
                 </Button>
               ) : (
-                <Button size="sm" variant="secondary">
-                  Crie sua conta
+                <Button asChild size="sm" variant="secondary">
+                  <Link href="/auth/sign-up">Crie sua conta</Link>
                 </Button>
               )}
             </div>

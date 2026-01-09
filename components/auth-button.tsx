@@ -1,19 +1,32 @@
 import Link from "next/link";
 import { Button } from "./retroui/Button";
-import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "./logout-button";
+import { cookies } from "next/headers";
 
 export async function AuthButton() {
-  const supabase = await createClient();
+  // old supabase request:
+  // const { data } = await supabase.auth.getClaims()
+  //
+  // placeholder auth: read user payload from cookies set by our mocked auth flow.
+  const cookieStore = await cookies();
+  const userJson = cookieStore.get("auth_user")?.value ?? null;
+  const accessToken = cookieStore.get("access_token")?.value ?? null;
 
-  // You can also use getUser() which will be slower.
-  const { data } = await supabase.auth.getClaims();
+  let userEmail: string | null = null;
+  if (userJson) {
+    try {
+      const parsed = JSON.parse(userJson) as { email?: string };
+      userEmail = parsed.email ?? null;
+    } catch {
+      userEmail = null;
+    }
+  }
 
-  const user = data?.claims;
+  const isAuthenticated = Boolean(accessToken);
 
-  return user ? (
+  return isAuthenticated ? (
     <div className="flex items-center gap-4">
-      Olá, {user.email}!
+      Olá, {userEmail ?? "usuário"}!
       <LogoutButton />
     </div>
   ) : (

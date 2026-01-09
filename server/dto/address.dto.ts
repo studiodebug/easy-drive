@@ -4,9 +4,18 @@
  * Never expose `AddressEntity` (DB row) directly.
  */
 
-import type { Tables } from "@/types/supabase";
-
-type AddressEntity = Tables<"addresses">;
+type AddressEntity = {
+  id: string;
+  created_at: string;
+  zipcode: string;
+  neighborhood: string | null;
+  city: string;
+  state: string;
+  country: string;
+  street: string | null;
+  number: string | null;
+  coordinates: string | null;
+};
 
 /**
  * DTO Público - Endereço com granularidade mínima (ex.: listagens públicas)

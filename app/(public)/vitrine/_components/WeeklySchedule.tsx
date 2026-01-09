@@ -6,7 +6,6 @@ import { DaySchedule } from "@/app/(authentitated)/dashboard/_components/student
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Button } from "@/components/retroui/Button";
-import { createClient } from "@/lib/supabase/client";
 
 interface WeeklyScheduleProps {
   schedule: DaySchedule[];
@@ -28,26 +27,15 @@ export function WeeklySchedule({ schedule }: WeeklyScheduleProps) {
 
   useEffect(() => {
     setIsMounted(true);
-    // Create client only on client side after component mounts
-    // Check if we're in the browser and env vars are available
-    if (typeof window === 'undefined') return;
-    
-    try {
-      const supabase = createClient();
-      const checkAuth = async () => {
-        try {
-          const { data: { user } } = await supabase.auth.getUser();
-          setIsAuthenticated(!!user);
-        } catch (error) {
-          // Silently handle errors during SSR/prerendering
-          console.error("Error checking auth:", error);
-        }
-      };
-      checkAuth();
-    } catch (error) {
-      // Silently handle errors if env vars are not available during build
-      console.error("Error creating Supabase client:", error);
-    }
+    const check = async () => {
+      try {
+        const res = await fetch("/api/auth/session");
+        setIsAuthenticated(res.ok);
+      } catch {
+        setIsAuthenticated(false);
+      }
+    };
+    void check();
   }, []);
 
   const formatTime = (hour: number, minute: number) => {
@@ -129,10 +117,8 @@ export function WeeklySchedule({ schedule }: WeeklyScheduleProps) {
     if (selectedSlots.length === 0) return;
 
     try {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
+      const res = await fetch("/api/auth/session");
+      if (!res.ok) {
         router.push("/auth/login");
         return;
       }
