@@ -12,6 +12,8 @@ export const buttonVariants = cva(
           "shadow-md hover:shadow active:shadow-none bg-primary text-primary-foreground border-2 border-black transition hover:translate-y-1 active:translate-y-2 active:translate-x-1 hover:bg-primary-hover",
         secondary:
           "shadow-md hover:shadow active:shadow-none bg-secondary shadow-primary text-secondary-foreground border-2 border-black transition hover:translate-y-1 active:translate-y-2 active:translate-x-1 hover:bg-secondary-hover",
+        destructive:
+          "shadow-md hover:shadow active:shadow-none bg-red-500 text-white border-2 border-black transition hover:translate-y-1 active:translate-y-2 active:translate-x-1 hover:bg-red-600",
         outline:
           "shadow-md hover:shadow active:shadow-none bg-transparent border-2 transition hover:translate-y-1 active:translate-y-2 active:translate-x-1",
         link: "bg-transparent text-black underline decoration-primary decoration-4 font-bold hover:bg-primary hover:text-black transition-all inline !p-1",

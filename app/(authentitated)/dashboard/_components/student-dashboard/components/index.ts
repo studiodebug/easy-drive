@@ -2,6 +2,7 @@ export { WeekCalendar } from "./WeekCalendar";
 export { CreditsSection } from "./CreditsSection";
 export { ScheduledClassesEmpty } from "./ScheduledClassesEmpty";
 export { ScheduledClassCard } from "./ScheduledClassCard";
+export { ScheduledClassDetailsModal } from "./ScheduledClassDetailsModal/index";
 export { ScheduledClassesList } from "./ScheduledClassesList";
 export { ScheduledClassesSection } from "./ScheduledClassesSection";
 export { ScheduleClassTab } from "./ScheduleClassTab";
