@@ -115,18 +115,19 @@ const ProfileCardContent = ({
 const ProfileCardAvatar = ({
   src,
   alt,
+  name,
   fallback,
   showOnlineIndicator = false,
 }: ProfileCardAvatarProps) => {
   return (
     <div className="absolute -top-12 left-6">
-      <Avatar className="h-24 w-24 border-4 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white">
-        {src && <Avatar.Image src={src} alt={alt} />}
-        <Avatar.Fallback>{fallback}</Avatar.Fallback>
-        {showOnlineIndicator && (
-          <div className="absolute top-0 right-0 w-5 h-5 bg-green-500 border-2 border-black translate-x-1/2 -translate-y-1/2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"></div>
-        )}
-      </Avatar>
+      <Avatar
+        size="lg"
+        name={name || fallback}
+        src={src}
+        alt={alt}
+        showOnlineIndicator={showOnlineIndicator}
+      />
     </div>
   );
 };
