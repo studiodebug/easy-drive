@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo_Black, Space_Grotesk} from "next/font/google";
 import "./globals.css";
+import { RootProvider } from "@/providers/RootProvider";
 
 const archivoBlack = Archivo_Black({
   subsets: ["latin"],
@@ -31,7 +32,9 @@ export default function RootLayout({
       <body
         className={`${archivoBlack.variable} ${space.variable} antialiased`}
       >
-        {children}
+        <RootProvider>
+          {children}
+        </RootProvider>
       </body>
     </html>
   );

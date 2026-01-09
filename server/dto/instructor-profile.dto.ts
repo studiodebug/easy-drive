@@ -4,10 +4,18 @@
  * Never expose `InstructorProfileEntity` (DB row) directly.
  */
 
-import type { Enums, Tables } from "@/types/supabase";
-
-type InstructorProfileEntity = Tables<"instructor_profiles">;
-type DriversLicenseType = Enums<"drivers_license_type">;
+type InstructorProfileEntity = {
+  id: string;
+  created_at: string;
+  age: number | null;
+  specialty: string | null;
+  description: string | null;
+  years_of_experience: number | null;
+  is_professional: boolean | null;
+  current_drivers_license_type: string | null;
+  complement: string | null;
+};
+type DriversLicenseType = string;
 
 export interface InstructorProfilePublicDTO {
   id: string;

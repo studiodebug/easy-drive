@@ -1,15 +1,22 @@
 /**
  * Instructor DTOs
  *
- * Data Transfer Objects para sanitizar dados de instrutores (Supabase schema-based)
+ * Data Transfer Objects para sanitizar dados de instrutores (schema-based)
  * NUNCA exponha entidades do banco diretamente.
  */
 
-import type { Tables } from "@/types/supabase";
 import type { AddressPublicDTO } from "./address.dto";
 import type { InstructorProfilePublicDTO } from "./instructor-profile.dto";
 
-type InstructorEntity = Tables<"instructors">;
+type InstructorEntity = {
+  id: string;
+  created_at: string;
+  drivers_license: string | null;
+  rating: number | null;
+  is_active: boolean | null;
+  profile_id: string | null;
+  address_id: string | null;
+};
 
 /**
  * DTO Público - Dados do instrutor visíveis para todos

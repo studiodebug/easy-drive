@@ -4,11 +4,21 @@
  * Never expose `UserEntity` (DB row) directly.
  */
 
-import type { Enums, Tables } from "@/types/supabase";
 import type { AddressPublicDTO } from "./address.dto";
 
-type UserEntity = Tables<"users">;
-type DocumentType = Enums<"document_type">;
+type UserEntity = {
+  id: string;
+  name: string;
+  photo_url: string | null;
+  created_at: string;
+  document_type: string | null;
+  document: string | null;
+  address_id: string | null;
+  instructor_id: string | null;
+  student_id: string | null;
+  wallet_id: string | null;
+};
+type DocumentType = string;
 
 /**
  * DTO Público - Dados mínimos do usuário visíveis para outros
