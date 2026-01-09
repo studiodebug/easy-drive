@@ -18,6 +18,7 @@ import {
   getClassesForWeek,
   getClassCountsByDate,
 } from "../data/week-classes-mock";
+import { Text } from "@/components/retroui/Text";
 
 interface ScheduleClassTabProps {
   onNavigateToInstructors?: (date: Date) => void;
@@ -70,7 +71,7 @@ export function ScheduleClassTab({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <h2 className="text-2xl font-bold">Agendar aula</h2>
+      <Text variant="h3">Sua semana</Text>
 
       {/* Calendar Card */}
       <Card className="w-full p-6 bg-white">

@@ -9,6 +9,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { StarRating } from "@/components/StarRating";
 import { MapPin } from "lucide-react";
+import { getAvailabilityBadge } from "@/lib/badge-utils";
 
 // ============================================================================
 // Types
@@ -136,29 +137,9 @@ const ProfileCardHeader = ({
   city,
   state,
 }: ProfileCardHeaderProps) => {
-  const getAvailabilityBadge = (availability?: string) => {
-    if (!availability) return;
-    const badges = {
-      disponivel: {
-        text: "Disponível",
-        className:
-          "bg-green-400 text-black border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
-      },
-      ocupado: {
-        text: "Ocupado",
-        className:
-          "bg-yellow-400 text-black border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
-      },
-      indisponivel: {
-        text: "Indisponível",
-        className:
-          "bg-gray-400 text-black border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
-      },
-    };
-    return badges[availability as keyof typeof badges];
-  };
-
-  const availabilityBadge = getAvailabilityBadge(availability);
+  const availabilityBadge = availability
+    ? getAvailabilityBadge(availability)
+    : undefined;
 
   return (
     <div className="pt-16 w-full">

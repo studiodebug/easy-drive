@@ -13,6 +13,7 @@ import { ReviewsSection } from "./ReviewsSection";
 import { WeeklySchedule } from "./WeeklySchedule";
 import { Button } from "@/components/retroui/Button";
 import { Text } from "@/components/retroui/Text";
+import { getAvailabilityBadge } from "@/lib/badge-utils";
 
 interface InstructorProfileProps {
   instructor: Instructor;
@@ -26,27 +27,6 @@ export function InstructorProfile({
   const [isBioExpanded, setIsBioExpanded] = useState(false);
 
   const MAX_BIO_LENGTH = 240;
-
-  const getAvailabilityBadge = (availability: string) => {
-    const badges = {
-      disponivel: {
-        text: "Disponível",
-        className:
-          "bg-green-400 text-black border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
-      },
-      ocupado: {
-        text: "Ocupado",
-        className:
-          "bg-yellow-400 text-black border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
-      },
-      indisponivel: {
-        text: "Indisponível",
-        className:
-          "bg-gray-400 text-black border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
-      },
-    };
-    return badges[availability as keyof typeof badges];
-  };
 
   const availabilityBadge = getAvailabilityBadge(instructor.availability);
 

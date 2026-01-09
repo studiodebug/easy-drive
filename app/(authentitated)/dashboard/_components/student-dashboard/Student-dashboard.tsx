@@ -40,7 +40,7 @@ export function StudentDashboard() {
       >
         <TabsTriggerList className="w-full items-center justify-center mb-8">
           <TabsTrigger>Início</TabsTrigger>
-          <TabsTrigger>Instrutores</TabsTrigger>
+          <TabsTrigger>Agendar aula</TabsTrigger>
           <TabsTrigger>Minha agenda</TabsTrigger>
           <TabsTrigger>Histórico</TabsTrigger>
         </TabsTriggerList>

@@ -8,6 +8,7 @@ import {
   formatDateAsDDMM,
   getDayOfWeekInPortuguese,
 } from "../utils/date-utils";
+import { getStatusBadge } from "@/lib/badge-utils";
 
 interface ScheduledClassCardProps {
   scheduledClass: ScheduledClass;
@@ -16,35 +17,7 @@ interface ScheduledClassCardProps {
 export function ScheduledClassCard({
   scheduledClass,
 }: ScheduledClassCardProps) {
-  const getStatusBadge = (status: string) => {
-    const badges = {
-      confirmada: {
-        text: "Confirmada",
-        className: "bg-green-400 text-black border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
-      },
-      pendente: {
-        text: "Pendente",
-        className: "bg-yellow-400 text-black border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
-      },
-      cancelada: {
-        text: "Cancelada",
-        className: "bg-red-400 text-black border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
-      },
-    };
-    return badges[status as keyof typeof badges];
-  };
-
-  const getLanguageFlag = (language: string) => {
-    const flags = {
-      "pt-BR": "🇧🇷",
-      "en-US": "🇺🇸",
-      "es-ES": "🇪🇸",
-    };
-    return flags[language as keyof typeof flags] || "🌐";
-  };
-
   const statusBadge = getStatusBadge(scheduledClass.status);
-  const languageFlag = getLanguageFlag(scheduledClass.language);
   const dayOfWeek = getDayOfWeekInPortuguese(scheduledClass.date);
   const formattedDate = formatDateAsDDMM(scheduledClass.date);
 
@@ -72,14 +45,6 @@ export function ScheduledClassCard({
         {/* Subject */}
         <div>
           <h3 className="text-lg font-bold mb-1">{scheduledClass.subject}</h3>
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">{languageFlag}</span>
-            <span className="text-sm text-muted-foreground">
-              {scheduledClass.language === "pt-BR" && "Português"}
-              {scheduledClass.language === "en-US" && "Inglês"}
-              {scheduledClass.language === "es-ES" && "Espanhol"}
-            </span>
-          </div>
         </div>
 
         {/* Instructor */}
@@ -104,7 +69,11 @@ export function ScheduledClassCard({
 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row items-center justify-between pt-2 border-t-2 border-gray-200 gap-3 sm:gap-0">
-          <Button size="sm" variant="secondary" className="w-full sm:w-auto flex-1 sm:mr-2">
+          <Button
+            size="sm"
+            variant="secondary"
+            className="w-full sm:w-auto flex-1 sm:mr-2"
+          >
             Começa em {scheduledClass.startsInDays} dias
           </Button>
           <a

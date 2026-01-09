@@ -4,6 +4,7 @@ import { HistoryClass } from "../data/history-mock";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { StarRating } from "@/components/StarRating";
+import { getStatusBadge } from "@/lib/badge-utils";
 
 interface HistoryClassCardProps {
   historyClass: HistoryClass;
@@ -85,7 +86,9 @@ export function HistoryClassCard({ historyClass }: HistoryClassCardProps) {
         {/* For cancelled classes, just show the link */}
         {historyClass.status === "cancelled" && (
           <div className="pt-4 border-t-2 border-black flex justify-between items-center">
-            <span className="text-xs font-bold text-red-500 bg-red-100 px-2 py-1 border-2 border-red-500 rounded-sm">CANCELADA</span>
+            <span className={getStatusBadge(historyClass.status).className}>
+              {getStatusBadge(historyClass.status).text.toUpperCase()}
+            </span>
             <a
               href="#"
               className="text-sm font-bold text-black border-b-2 border-yellow-400 hover:bg-yellow-400 transition-all px-1"

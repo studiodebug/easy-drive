@@ -1,39 +1,93 @@
+"use client";
+
+import { useState, useMemo } from "react";
 import { ScheduledClassCard } from "./ScheduledClassCard";
 import { ScheduledClass } from "../data/scheduled-classes-mock";
-import { getCurrentWeekRange, formatDateAsDDMM } from "../utils/date-utils";
+import { formatDateAsDDMM } from "../utils/date-utils";
+import { Text } from "@/components/retroui/Text";
+import { Button } from "@/components/retroui/Button";
 
 interface ScheduledClassesListProps {
   scheduledClasses: ScheduledClass[];
 }
 
+const ITEMS_PER_PAGE = 6;
+
 export function ScheduledClassesList({
   scheduledClasses,
 }: ScheduledClassesListProps) {
-  const { startDate, endDate } = getCurrentWeekRange();
-  const startDateFormatted = formatDateAsDDMM(startDate);
-  const endDateFormatted = formatDateAsDDMM(endDate);
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
+
+  // Filtra aulas do dia atual em diante e ordena por data
+  const filteredClasses = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return scheduledClasses
+      .filter((scheduledClass) => {
+        const classDate = new Date(scheduledClass.date);
+        classDate.setHours(0, 0, 0, 0);
+        return classDate >= today;
+      })
+      .sort((a, b) => a.date.getTime() - b.date.getTime());
+  }, [scheduledClasses]);
+
+  const visibleClasses = filteredClasses.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredClasses.length;
+  const remainingCount = filteredClasses.length - visibleCount;
+
+  const handleLoadMore = () => {
+    setVisibleCount((prev) => prev + ITEMS_PER_PAGE);
+  };
+
+  const today = new Date();
+  const todayFormatted = formatDateAsDDMM(today);
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Aulas agendadas</h2>
+    <div className="space-y-4">
+      <Text variant="h3">Aulas agendadas</Text>
       <p className="text-sm text-muted-foreground mb-4">
-        Entre os dias {startDateFormatted} a {endDateFormatted}. Para ver outras
-        datas, avance para a próxima semana ou acesse{" "}
-        <a href="#" className="text-black underline decoration-primary decoration-4 font-bold hover:bg-primary hover:text-black transition-all">
+        A partir de {todayFormatted}. Para ver todas as suas aulas, acesse{" "}
+        <a
+          href="#"
+          className="text-black underline decoration-primary decoration-4 font-bold hover:bg-primary hover:text-black transition-all"
+        >
           minhas aulas
         </a>
         .
       </p>
 
-      {/* Classes Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {scheduledClasses.map((scheduledClass) => (
-          <ScheduledClassCard
-            key={scheduledClass.id}
-            scheduledClass={scheduledClass}
-          />
-        ))}
-      </div>
+      {filteredClasses.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground">
+          <p>Nenhuma aula agendada a partir de hoje.</p>
+        </div>
+      ) : (
+        <>
+          {/* Classes Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {visibleClasses.map((scheduledClass) => (
+              <ScheduledClassCard
+                key={scheduledClass.id}
+                scheduledClass={scheduledClass}
+              />
+            ))}
+          </div>
+
+          {/* Load More Button */}
+          {hasMore && (
+            <div className="flex justify-center pt-6">
+              <Button
+                onClick={handleLoadMore}
+                variant="default"
+                size="lg"
+                className="min-w-[200px]"
+              >
+                Carregar mais aulas agendadas
+              </Button>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
