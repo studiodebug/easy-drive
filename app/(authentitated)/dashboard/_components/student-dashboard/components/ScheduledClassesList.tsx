@@ -6,6 +6,7 @@ import { ScheduledClass } from "../data/scheduled-classes-mock";
 import { formatDateAsDDMM } from "../utils/date-utils";
 import { Text } from "@/components/retroui/Text";
 import { Button } from "@/components/retroui/Button";
+import Link from "next/link";
 
 interface ScheduledClassesListProps {
   scheduledClasses: ScheduledClass[];
@@ -46,20 +47,17 @@ export function ScheduledClassesList({
   return (
     <div className="space-y-4">
       <Text variant="h3">Aulas agendadas</Text>
-      <p className="text-sm text-muted-foreground mb-4">
+      <Text>
         A partir de {todayFormatted}. Para ver todas as suas aulas, acesse{" "}
-        <a
-          href="#"
-          className="text-black underline decoration-primary decoration-4 font-bold hover:bg-primary hover:text-black transition-all"
-        >
-          minhas aulas
-        </a>
+        <Button asChild variant={"link"}>
+          <Link href="/dashboard?tab=2">minhas aulas</Link>
+        </Button>
         .
-      </p>
+      </Text>
 
       {filteredClasses.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
-          <p>Nenhuma aula agendada a partir de hoje.</p>
+          <Text>Nenhuma aula agendada a partir de hoje.</Text>
         </div>
       ) : (
         <>
