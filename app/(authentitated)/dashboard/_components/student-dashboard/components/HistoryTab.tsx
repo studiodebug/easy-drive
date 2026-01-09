@@ -1,6 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { Card } from "@/components/retroui/Card";
+import { Button } from "@/components/retroui/Button";
+import { Text } from "@/components/retroui/Text";
 import { ToggleGroup, ToggleGroupItem } from "@/components/retroui/ToggleGroup";
 import { HistoryClassCard } from "./HistoryClassCard";
 import { EmptyState } from "./EmptyState";
@@ -9,14 +12,37 @@ import { History } from "lucide-react";
 
 type FilterType = "all" | "completed" | "cancelled";
 
+const ITEMS_PER_PAGE = 6;
+
 export function HistoryTab() {
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
+  const [visibleItems, setVisibleItems] = useState<Record<FilterType, number>>({
+    all: ITEMS_PER_PAGE,
+    completed: ITEMS_PER_PAGE,
+    cancelled: ITEMS_PER_PAGE,
+  });
 
   // Filter classes based on selected filter
-  const filteredClasses = historyClassesMock.filter((classItem) => {
-    if (activeFilter === "all") return true;
-    return classItem.status === activeFilter;
-  });
+  const filteredClasses = useMemo(() => {
+    return historyClassesMock.filter((classItem) => {
+      if (activeFilter === "all") return true;
+      return classItem.status === activeFilter;
+    });
+  }, [activeFilter]);
+
+  // Get visible classes for current filter
+  const visibleClasses = useMemo(() => {
+    return filteredClasses.slice(0, visibleItems[activeFilter]);
+  }, [filteredClasses, visibleItems, activeFilter]);
+
+  const hasMore = visibleClasses.length < filteredClasses.length;
+
+  const handleLoadMore = () => {
+    setVisibleItems((prev) => ({
+      ...prev,
+      [activeFilter]: prev[activeFilter] + ITEMS_PER_PAGE,
+    }));
+  };
 
   // Empty state messages based on filter
   const getEmptyStateMessage = () => {
@@ -41,42 +67,93 @@ export function HistoryTab() {
 
   const emptyState = getEmptyStateMessage();
 
+  // Get counts for each filter
+  const counts = useMemo(() => {
+    return {
+      all: historyClassesMock.length,
+      completed: historyClassesMock.filter((c) => c.status === "completed")
+        .length,
+      cancelled: historyClassesMock.filter((c) => c.status === "cancelled")
+        .length,
+    };
+  }, []);
+
   return (
-    <div className="w-full">
-      {/* Filter Buttons */}
-      <div className="mb-6 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
-        <ToggleGroup
-          type="single"
-          value={activeFilter}
-          onValueChange={(value) => {
-            if (value) setActiveFilter(value as FilterType);
-          }}
-          className="justify-start inline-flex min-w-full sm:min-w-0"
-        >
-          <ToggleGroupItem value="all" aria-label="Mostrar todas as aulas">
-            Todas
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="completed"
-            aria-label="Mostrar apenas aulas finalizadas"
-          >
-            Finalizada
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="cancelled"
-            aria-label="Mostrar apenas aulas canceladas"
-          >
-            Cancelada
-          </ToggleGroupItem>
-        </ToggleGroup>
-      </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <Text variant="h3">Histórico de Aulas</Text>
+
+      {/* Filter Card */}
+      <Card className="w-full p-4 sm:p-6 bg-white">
+        <div className="space-y-4">
+          <Text variant="body" className="font-semibold">
+            Filtrar por status
+          </Text>
+
+          <div className="overflow-x-auto pb-2 -mx-2 px-2">
+            <ToggleGroup
+              type="single"
+              value={activeFilter}
+              onValueChange={(value) => {
+                if (value) setActiveFilter(value as FilterType);
+              }}
+              className="justify-start inline-flex min-w-full sm:min-w-0"
+            >
+              <ToggleGroupItem value="all" aria-label="Mostrar todas as aulas">
+                Todas ({counts.all})
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                value="completed"
+                aria-label="Mostrar apenas aulas finalizadas"
+              >
+                Finalizadas ({counts.completed})
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                value="cancelled"
+                aria-label="Mostrar apenas aulas canceladas"
+              >
+                Canceladas ({counts.cancelled})
+              </ToggleGroupItem>
+            </ToggleGroup>
+          </div>
+        </div>
+      </Card>
 
       {/* Classes Grid or Empty State */}
-      {filteredClasses.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredClasses.map((classItem) => (
-            <HistoryClassCard key={classItem.id} historyClass={classItem} />
-          ))}
+      {visibleClasses.length > 0 ? (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {visibleClasses.map((classItem) => (
+              <HistoryClassCard key={classItem.id} historyClass={classItem} />
+            ))}
+          </div>
+
+          {/* Load More Button */}
+          {hasMore && (
+            <div className="flex justify-center pt-2">
+              <Button
+                variant="secondary"
+                size="lg"
+                onClick={handleLoadMore}
+                className="min-w-[200px]"
+              >
+                Carregar mais ({filteredClasses.length - visibleClasses.length}{" "}
+                restantes)
+              </Button>
+            </div>
+          )}
+
+          {/* Summary */}
+          <div className="text-center">
+            <Text variant="bodySm" className="text-muted-foreground">
+              Mostrando {visibleClasses.length} de {filteredClasses.length}{" "}
+              {activeFilter === "all"
+                ? "aulas"
+                : activeFilter === "completed"
+                ? "aulas finalizadas"
+                : "aulas canceladas"}
+            </Text>
+          </div>
         </div>
       ) : (
         <EmptyState
