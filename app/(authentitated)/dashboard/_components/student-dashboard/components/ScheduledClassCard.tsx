@@ -6,7 +6,7 @@ import { Button } from "@/components/retroui/Button";
 import { Avatar } from "@/components/retroui/Avatar";
 import { Badge } from "@/components/retroui/Badge";
 import { Clock, FileText } from "lucide-react";
-import { ScheduledClass } from "../data/scheduled-classes-mock";
+import type { ScheduledClass } from "@/types/scheduled-class";
 import {
   formatDateAsDDMM,
   getDayOfWeekInPortuguese,

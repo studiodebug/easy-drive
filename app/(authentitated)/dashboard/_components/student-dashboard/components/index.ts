@@ -6,7 +6,6 @@ export { ScheduledClassDetailsModal } from "./ScheduledClassDetailsModal/index";
 export { ScheduledClassesList } from "./ScheduledClassesList";
 export { ScheduledClassesSection } from "./ScheduledClassesSection";
 export { ScheduleClassTab } from "./ScheduleClassTab";
-export { InstructorsTab } from "./InstructorsTab";
 export { InstructorCard } from "./InstructorCard";
 export { InstructorsFilters } from "./InstructorsFilters";
 export { MyScheduleTab } from "./MyScheduleTab";

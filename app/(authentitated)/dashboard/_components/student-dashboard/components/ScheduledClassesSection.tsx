@@ -1,6 +1,6 @@
 import { ScheduledClassesEmpty } from "./ScheduledClassesEmpty";
 import { ScheduledClassesList } from "./ScheduledClassesList";
-import { ScheduledClass } from "../data/scheduled-classes-mock";
+import type { ScheduledClass } from "@/types/scheduled-class";
 
 interface ScheduledClassesSectionProps {
   scheduledClasses: ScheduledClass[];

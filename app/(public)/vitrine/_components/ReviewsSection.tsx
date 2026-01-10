@@ -1,6 +1,6 @@
 "use client";
 
-import { Review } from "@/app/(authentitated)/dashboard/_components/student-dashboard/data/instructors-mock";
+import type { Review } from "@/types/instructor";
 import { Card } from "@/components/retroui/Card";
 import { Avatar } from "@/components/retroui/Avatar";
 import { StarRating } from "@/components/StarRating";

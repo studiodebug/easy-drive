@@ -4,20 +4,20 @@ import { useMemo } from "react";
 import { Text } from "@/components/retroui/Text";
 import { Card } from "@/components/retroui/Card";
 import { CalendarClock } from "lucide-react";
-import { myScheduleMock } from "../data/my-schedule-mock";
+import { useGetMySchedule } from "@/queries/dashboard/my-schedule.query";
 import { MyScheduleEmpty } from "./MyScheduleEmpty";
 import { MyScheduleClassCard } from "./MyScheduleClassCard";
 import { EmptyState } from "./EmptyState";
 
 export function MyScheduleTab() {
-  const scheduledClasses = myScheduleMock;
+  const { data: scheduledClasses } = useGetMySchedule();
   const hasClasses = scheduledClasses && scheduledClasses.length > 0;
 
   // Agrupar aulas por período
   const groupedClasses = useMemo(() => {
-    const today = scheduledClasses.filter((c) => c.startsInDays === 0);
-    const tomorrow = scheduledClasses.filter((c) => c.startsInDays === 1);
-    const upcoming = scheduledClasses.filter((c) => c.startsInDays > 1);
+    const today = scheduledClasses?.filter((c) => c.startsInDays === 0) ?? [];
+    const tomorrow = scheduledClasses?.filter((c) => c.startsInDays === 1) ?? [];
+    const upcoming = scheduledClasses?.filter((c) => c.startsInDays > 1) ?? [];
 
     return { today, tomorrow, upcoming };
   }, [scheduledClasses]);
@@ -116,8 +116,8 @@ export function MyScheduleTab() {
       {/* Resumo */}
       <div className="text-center pt-4">
         <Text variant="bodySm" className="text-muted-foreground">
-          Total de {scheduledClasses.length}{" "}
-          {scheduledClasses.length === 1 ? "aula agendada" : "aulas agendadas"}
+          Total de {scheduledClasses?.length ?? 0}{" "}
+          {scheduledClasses?.length === 1 ? "aula agendada" : "aulas agendadas"}
         </Text>
       </div>
     </div>

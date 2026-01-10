@@ -7,8 +7,8 @@ import { Text } from "@/components/retroui/Text";
 import { ToggleGroup, ToggleGroupItem } from "@/components/retroui/ToggleGroup";
 import { HistoryClassCard } from "./HistoryClassCard";
 import { EmptyState } from "./EmptyState";
-import { historyClassesMock } from "../data/history-mock";
 import { History } from "lucide-react";
+import { useGetHistory } from "@/queries/dashboard/history.query";
 
 type FilterType = "all" | "completed" | "cancelled";
 
@@ -22,17 +22,19 @@ export function HistoryTab() {
     cancelled: ITEMS_PER_PAGE,
   });
 
+  const { data: historyClasses } = useGetHistory();
+
   // Filter classes based on selected filter
   const filteredClasses = useMemo(() => {
-    return historyClassesMock.filter((classItem) => {
+    return historyClasses?.filter((classItem) => {
       if (activeFilter === "all") return true;
       return classItem.status === activeFilter;
-    });
+    }) ?? [];
   }, [activeFilter]);
 
   // Get visible classes for current filter
   const visibleClasses = useMemo(() => {
-    return filteredClasses.slice(0, visibleItems[activeFilter]);
+    return filteredClasses?.slice(0, visibleItems[activeFilter]) ?? [];
   }, [filteredClasses, visibleItems, activeFilter]);
 
   const hasMore = visibleClasses.length < filteredClasses.length;
@@ -43,6 +45,7 @@ export function HistoryTab() {
       [activeFilter]: prev[activeFilter] + ITEMS_PER_PAGE,
     }));
   };
+
 
   // Empty state messages based on filter
   const getEmptyStateMessage = () => {
@@ -70,13 +73,13 @@ export function HistoryTab() {
   // Get counts for each filter
   const counts = useMemo(() => {
     return {
-      all: historyClassesMock.length,
-      completed: historyClassesMock.filter((c) => c.status === "completed")
-        .length,
-      cancelled: historyClassesMock.filter((c) => c.status === "cancelled")
-        .length,
+      all: historyClasses?.length ?? 0,
+      completed: historyClasses?.filter((c) => c.status === "completed")
+        .length ?? 0,
+      cancelled: historyClasses?.filter((c) => c.status === "cancelled")
+        .length ?? 0,
     };
-  }, []);
+  }, [historyClasses]);
 
   return (
     <div className="space-y-6">

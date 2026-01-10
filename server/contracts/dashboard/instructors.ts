@@ -1,47 +1,7 @@
-export interface TimeSlot {
-  hour: number;
-  minute: number;
-  available: boolean;
-}
+import { fakePromises } from "@/lib/utils";
+import type { Instructor, TimeSlot, DaySchedule, Review } from "@/types/instructor";
 
-export interface DaySchedule {
-  day: string;
-  dayNumber: number; // 0-6 (0 = domingo, 1 = segunda, etc)
-  slots: TimeSlot[];
-}
-
-export interface Review {
-  id: string;
-  studentName: string;
-  studentAvatar: string;
-  rating: number;
-  comment: string;
-  date: string; // ISO date string
-}
-
-export interface Instructor {
-  id: string;
-  name: string;
-  avatar: string;
-  specialties: string[];
-  levels: string[];
-  rating: number;
-  totalClasses: number;
-  availability: "disponivel" | "ocupado" | "indisponivel";
-  bio?: string;
-  city: string;
-  state: string;
-  hourlyRate: number;
-  carPhotos: string[];
-  carModel: string;
-  carYear: number;
-  carTransmission: "manual" | "automatico";
-  schedule: DaySchedule[];
-  phone?: string;
-  email?: string;
-  address?: string;
-  reviews?: Review[];
-}
+export type GetInstructorsResponse = Instructor[];
 
 // Helper function to generate schedule
 function generateSchedule(): DaySchedule[] {
@@ -326,7 +286,7 @@ function generateReviews(instructorId: string): Review[] {
   return reviewTemplates[instructorId] || [];
 }
 
-export const instructorsMock: Instructor[] = [
+const getInstructorsResponseMock: GetInstructorsResponse = [
   {
     id: "1",
     name: "Carlos Silva",
@@ -547,3 +507,9 @@ export const instructorsMock: Instructor[] = [
     reviews: generateReviews("8"),
   },
 ];
+
+export const getInstructors = async (): Promise<GetInstructorsResponse> => {
+    return await fakePromises(() => {
+        return getInstructorsResponseMock;
+    });
+};

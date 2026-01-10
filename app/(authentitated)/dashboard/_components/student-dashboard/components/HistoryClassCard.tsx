@@ -7,7 +7,7 @@ import { Avatar } from "@/components/retroui/Avatar";
 import { Badge } from "@/components/retroui/Badge";
 import { Text } from "@/components/retroui/Text";
 import { Clock, Calendar } from "lucide-react";
-import { HistoryClass } from "../data/history-mock";
+import type { HistoryClass } from "@/types/history";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { StarRating } from "@/components/StarRating";

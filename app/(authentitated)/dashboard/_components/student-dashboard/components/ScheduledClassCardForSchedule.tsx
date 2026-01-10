@@ -6,7 +6,7 @@ import { Avatar } from "@/components/retroui/Avatar";
 import { Badge } from "@/components/retroui/Badge";
 import { Popover } from "@/components/retroui/Popover";
 import { MoreVertical, FileDown, User, X } from "lucide-react";
-import { MyScheduleClass } from "../data/my-schedule-mock";
+import type { MyScheduleClass } from "@/types/my-schedule";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 

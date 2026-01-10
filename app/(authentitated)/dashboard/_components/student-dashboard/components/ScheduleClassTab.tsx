@@ -5,7 +5,8 @@ import { Card } from "@/components/retroui/Card";
 import { WeekCalendar } from "./WeekCalendar";
 import { CreditsSection } from "./CreditsSection";
 import { ScheduledClassesSection } from "./ScheduledClassesSection";
-import { scheduledClassesMock } from "../data/scheduled-classes-mock";
+import { useGetScheduledClasses } from "@/queries/dashboard/scheduled-classes.query";
+import { useGetWeekClasses } from "@/queries/dashboard/week-classes.query";
 import {
   getCurrentWeekRange,
   getWeekRangeForDate,
@@ -14,11 +15,9 @@ import {
   formatDateToISO,
   getShortDayInPortuguese,
 } from "../utils/date-utils";
-import {
-  getClassesForWeek,
-  getClassCountsByDate,
-} from "../data/week-classes-mock";
+
 import { Text } from "@/components/retroui/Text";
+import { getClassCountsByDate } from "../utils/week-classes-utils";
 
 interface ScheduleClassTabProps {
   onNavigateToInstructors?: (date: Date) => void;
@@ -27,6 +26,9 @@ interface ScheduleClassTabProps {
 export function ScheduleClassTab({
   onNavigateToInstructors,
 }: ScheduleClassTabProps) {
+  const { data: scheduledClasses } = useGetScheduledClasses();
+  const { data: weekClasses } = useGetWeekClasses();
+
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(() => {
     const { startDate } = getCurrentWeekRange();
     return startDate;
@@ -38,10 +40,12 @@ export function ScheduleClassTab({
 
   useEffect(() => {
     // Load class counts for the current week
-    const { startDate, endDate } = getWeekRangeForDate(currentWeekStart);
-    const counts = getClassCountsByDate(startDate, endDate);
-    setClassCountsMap(counts);
-  }, [currentWeekStart]);
+    if (weekClasses) {
+      const { startDate, endDate } = getWeekRangeForDate(currentWeekStart);
+      const counts = getClassCountsByDate(weekClasses, startDate, endDate);
+      setClassCountsMap(counts);
+    }
+  }, [currentWeekStart, weekClasses]);
 
   const handlePreviousWeek = () => {
     setCurrentWeekStart((prev) => addWeeks(prev, -1));
@@ -91,7 +95,7 @@ export function ScheduleClassTab({
       </Card>
 
       {/* Scheduled Classes Section */}
-      <ScheduledClassesSection scheduledClasses={scheduledClassesMock} />
+      <ScheduledClassesSection scheduledClasses={scheduledClasses ?? []} />
     </div>
   );
 }

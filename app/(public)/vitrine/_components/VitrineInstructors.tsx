@@ -5,11 +5,12 @@ import { VitrineInstructorCard } from "./VitrineInstructorCard";
 import { VitrineMobileFilters } from "./VitrineMobileFilters";
 import { VitrineFilters } from "./VitrineFilters";
 import { VitrineSearchBanner } from "./VitrineSearchBanner";
-import { instructorsMock } from "@/app/(authentitated)/dashboard/_components/student-dashboard/data/instructors-mock";
-import { Instructor } from "@/app/(authentitated)/dashboard/_components/student-dashboard/data/instructors-mock";
+import { useGetInstructors } from "@/queries/dashboard/instructors.query";
+import type { Instructor } from "@/types/instructor";
 import { brazilStates } from "./brazil-locations";
 
 export function VitrineInstructors({ isLoggedIn }: { isLoggedIn?: boolean }) {
+  const { data: instructors = [] } = useGetInstructors();
   const [selectedState, setSelectedState] = useState<string>("");
   const [selectedCity, setSelectedCity] = useState<string>("");
 
@@ -28,7 +29,7 @@ export function VitrineInstructors({ isLoggedIn }: { isLoggedIn?: boolean }) {
   };
 
   const filteredInstructors = useMemo(() => {
-    let filtered: Instructor[] = [...instructorsMock];
+    let filtered: Instructor[] = [...instructors];
 
     if (selectedState) {
       filtered = filtered.filter(
@@ -43,7 +44,7 @@ export function VitrineInstructors({ isLoggedIn }: { isLoggedIn?: boolean }) {
     }
 
     return filtered;
-  }, [selectedState, selectedCity]);
+  }, [instructors, selectedState, selectedCity]);
 
   return (
     <div className="w-full flex flex-col">

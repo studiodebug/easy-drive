@@ -1,20 +1,13 @@
-export interface WeekClass {
-  id: string;
-  date: string; // ISO date string (YYYY-MM-DD)
-  time: string;
-  subject: string;
-  instructor: {
-    name: string;
-    avatar: string;
-  };
-  status: "confirmada" | "pendente" | "cancelada";
-}
+import { fakePromises } from "@/lib/utils";
+import type { WeekClass } from "@/types/week-class";
+
+export type GetWeekClassesResponse = WeekClass[];
 
 /**
  * Mock data for classes scheduled on specific dates
  * This simulates an API response that returns classes for a given week
  */
-export const weekClassesMock: WeekClass[] = [
+const getWeekClassesResponseMock: GetWeekClassesResponse = [
   // Friday, January 10, 2026 - 3 classes
   {
     id: "1",
@@ -86,34 +79,8 @@ export const weekClassesMock: WeekClass[] = [
   },
 ];
 
-/**
- * Get classes for a specific date range
- * Simulates an API call that would filter classes by date
- */
-export function getClassesForWeek(startDate: Date, endDate: Date): WeekClass[] {
-  const startDateStr = startDate.toISOString().split("T")[0];
-  const endDateStr = endDate.toISOString().split("T")[0];
-
-  return weekClassesMock.filter((classItem) => {
-    return classItem.date >= startDateStr && classItem.date <= endDateStr;
-  });
-}
-
-/**
- * Get class count for each day in a week
- * Returns a map of date strings to class counts
- */
-export function getClassCountsByDate(
-  startDate: Date,
-  endDate: Date
-): Map<string, number> {
-  const classes = getClassesForWeek(startDate, endDate);
-  const countMap = new Map<string, number>();
-
-  classes.forEach((classItem) => {
-    const count = countMap.get(classItem.date) || 0;
-    countMap.set(classItem.date, count + 1);
-  });
-
-  return countMap;
-}
+export const getWeekClasses = async (): Promise<GetWeekClassesResponse> => {
+    return await fakePromises(() => {
+        return getWeekClassesResponseMock;
+    });
+};

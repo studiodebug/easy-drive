@@ -1,6 +1,6 @@
 import { ProfileCard } from "@/components/blocks/ProfileCard/ProfileCard";
 import { Button } from "@/components/retroui/Button";
-import { Instructor } from "../data/instructors-mock";
+import type { Instructor } from "@/types/instructor";
 
 interface InstructorCardProps {
   instructor: Instructor;

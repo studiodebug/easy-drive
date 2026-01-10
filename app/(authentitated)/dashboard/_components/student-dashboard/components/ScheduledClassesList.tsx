@@ -2,11 +2,11 @@
 
 import { useState, useMemo } from "react";
 import { ScheduledClassCard } from "./ScheduledClassCard";
-import { ScheduledClass } from "../data/scheduled-classes-mock";
-import { formatDateAsDDMM } from "../utils/date-utils";
 import { Text } from "@/components/retroui/Text";
 import { Button } from "@/components/retroui/Button";
 import Link from "next/link";
+import type { ScheduledClass } from "@/types/scheduled-class";
+import { formatDateAsDDMM } from "../utils/date-utils";
 
 interface ScheduledClassesListProps {
   scheduledClasses: ScheduledClass[];

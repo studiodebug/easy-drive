@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { DaySchedule } from "@/app/(authentitated)/dashboard/_components/student-dashboard/data/instructors-mock";
+import type { DaySchedule } from "@/types/instructor";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Button } from "@/components/retroui/Button";

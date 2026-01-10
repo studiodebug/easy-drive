@@ -1,4 +1,4 @@
-import { Instructor } from "@/app/(authentitated)/dashboard/_components/student-dashboard/data/instructors-mock";
+import type { Instructor } from "@/types/instructor";
 import { ProfileCard } from "@/components/blocks/ProfileCard/ProfileCard";
 import { Button } from "@/components/retroui/Button";
 import Link from "next/link";
