@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { VitrineInstructorCard } from "./VitrineInstructorCard";
 import { VitrineMobileFilters } from "./VitrineMobileFilters";
 import { VitrineFilters } from "./VitrineFilters";
@@ -8,13 +8,32 @@ import { VitrineSearchBanner } from "./VitrineSearchBanner";
 import { useGetInstructors } from "@/queries/dashboard/instructors.query";
 import type { Instructor } from "@/types/instructor";
 import { brazilStates } from "./brazil-locations";
+import { useSearchParams } from "next/navigation";
 
 export function VitrineInstructors({ isLoggedIn }: { isLoggedIn?: boolean }) {
   const { data: instructors = [] } = useGetInstructors();
   const [selectedState, setSelectedState] = useState<string>("");
   const [selectedCity, setSelectedCity] = useState<string>("");
+  const searchParams = useSearchParams();
+  const city = searchParams.get("city");
+  const state = searchParams.get("state");
 
-  const handleCitySearch = (cityName: string) => {
+
+  
+  const handleCitySearch = (cityName: string, stateCode?: string) => {
+    if (stateCode) {
+      const state = brazilStates.find((s) => s.code === stateCode);
+      const city = state?.cities.find(
+        (c) => c.name.toLowerCase() === cityName.toLowerCase()
+      );
+      if (city && state) {
+        setSelectedState(state.code);
+        setSelectedCity(city.name);
+        return;
+      }
+    }
+    
+    // Otherwise, search through all states
     for (const state of brazilStates) {
       const city = state.cities.find(
         (c) => c.name.toLowerCase() === cityName.toLowerCase()
@@ -28,18 +47,24 @@ export function VitrineInstructors({ isLoggedIn }: { isLoggedIn?: boolean }) {
     setSelectedCity(cityName);
   };
 
+  useEffect(() => {
+    if (!city || !state) return;
+    handleCitySearch(city, state);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [city, state]);
+
   const filteredInstructors = useMemo(() => {
     let filtered: Instructor[] = [...instructors];
 
     if (selectedState) {
       filtered = filtered.filter(
-        (instructor) => instructor.state === selectedState
+        (instructor) => instructor.address.state === selectedState
       );
     }
 
     if (selectedCity) {
       filtered = filtered.filter(
-        (instructor) => instructor.city === selectedCity
+        (instructor) => instructor.address.city === selectedCity
       );
     }
 

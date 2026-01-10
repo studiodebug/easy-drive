@@ -28,7 +28,7 @@ async function InstructorContent({ id }: { id: string }) {
     notFound();
   }
 
-  return <InstructorProfile instructor={instructor} isLoggedIn={false} />;
+  return <InstructorProfile instructor={instructor} />;
 }
 
 export default async function InstructorPage({ params }: InstructorPageProps) {

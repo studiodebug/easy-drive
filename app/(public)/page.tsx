@@ -8,6 +8,7 @@ import { Text } from "@/components/retroui/Text";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useCityAutocomplete, type CitySuggestion } from "./vitrine/_components/useCityAutocomplete";
 
 export type HomePageProps = {
   className?: string;
@@ -15,10 +16,41 @@ export type HomePageProps = {
 
 export default function HomePage({ className }: HomePageProps) {
   const router = useRouter();
+  
+  const {
+    searchCity,
+    showSuggestions,
+    setShowSuggestions,
+    focusedIndex,
+    setFocusedIndex,
+    suggestions,
+    containerRef,
+    handleInputChange,
+    handleCitySelect: baseHandleCitySelect,
+    handleKeyDown,
+    getSelectedCityForSubmit,
+  } = useCityAutocomplete();
 
+  // Handle city selection
+  const handleCitySelect = (city: CitySuggestion) => {
+    baseHandleCitySelect(city, () => {
+      // Redirect to vitrine with query params
+      router.push(`/vitrine?city=${encodeURIComponent(city.name)}&state=${encodeURIComponent(city.state)}`);
+    });
+  };
+
+  // Handle form submit
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    router.push("/vitrine");
+    const selectedCity = getSelectedCityForSubmit();
+    if (selectedCity) {
+      router.push(`/vitrine?city=${encodeURIComponent(selectedCity.name)}&state=${encodeURIComponent(selectedCity.state)}`);
+    } else if (searchCity.trim()) {
+      // If no exact match but we have text, just redirect with city name
+      router.push(`/vitrine?city=${encodeURIComponent(searchCity.trim())}`);
+    } else {
+      router.push("/vitrine");
+    }
   };
 
   return (
@@ -61,12 +93,41 @@ export default function HomePage({ className }: HomePageProps) {
                 </Card.Header>
                 <Card.Content className="p-6 pt-0 space-y-4">
                   <form onSubmit={handleSearch} className="flex flex-col lg:flex-row gap-4">
-                    <Input
-                      placeholder="Digite sua cidade (ex.: São Paulo)"
-                      aria-label="Cidade"
-                      type="text"
-                      className="flex-1 border-black"
-                    />
+                    <div ref={containerRef} className="flex-1 relative">
+                      <Input
+                        placeholder="Digite sua cidade (ex.: São Paulo)"
+                        aria-label="Cidade"
+                        type="text"
+                        value={searchCity}
+                        onChange={handleInputChange}
+                        onKeyDown={(e) => handleKeyDown(e, handleCitySelect, () => {
+                          const selectedCity = getSelectedCityForSubmit();
+                          if (selectedCity) {
+                            router.push(`/vitrine?city=${encodeURIComponent(selectedCity.name)}&state=${encodeURIComponent(selectedCity.state)}`);
+                          }
+                        })}
+                        onFocus={() => setShowSuggestions(suggestions.length > 0)}
+                        className="flex-1 border-black"
+                      />
+                      {showSuggestions && suggestions.length > 0 && (
+                        <div className="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] z-50 max-h-60 overflow-y-auto">
+                          {suggestions.map((city: CitySuggestion, index: number) => (
+                            <button
+                              key={`${city.name}-${city.state}`}
+                              type="button"
+                              onClick={() => handleCitySelect(city)}
+                              className={`w-full px-4 py-3 text-left hover:bg-primary transition-colors border-b-2 border-black last:border-b-0 ${
+                                index === focusedIndex ? "bg-primary" : ""
+                              }`}
+                              onMouseEnter={() => setFocusedIndex(index)}
+                            >
+                              <div className="font-medium text-base">{city.name}</div>
+                              <div className="text-sm text-muted-foreground">{city.state}</div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                     <Button type="submit" className="ml-auto md:ml-0  w-60 justify-center self-stretch">
                       Encontrar instrutores
                     </Button>

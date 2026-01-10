@@ -14,17 +14,17 @@ import { WeeklySchedule } from "./WeeklySchedule";
 import { Button } from "@/components/retroui/Button";
 import { Text } from "@/components/retroui/Text";
 import { getAvailabilityBadge } from "@/lib/badge-utils";
+import { useAuth } from "@/providers/auth/AuthProvider";
 
 interface InstructorProfileProps {
   instructor: Instructor;
-  isLoggedIn: boolean;
 }
 
 export function InstructorProfile({
   instructor,
-  isLoggedIn,
 }: InstructorProfileProps) {
   const [isBioExpanded, setIsBioExpanded] = useState(false);
+  const { isAuthenticated: isLoggedIn } = useAuth();
 
   const MAX_BIO_LENGTH = 240;
 
@@ -100,7 +100,7 @@ export function InstructorProfile({
                     <div className="flex items-center gap-2">
                       <MapPin className="h-5 w-5" />
                       <span className="font-bold text-lg">
-                        {instructor.city}, {instructor.state}
+                        {instructor.address.city}, {instructor.address.state}
                       </span>
                     </div>
                     <div className="w-px h-6 bg-black/20" />

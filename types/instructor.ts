@@ -1,3 +1,5 @@
+import { Address } from "./user";
+
 export interface TimeSlot {
   hour: number;
   minute: number;
@@ -29,8 +31,7 @@ export interface Instructor {
   totalClasses: number;
   availability: "disponivel" | "ocupado" | "indisponivel";
   bio?: string;
-  city: string;
-  state: string;
+  address: Address;
   hourlyRate: number;
   carPhotos: string[];
   carModel: string;
@@ -39,6 +40,5 @@ export interface Instructor {
   schedule: DaySchedule[];
   phone?: string;
   email?: string;
-  address?: string;
   reviews?: Review[];
 }
