@@ -6,7 +6,7 @@ import { Button } from "@/components/retroui/Button";
 import { Text } from "@/components/retroui/Text";
 import { Avatar } from "@/components/retroui/Avatar";
 import { Calendar, Clock } from "lucide-react";
-import { HistoryClass } from "../data/history-mock";
+import type { HistoryClass } from "@/types/history";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ReviewForm } from "./ReviewForm";

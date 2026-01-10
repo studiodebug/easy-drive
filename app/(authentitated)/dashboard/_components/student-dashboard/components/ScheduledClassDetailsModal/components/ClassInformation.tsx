@@ -1,7 +1,7 @@
 import { Badge } from "@/components/retroui/Badge";
 import { Text } from "@/components/retroui/Text";
 import { Calendar, Clock } from "lucide-react";
-import { ScheduledClass } from "../../../data/scheduled-classes-mock";
+import type { ScheduledClass } from "@/types/scheduled-class";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { getStatusBadge } from "@/lib/badge-utils";

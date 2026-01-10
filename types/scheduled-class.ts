@@ -3,7 +3,7 @@ export interface ScheduledClass {
   subject: string;
   date: Date;
   time: string;
-  language: "pt-BR" | "en-US" | "es-ES";
+  language?: "pt-BR" | "en-US" | "es-ES";
   instructor: {
     name: string;
     avatar: string;

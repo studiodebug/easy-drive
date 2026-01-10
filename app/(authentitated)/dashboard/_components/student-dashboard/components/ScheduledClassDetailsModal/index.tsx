@@ -4,8 +4,8 @@ import { useState } from "react";
 import { Dialog } from "@/components/retroui/Dialog";
 import { Button } from "@/components/retroui/Button";
 import { Text } from "@/components/retroui/Text";
-import { ScheduledClass } from "../../data/scheduled-classes-mock";
-import { instructorsMock } from "../../data/instructors-mock";
+import type { ScheduledClass } from "@/types/scheduled-class";
+import { useGetInstructors } from "@/queries/dashboard/instructors.query";
 import { useCancellationPolicy } from "./hooks/useCancellationPolicy";
 import {
   ClassInformation,
@@ -24,6 +24,7 @@ export function ScheduledClassDetailsModal({
   open,
   onOpenChange,
 }: ScheduledClassDetailsModalProps) {
+  const { data: instructors } = useGetInstructors();
   const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
   const [isCanceling, setIsCanceling] = useState(false);
 
@@ -36,8 +37,8 @@ export function ScheduledClassDetailsModal({
     onOpenChange(newOpen);
   };
 
-  // Find instructor full details from mock data
-  const instructorDetails = instructorsMock.find(
+  // Find instructor full details from query data
+  const instructorDetails = instructors?.find(
     (i) => i.name === scheduledClass.instructor.name
   );
 

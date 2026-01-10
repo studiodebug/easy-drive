@@ -3,7 +3,7 @@ import { Badge } from "@/components/retroui/Badge";
 import { StarRating } from "@/components/StarRating";
 import { Text } from "@/components/retroui/Text";
 import { Award, Car, MapPin } from "lucide-react";
-import { Instructor } from "../../../data/instructors-mock";
+import type { Instructor } from "@/types/instructor";
 
 interface InstructorDetailsProps {
   instructor: Instructor;

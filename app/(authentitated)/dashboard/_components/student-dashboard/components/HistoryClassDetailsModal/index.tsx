@@ -7,8 +7,8 @@ import { Badge } from "@/components/retroui/Badge";
 import { Avatar } from "@/components/retroui/Avatar";
 import { StarRating } from "@/components/StarRating";
 import { Calendar, Clock, Award, Car, MapPin } from "lucide-react";
-import { HistoryClass } from "../../data/history-mock";
-import { instructorsMock } from "../../data/instructors-mock";
+import type { HistoryClass } from "@/types/history";
+import { useGetInstructors } from "@/queries/dashboard/instructors.query";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { getStatusBadge } from "@/lib/badge-utils";
@@ -24,8 +24,10 @@ export function HistoryClassDetailsModal({
   open,
   onOpenChange,
 }: HistoryClassDetailsModalProps) {
-  // Find instructor full details from mock data
-  const instructorDetails = instructorsMock.find(
+  const { data: instructors } = useGetInstructors();
+  
+  // Find instructor full details from query data
+  const instructorDetails = instructors?.find(
     (i) => i.name === historyClass.professor.name
   );
 

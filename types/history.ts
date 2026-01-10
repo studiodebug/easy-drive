@@ -13,4 +13,5 @@ export interface HistoryClass {
   endTime: string;
   status: "completed" | "cancelled";
   rating?: number; // 1-5, only for completed classes
+  comment?: string; // Optional review comment
 }
