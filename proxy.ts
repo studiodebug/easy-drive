@@ -1,5 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+const protectedRoutes = [
+  "/dashboard",
+  "/profile",
+];
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -11,11 +16,11 @@ export async function proxy(request: NextRequest) {
   const accessToken = request.cookies.get("access_token")?.value ?? "";
   const isAuthenticated = Boolean(accessToken);
 
-  const isDashboardRoute = pathname === "/dashboard" || pathname.startsWith("/dashboard/");
+  const isProtectedRoute = protectedRoutes.includes(pathname);
   const isAuthRoute = pathname === "/auth" || pathname.startsWith("/auth/");
 
   // Block protected pages when logged out.
-  if (isDashboardRoute && !isAuthenticated) {
+  if (isProtectedRoute && !isAuthenticated) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
     url.searchParams.set("next", pathname);

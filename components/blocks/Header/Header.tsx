@@ -57,7 +57,7 @@ function Header() {
                   <Menu.Item
                     onSelect={(e) => {
                       e.preventDefault();
-                      router.push("/dashboard");
+                      router.push("/profile");
                     }}
                   >
                     Perfil

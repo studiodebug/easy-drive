@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Archivo_Black, Space_Grotesk} from "next/font/google";
 import "./globals.css";
 import { RootProvider } from "@/providers/RootProvider";
+import { Toaster } from "@/components/retroui/Sonner";
 
 const archivoBlack = Archivo_Black({
   subsets: ["latin"],
@@ -34,6 +35,7 @@ export default function RootLayout({
       >
         <RootProvider>
           {children}
+          <Toaster />
         </RootProvider>
       </body>
     </html>
