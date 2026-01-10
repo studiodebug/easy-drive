@@ -77,9 +77,9 @@ export function InstructorDetails({ instructor }: InstructorDetailsProps) {
           <div>
             <Text variant="bodySm">Localização</Text>
             <Text variant="body" className="font-semibold">
-              {instructor.city}
+              {instructor.address.city}
             </Text>
-            <Text variant="body">{instructor.state}</Text>
+            <Text variant="body">{instructor.address.state}</Text>
           </div>
         </div>
       </div>

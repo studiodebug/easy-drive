@@ -179,9 +179,9 @@ export function HistoryClassDetailsModal({
                   <div>
                     <Text variant="bodySm">Localização</Text>
                     <Text variant="body" className="font-semibold">
-                      {instructorDetails.city}
+                      {instructorDetails.address.city}
                     </Text>
-                    <Text variant="body">{instructorDetails.state}</Text>
+                    <Text variant="body">{instructorDetails.address.state}</Text>
                   </div>
                 </div>
               </div>

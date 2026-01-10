@@ -107,12 +107,6 @@ export function ProfileContent() {
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
-      <div>
-        <Text variant="h1">Meu Perfil</Text>
-        <Text variant="body" className="text-muted-foreground mt-2">
-          Gerencie suas informações pessoais e endereço
-        </Text>
-      </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <ProfileAvatar profile={profile} />

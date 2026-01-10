@@ -27,8 +27,8 @@ export function VitrineInstructorCard({
         <ProfileCard.Header
           name={instructor.name}
           availability={instructor.availability}
-          city={instructor.city}
-          state={instructor.state}
+          city={instructor.address.city}
+          state={instructor.address.state}
         />
         <ProfileCard.Rating
           rating={instructor.rating}
