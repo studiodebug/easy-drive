@@ -7,6 +7,7 @@ export interface ScheduledClass {
   instructor: {
     name: string;
     avatar: string;
+    credits?: number;
   };
   status: "confirmada" | "pendente" | "cancelada";
   startsInDays: number;
