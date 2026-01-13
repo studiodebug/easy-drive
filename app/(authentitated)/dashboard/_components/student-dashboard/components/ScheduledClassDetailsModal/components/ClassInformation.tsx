@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { getStatusBadge } from "@/lib/badge-utils";
 import { UrgentAlert } from "./UrgentAlert";
+import { CreditDisplay } from "@/components/blocks/CreditDisplay";
 
 interface ClassInformationProps {
   scheduledClass: ScheduledClass;
@@ -52,6 +53,7 @@ export function ClassInformation({
                   {scheduledClass.time}
                 </Text>
               </div>
+              <CreditDisplay credits={scheduledClass.credits} />
             </div>
           </div>
 

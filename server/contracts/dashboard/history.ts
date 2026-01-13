@@ -18,6 +18,7 @@ const getHistoryResponseMock: GetHistoryResponse = [
     startTime: "09:00",
     endTime: "10:00",
     status: "completed",
+    credits: 85,
     rating: 5,
     comment: "Excelente instrutor! Muito paciente e didático.",
   },
@@ -35,6 +36,7 @@ const getHistoryResponseMock: GetHistoryResponse = [
     startTime: "14:00",
     endTime: "15:30",
     status: "completed",
+    credits: 110,
     rating: 4,
   },
   {
@@ -51,6 +53,7 @@ const getHistoryResponseMock: GetHistoryResponse = [
     startTime: "10:00",
     endTime: "11:00",
     status: "cancelled",
+    credits: 95,
   },
   {
     id: "4",
@@ -66,6 +69,7 @@ const getHistoryResponseMock: GetHistoryResponse = [
     startTime: "16:00",
     endTime: "17:30",
     status: "completed",
+    credits: 120,
     rating: 5,
   },
   {
@@ -82,6 +86,7 @@ const getHistoryResponseMock: GetHistoryResponse = [
     startTime: "19:00",
     endTime: "20:00",
     status: "cancelled",
+    credits: 90,
   },
   {
     id: "6",
@@ -97,6 +102,7 @@ const getHistoryResponseMock: GetHistoryResponse = [
     startTime: "10:00",
     endTime: "11:00",
     status: "completed",
+    credits: 85,
   },
   {
     id: "7",
@@ -112,6 +118,7 @@ const getHistoryResponseMock: GetHistoryResponse = [
     startTime: "15:00",
     endTime: "16:30",
     status: "completed",
+    credits: 105,
     rating: 5,
   },
   {
@@ -128,6 +135,7 @@ const getHistoryResponseMock: GetHistoryResponse = [
     startTime: "09:00",
     endTime: "10:00",
     status: "completed",
+    credits: 95,
     rating: 4,
   },
   {
@@ -144,6 +152,7 @@ const getHistoryResponseMock: GetHistoryResponse = [
     startTime: "14:00",
     endTime: "15:30",
     status: "completed",
+    credits: 115,
   },
   {
     id: "10",
@@ -159,6 +168,7 @@ const getHistoryResponseMock: GetHistoryResponse = [
     startTime: "11:00",
     endTime: "12:00",
     status: "cancelled",
+    credits: 80,
   },
   {
     id: "11",
@@ -174,6 +184,7 @@ const getHistoryResponseMock: GetHistoryResponse = [
     startTime: "16:00",
     endTime: "17:00",
     status: "completed",
+    credits: 85,
     rating: 5,
   },
   {
@@ -190,6 +201,7 @@ const getHistoryResponseMock: GetHistoryResponse = [
     startTime: "08:00",
     endTime: "10:00",
     status: "completed",
+    credits: 130,
     rating: 4,
   },
 ];

@@ -14,6 +14,7 @@ import { StarRating } from "@/components/StarRating";
 import { getStatusBadge } from "@/lib/badge-utils";
 import { HistoryClassDetailsModal } from "./HistoryClassDetailsModal";
 import { RateClassModal } from "./RateClassModal";
+import { CreditDisplay } from "@/components/blocks/CreditDisplay";
 
 interface HistoryClassCardProps {
   historyClass: HistoryClass;
@@ -55,6 +56,7 @@ export function HistoryClassCard({ historyClass }: HistoryClassCardProps) {
                 {timeRange}
               </Text>
             </div>
+            <CreditDisplay credits={historyClass.credits} />
           </div>
 
           <Badge className={statusBadge.className} size="sm">

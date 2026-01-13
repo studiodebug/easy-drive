@@ -12,6 +12,7 @@ import { useGetInstructors } from "@/queries/dashboard/instructors.query";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { getStatusBadge } from "@/lib/badge-utils";
+import { CreditDisplay } from "@/components/blocks/CreditDisplay";
 
 interface HistoryClassDetailsModalProps {
   historyClass: HistoryClass;
@@ -73,6 +74,7 @@ export function HistoryClassDetailsModal({
                       {timeRange}
                     </Text>
                   </div>
+                  <CreditDisplay credits={historyClass.credits} />
                 </div>
               </div>
 
