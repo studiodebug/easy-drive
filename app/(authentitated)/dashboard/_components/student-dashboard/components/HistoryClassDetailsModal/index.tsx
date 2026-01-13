@@ -12,7 +12,6 @@ import { useGetInstructors } from "@/queries/dashboard/instructors.query";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { getStatusBadge } from "@/lib/badge-utils";
-import { CreditDisplay } from "@/components/blocks/CreditDisplay";
 
 interface HistoryClassDetailsModalProps {
   historyClass: HistoryClass;
@@ -26,7 +25,7 @@ export function HistoryClassDetailsModal({
   onOpenChange,
 }: HistoryClassDetailsModalProps) {
   const { data: instructors } = useGetInstructors();
-  
+
   // Find instructor full details from query data
   const instructorDetails = instructors?.find(
     (i) => i.name === historyClass.professor.name
@@ -44,7 +43,7 @@ export function HistoryClassDetailsModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <Dialog.Content size="2xl" className="max-h-[90vh] overflow-hidden">
+      <Dialog.Content size="2xl" className="max-h-[90vh]">
         <Dialog.Header>
           <Text variant="h4">Detalhes da Aula</Text>
         </Dialog.Header>
@@ -74,7 +73,6 @@ export function HistoryClassDetailsModal({
                       {timeRange}
                     </Text>
                   </div>
-                  <CreditDisplay credits={historyClass.credits} />
                 </div>
               </div>
 
@@ -92,7 +90,10 @@ export function HistoryClassDetailsModal({
                 <StarRating rating={historyClass.rating} size={24} showText />
                 {historyClass.comment && (
                   <div className="pt-2 border-t-2 border-black/10">
-                    <Text variant="bodySm" className="text-muted-foreground mb-1">
+                    <Text
+                      variant="bodySm"
+                      className="text-muted-foreground mb-1"
+                    >
                       Seu comentário
                     </Text>
                     <Text variant="body">{historyClass.comment}</Text>
@@ -129,7 +130,10 @@ export function HistoryClassDetailsModal({
 
                     <div className="flex items-center gap-4 flex-wrap mb-3">
                       <div className="flex items-center gap-2">
-                        <StarRating rating={instructorDetails.rating} size={20} />
+                        <StarRating
+                          rating={instructorDetails.rating}
+                          size={20}
+                        />
                         <Text variant="h6">
                           {instructorDetails.rating.toFixed(1)}
                         </Text>
@@ -183,13 +187,14 @@ export function HistoryClassDetailsModal({
                     <Text variant="body" className="font-semibold">
                       {instructorDetails.address.city}
                     </Text>
-                    <Text variant="body">{instructorDetails.address.state}</Text>
+                    <Text variant="body">
+                      {instructorDetails.address.state}
+                    </Text>
                   </div>
                 </div>
               </div>
             </div>
           )}
-
         </div>
 
         {/* Footer */}
@@ -198,6 +203,7 @@ export function HistoryClassDetailsModal({
             variant="default"
             onClick={() => onOpenChange(false)}
             size="lg"
+            className="w-full sm:w-auto"
           >
             Fechar
           </Button>
