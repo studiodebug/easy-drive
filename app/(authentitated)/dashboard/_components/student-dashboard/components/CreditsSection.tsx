@@ -5,17 +5,19 @@ import { ChevronRight } from "lucide-react";
 import { Suspense } from "react";
 import { useGetCredits } from "@/queries/dashboard/credits.query";
 
-interface CreditsSectionProps {}
+interface CreditsSectionProps {
+  onNavigateToCredits: () => void;
+}
 
-export function CreditsSection({}: CreditsSectionProps) {
+export function CreditsSection({ onNavigateToCredits }: CreditsSectionProps) {
   return (
     <Suspense fallback={<CreditsSectionSkeleton />}>
-      <CreditsSectionContent />
+      <CreditsSectionContent onNavigateToCredits={onNavigateToCredits} />
     </Suspense>
   );
 }
 
-function CreditsSectionContent() {
+function CreditsSectionContent({ onNavigateToCredits }: CreditsSectionProps) {
   const { data } = useGetCredits();
 
   return (
@@ -32,10 +34,7 @@ function CreditsSectionContent() {
         </div>
       </div>
 
-      <Button
-        variant="outline"
-        // onClick={onUnderstandPlan}
-      >
+      <Button variant="outline" onClick={onNavigateToCredits}>
         Meus créditos
         <ChevronRight className="w-4 h-4 ml-2" />
       </Button>

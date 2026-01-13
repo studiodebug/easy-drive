@@ -13,6 +13,7 @@ import { Suspense, useState } from "react";
 import { HistoryTab } from "./components/HistoryTab";
 import { MyScheduleTab } from "./components/MyScheduleTab";
 import { ScheduleClassTab } from "./components/ScheduleClassTab";
+import { CreditsTab } from "./components/CreditsTab";
 
 export function StudentDashboard() {
   const queryParams = useSearchParams();
@@ -31,6 +32,10 @@ export function StudentDashboard() {
     setSelectedTab(1); // Switch to Instructors tab (index 1)
   };
 
+  const handleNavigateToCredits = () => {
+    setSelectedTab(4); // Switch to Credits tab (index 4)
+  };
+
   return (
     <div className="w-full">
       <Tabs
@@ -43,11 +48,13 @@ export function StudentDashboard() {
           <TabsTrigger>Agendar aula</TabsTrigger>
           <TabsTrigger>Minha agenda</TabsTrigger>
           <TabsTrigger>Histórico</TabsTrigger>
+          <TabsTrigger>Créditos</TabsTrigger>
         </TabsTriggerList>
         <TabsPanels className="w-full">
           <TabsContent>
             <ScheduleClassTab
               onNavigateToInstructors={handleNavigateToInstructors}
+              onNavigateToCredits={handleNavigateToCredits}
             />
           </TabsContent>
           <TabsContent>
@@ -60,6 +67,9 @@ export function StudentDashboard() {
           </TabsContent>
           <TabsContent>
             <HistoryTab />
+          </TabsContent>
+          <TabsContent>
+            <CreditsTab />
           </TabsContent>
         </TabsPanels>
       </Tabs>

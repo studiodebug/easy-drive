@@ -21,10 +21,12 @@ import { getClassCountsByDate } from "../utils/week-classes-utils";
 
 interface ScheduleClassTabProps {
   onNavigateToInstructors?: (date: Date) => void;
+  onNavigateToCredits: () => void;
 }
 
 export function ScheduleClassTab({
   onNavigateToInstructors,
+  onNavigateToCredits,
 }: ScheduleClassTabProps) {
   const { data: scheduledClasses } = useGetScheduledClasses();
   const { data: weekClasses } = useGetWeekClasses();
@@ -91,7 +93,7 @@ export function ScheduleClassTab({
         <div className="border-t-2 border-border my-6" />
 
         {/* Credits Section */}
-        <CreditsSection />
+        <CreditsSection onNavigateToCredits={onNavigateToCredits} />
       </Card>
 
       {/* Scheduled Classes Section */}
