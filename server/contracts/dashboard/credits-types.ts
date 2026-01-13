@@ -14,6 +14,7 @@ export interface CreditPlan {
   price: number;
   label?: string;
   popular?: boolean;
+  bonusCredits?: number;
 }
 
 export interface WalletSummary {

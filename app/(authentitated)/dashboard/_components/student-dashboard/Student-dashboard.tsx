@@ -48,7 +48,7 @@ export function StudentDashboard() {
           <TabsTrigger>Agendar aula</TabsTrigger>
           <TabsTrigger>Minha agenda</TabsTrigger>
           <TabsTrigger>Histórico</TabsTrigger>
-          <TabsTrigger>Créditos</TabsTrigger>
+          <TabsTrigger>Meus créditos</TabsTrigger>
         </TabsTriggerList>
         <TabsPanels className="w-full">
           <TabsContent>

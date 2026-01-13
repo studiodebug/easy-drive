@@ -2,10 +2,9 @@ import { CreditPlan } from "@/server/contracts/dashboard/credits-types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const CREDIT_PLANS: CreditPlan[] = [
-  { id: "plan-1", credits: 5, price: 45.00, label: "Iniciante" },
-  { id: "plan-2", credits: 10, price: 85.00, label: "Popuar", popular: true },
-  { id: "plan-3", credits: 20, price: 160.00, label: "Intensivo" },
-  { id: "plan-4", credits: 50, price: 350.00, label: "Profissional" },
+  { id: "plan-1", credits: 50, price: 50.00, label: "Básico" },
+  { id: "plan-2", credits: 250, price: 250.00, label: "Intermediário" },
+  { id: "plan-3", credits: 500, price: 500.00, label: "Completo", popular: true },
 ];
 
 const purchaseCredits = async (planId: string): Promise<{ success: boolean; newBalance: number }> => {
