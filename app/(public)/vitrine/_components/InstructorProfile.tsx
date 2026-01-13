@@ -6,7 +6,7 @@ import { Avatar } from "@/components/retroui/Avatar";
 import { Badge } from "@/components/retroui/Badge";
 import { Card } from "@/components/retroui/Card";
 import { StarRating } from "@/components/StarRating";
-import { Calendar, MapPin, ArrowLeft } from "lucide-react";
+import { Calendar, MapPin, ArrowLeft, Coins } from "lucide-react";
 import Link from "next/link";
 import { CarGallery } from "./CarGallery";
 import { ReviewsSection } from "./ReviewsSection";
@@ -20,9 +20,7 @@ interface InstructorProfileProps {
   instructor: Instructor;
 }
 
-export function InstructorProfile({
-  instructor,
-}: InstructorProfileProps) {
+export function InstructorProfile({ instructor }: InstructorProfileProps) {
   const [isBioExpanded, setIsBioExpanded] = useState(false);
   const { isAuthenticated: isLoggedIn } = useAuth();
 
@@ -115,24 +113,21 @@ export function InstructorProfile({
                 </div>
 
                 <Card className="p-6 border-4 min-w-[240px] transform mr-2 rotate-1 transition-transform hover:rotate-0">
-                  <div className="text-center">
-                    <div className="text-sm font-bold uppercase text-muted-foreground mb-2">
-                      Valor por hora
-                    </div>
-                    <div className="text-4xl font-black text-black">
-                      R$ {instructor.hourlyRate.toFixed(2)}
-                    </div>
-                    <div className="mt-4 flex flex-col gap-2">
-                      {isLoggedIn ? (
-                        <Button className="w-full" asChild>
-                          <Link href="#agenda">Ver horários</Link>
-                        </Button>
-                      ) : (
-                        <Button className="w-full" asChild>
-                          <Link href="/auth/login">Fazer login</Link>
-                        </Button>
-                      )}
-                    </div>
+                  <div className="text-sm font-bold uppercase text-muted-foreground mb-2">
+                    Créditos por aula
+                  </div>
+                  <div className="flex items-center gap-2 text-4xl font-black text-black">
+                    <Coins className="w-8 h-8" />
+                    <span>{instructor.credits}</span>
+                  </div>
+                  <div className="mt-4 flex flex-col gap-2">
+                    {isLoggedIn ? (
+                      <div />
+                    ) : (
+                      <Button className="w-full" asChild>
+                        <Link href="/auth/login">Fazer login</Link>
+                      </Button>
+                    )}
                   </div>
                 </Card>
               </div>

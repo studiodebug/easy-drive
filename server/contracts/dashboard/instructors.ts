@@ -297,7 +297,7 @@ const getInstructorsResponseMock: GetInstructorsResponse = [
     totalClasses: 245,
     availability: "disponivel",
     bio: "Instrutor experiente com mais de 10 anos de experiência. Formado em Pedagogia e especializado em ensino de direção defensiva. Trabalho com paciência e dedicação para garantir que meus alunos aprendam com segurança e confiança.",
-    hourlyRate: 80,
+    credits: 80,
     carPhotos: [
       "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800",
       "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800",
@@ -334,7 +334,7 @@ const getInstructorsResponseMock: GetInstructorsResponse = [
     totalClasses: 312,
     availability: "disponivel",
     bio: "Especialista em ensinar iniciantes com paciência e dedicação. Tenho mais de 8 anos de experiência ajudando pessoas a superar o medo de dirigir. Minha abordagem é calma e encorajadora, focada em construir confiança passo a passo.",
-    hourlyRate: 75,
+    credits: 75,
     carPhotos: [
       "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800",
       "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800",
@@ -366,7 +366,7 @@ const getInstructorsResponseMock: GetInstructorsResponse = [
     totalClasses: 189,
     availability: "ocupado",
     bio: "Instrutor especializado em direção avançada e viagens. Com experiência em rodovias e direção noturna.",
-    hourlyRate: 90,
+    credits: 90,
     carPhotos: [
       "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=800",
       "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800",
@@ -398,7 +398,7 @@ const getInstructorsResponseMock: GetInstructorsResponse = [
     totalClasses: 428,
     availability: "disponivel",
     bio: "Instrutora com excelente didática e paciência. Especializada em técnicas avançadas de manobra.",
-    hourlyRate: 85,
+    credits: 85,
     carPhotos: [
       "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=800",
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800",
@@ -434,7 +434,7 @@ const getInstructorsResponseMock: GetInstructorsResponse = [
     totalClasses: 156,
     availability: "disponivel",
     bio: "Foco em direção econômica e segura. Ensino técnicas de economia de combustível.",
-    hourlyRate: 70,
+    credits: 70,
     carPhotos: [
       "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800",
     ],
@@ -469,7 +469,7 @@ const getInstructorsResponseMock: GetInstructorsResponse = [
     totalClasses: 278,
     availability: "disponivel",
     bio: "Especialista em ajudar alunos a superar o medo de dirigir. Abordagem calma e encorajadora.",
-    hourlyRate: 75,
+    credits: 75,
     carPhotos: [
       "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800",
       "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800",
@@ -501,7 +501,7 @@ const getInstructorsResponseMock: GetInstructorsResponse = [
     totalClasses: 201,
     availability: "indisponivel",
     bio: "Instrutor de alta performance e direção esportiva. Especializado em técnicas avançadas.",
-    hourlyRate: 120,
+    credits: 120,
     carPhotos: [
       "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800",
       "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=800",
@@ -532,7 +532,7 @@ const getInstructorsResponseMock: GetInstructorsResponse = [
     totalClasses: 193,
     availability: "disponivel",
     bio: "Especialista em manobras e estacionamento. Ensino técnicas precisas para estacionar em qualquer lugar.",
-    hourlyRate: 80,
+    credits: 80,
     carPhotos: [
       "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=800",
     ],

@@ -32,7 +32,7 @@ export interface Instructor {
   availability: "disponivel" | "ocupado" | "indisponivel";
   bio?: string;
   address: Address;
-  hourlyRate: number;
+  credits: number;
   carPhotos: string[];
   carModel: string;
   carYear: number;
