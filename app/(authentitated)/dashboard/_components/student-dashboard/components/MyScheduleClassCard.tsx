@@ -39,6 +39,7 @@ export function MyScheduleClassCard({
       instructor: scheduledClass.instructor,
       status: "confirmada" as const,
       startsInDays: scheduledClass.startsInDays,
+      credits: scheduledClass.instructor.credits || 0,
     }),
     [scheduledClass]
   );
@@ -47,8 +48,8 @@ export function MyScheduleClassCard({
     <>
       <Card className="p-4 sm:p-6 flex flex-col h-full">
         {/* Date and Time */}
-        <div className="flex items-start justify-between w-full">
-          <div className="space-y-2 mb-4">
+        <div className="flex items-start justify-between w-full mb-4">
+          <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-muted-foreground shrink-0" />
               <Text variant="bodyLg" className="font-semibold capitalize">
@@ -66,50 +67,48 @@ export function MyScheduleClassCard({
           <CreditDisplay credits={scheduledClass.instructor.credits} />
         </div>
 
-        <div className="flex-1 flex flex-col gap-4">
-          {/* Subject */}
-          <div>
-            <Text variant="h5">{scheduledClass.subject.name}</Text>
-          </div>
+        {/* Subject */}
+        <div className="mb-4">
+          <Text variant="h5">{scheduledClass.subject.name}</Text>
+        </div>
 
-          {/* Instructor */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Avatar className="h-12 w-12">
-                <Avatar.Image
-                  src={scheduledClass.instructor.avatar}
-                  alt={scheduledClass.instructor.name}
-                />
-                <Avatar.Fallback>
-                  {scheduledClass.instructor.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
-                </Avatar.Fallback>
-              </Avatar>
-              <div>
-                <Text variant="body">Instrutor</Text>
-                <Text variant="body" className="font-semibold">
-                  {scheduledClass.instructor.name}
-                </Text>
-              </div>
+        {/* Instructor */}
+        <div className="mb-4">
+          <div className="flex items-center gap-2">
+            <Avatar className="h-12 w-12">
+              <Avatar.Image
+                src={scheduledClass.instructor.avatar}
+                alt={scheduledClass.instructor.name}
+              />
+              <Avatar.Fallback>
+                {scheduledClass.instructor.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")}
+              </Avatar.Fallback>
+            </Avatar>
+            <div>
+              <Text variant="body">Instrutor</Text>
+              <Text variant="body" className="font-semibold">
+                {scheduledClass.instructor.name}
+              </Text>
             </div>
           </div>
+        </div>
 
-          {/* Spacer to push button to bottom */}
-          <div className="flex-1" />
+        {/* Spacer to push button to bottom */}
+        <div className="flex-1" />
 
-          {/* Action - Always at bottom */}
-          <div className="flex items-center gap-2 pt-2">
-            <Button
-              size="sm"
-              variant="secondary"
-              className="flex-1"
-              onClick={() => setIsDetailsModalOpen(true)}
-            >
-              Ver detalhes
-            </Button>
-          </div>
+        {/* Action - Always at bottom */}
+        <div className="pt-2">
+          <Button
+            size="sm"
+            variant="secondary"
+            className="w-full"
+            onClick={() => setIsDetailsModalOpen(true)}
+          >
+            Ver detalhes
+          </Button>
         </div>
       </Card>
 

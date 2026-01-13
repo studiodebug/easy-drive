@@ -16,6 +16,7 @@ const getScheduledClassesResponseMock: GetScheduledClassesResponse = [
     },
     status: "confirmada",
     startsInDays: 0,
+    credits: 10,
   },
   {
     id: "2",
@@ -29,6 +30,7 @@ const getScheduledClassesResponseMock: GetScheduledClassesResponse = [
     },
     status: "confirmada",
     startsInDays: 1,
+    credits: 15,
   },
   {
     id: "3",
@@ -42,6 +44,7 @@ const getScheduledClassesResponseMock: GetScheduledClassesResponse = [
     },
     status: "confirmada",
     startsInDays: 2,
+    credits: 10,
   },
   {
     id: "4",
@@ -55,6 +58,7 @@ const getScheduledClassesResponseMock: GetScheduledClassesResponse = [
     },
     status: "pendente",
     startsInDays: 3,
+    credits: 12,
   },
   {
     id: "5",
@@ -68,6 +72,7 @@ const getScheduledClassesResponseMock: GetScheduledClassesResponse = [
     },
     status: "confirmada",
     startsInDays: 4,
+    credits: 18,
   },
   {
     id: "6",
@@ -81,6 +86,7 @@ const getScheduledClassesResponseMock: GetScheduledClassesResponse = [
     },
     status: "confirmada",
     startsInDays: 5,
+    credits: 20,
   },
   {
     id: "7",
@@ -94,6 +100,7 @@ const getScheduledClassesResponseMock: GetScheduledClassesResponse = [
     },
     status: "confirmada",
     startsInDays: 6,
+    credits: 15,
   },
   {
     id: "8",
@@ -107,6 +114,7 @@ const getScheduledClassesResponseMock: GetScheduledClassesResponse = [
     },
     status: "confirmada",
     startsInDays: 7,
+    credits: 12,
   },
   {
     id: "9",
@@ -120,6 +128,7 @@ const getScheduledClassesResponseMock: GetScheduledClassesResponse = [
     },
     status: "pendente",
     startsInDays: 8,
+    credits: 14,
   },
   {
     id: "10",
@@ -133,6 +142,7 @@ const getScheduledClassesResponseMock: GetScheduledClassesResponse = [
     },
     status: "confirmada",
     startsInDays: 9,
+    credits: 16,
   },
   {
     id: "11",
@@ -146,6 +156,7 @@ const getScheduledClassesResponseMock: GetScheduledClassesResponse = [
     },
     status: "confirmada",
     startsInDays: 10,
+    credits: 10,
   },
   {
     id: "12",
@@ -159,6 +170,7 @@ const getScheduledClassesResponseMock: GetScheduledClassesResponse = [
     },
     status: "confirmada",
     startsInDays: 11,
+    credits: 25,
   },
 ];
 

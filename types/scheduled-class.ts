@@ -11,4 +11,5 @@ export interface ScheduledClass {
   };
   status: "confirmada" | "pendente" | "cancelada";
   startsInDays: number;
+  credits: number;
 }
