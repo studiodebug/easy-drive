@@ -11,6 +11,7 @@ import type { ScheduledClass } from "@/types/scheduled-class";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ScheduledClassDetailsModal } from "./ScheduledClassDetailsModal";
+import { CreditDisplay } from "@/components/blocks/CreditDisplay";
 
 interface MyScheduleClassCardProps {
   scheduledClass: MyScheduleClass;
@@ -46,19 +47,23 @@ export function MyScheduleClassCard({
     <>
       <Card className="p-4 sm:p-6 flex flex-col h-full">
         {/* Date and Time */}
-        <div className="space-y-2 mb-4">
-          <div className="flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-muted-foreground shrink-0" />
-            <Text variant="bodyLg" className="font-semibold capitalize">
-              {formattedDate}
-            </Text>
+        <div className="flex items-start justify-between w-full">
+          <div className="space-y-2 mb-4">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-muted-foreground shrink-0" />
+              <Text variant="bodyLg" className="font-semibold capitalize">
+                {formattedDate}
+              </Text>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="w-5 h-5 text-muted-foreground shrink-0" />
+              <Text variant="bodyLg" className="font-semibold">
+                {timeRange}
+              </Text>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Clock className="w-5 h-5 text-muted-foreground shrink-0" />
-            <Text variant="bodyLg" className="font-semibold">
-              {timeRange}
-            </Text>
-          </div>
+
+          <CreditDisplay credits={scheduledClass.instructor.credits} />
         </div>
 
         <div className="flex-1 flex flex-col gap-4">
@@ -68,24 +73,26 @@ export function MyScheduleClassCard({
           </div>
 
           {/* Instructor */}
-          <div className="flex items-center gap-2">
-            <Avatar className="h-12 w-12">
-              <Avatar.Image
-                src={scheduledClass.instructor.avatar}
-                alt={scheduledClass.instructor.name}
-              />
-              <Avatar.Fallback>
-                {scheduledClass.instructor.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-              </Avatar.Fallback>
-            </Avatar>
-            <div>
-              <Text variant="body">Instrutor</Text>
-              <Text variant="body" className="font-semibold">
-                {scheduledClass.instructor.name}
-              </Text>
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Avatar className="h-12 w-12">
+                <Avatar.Image
+                  src={scheduledClass.instructor.avatar}
+                  alt={scheduledClass.instructor.name}
+                />
+                <Avatar.Fallback>
+                  {scheduledClass.instructor.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
+                </Avatar.Fallback>
+              </Avatar>
+              <div>
+                <Text variant="body">Instrutor</Text>
+                <Text variant="body" className="font-semibold">
+                  {scheduledClass.instructor.name}
+                </Text>
+              </div>
             </div>
           </div>
 

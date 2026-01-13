@@ -2,7 +2,6 @@ export interface MyScheduleClass {
   id: string;
   subject: {
     name: string;
-    icon: string; // emoji icon
   };
   date: Date;
   startTime: string;
@@ -10,6 +9,7 @@ export interface MyScheduleClass {
   instructor: {
     name: string;
     avatar: string;
+    credits: number;
   };
   startsInDays: number;
   hasMaterial: boolean;

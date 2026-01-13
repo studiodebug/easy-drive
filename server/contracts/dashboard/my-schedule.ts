@@ -8,7 +8,6 @@ const getMyScheduleResponseMock: GetMyScheduleResponse = [
     id: "1",
     subject: {
       name: "Direção defensiva em vias urbanas",
-      icon: "🚗",
     },
     date: new Date("2026-01-09T15:00:00"),
     startTime: "15:00",
@@ -16,6 +15,7 @@ const getMyScheduleResponseMock: GetMyScheduleResponse = [
     instructor: {
       name: "Carlos Silva",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos",
+      credits: 85,
     },
     startsInDays: 0,
     hasMaterial: true,
@@ -24,7 +24,6 @@ const getMyScheduleResponseMock: GetMyScheduleResponse = [
     id: "2",
     subject: {
       name: "Práticas de estacionamento",
-      icon: "🅿️",
     },
     date: new Date("2026-01-09T17:00:00"),
     startTime: "17:00",
@@ -32,6 +31,7 @@ const getMyScheduleResponseMock: GetMyScheduleResponse = [
     instructor: {
       name: "Ana Costa",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ana",
+      credits: 75,
     },
     startsInDays: 0,
     hasMaterial: false,
@@ -40,7 +40,6 @@ const getMyScheduleResponseMock: GetMyScheduleResponse = [
     id: "3",
     subject: {
       name: "Baliza e manobras",
-      icon: "🔄",
     },
     date: new Date("2026-01-10T09:00:00"),
     startTime: "09:00",
@@ -48,6 +47,7 @@ const getMyScheduleResponseMock: GetMyScheduleResponse = [
     instructor: {
       name: "João Santos",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Joao",
+      credits: 95,
     },
     startsInDays: 1,
     hasMaterial: true,
@@ -56,7 +56,6 @@ const getMyScheduleResponseMock: GetMyScheduleResponse = [
     id: "4",
     subject: {
       name: "Direção noturna",
-      icon: "🌙",
     },
     date: new Date("2026-01-10T19:00:00"),
     startTime: "19:00",
@@ -64,6 +63,7 @@ const getMyScheduleResponseMock: GetMyScheduleResponse = [
     instructor: {
       name: "Mariana Oliveira",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Mariana",
+      credits: 90,
     },
     startsInDays: 1,
     hasMaterial: false,
@@ -72,7 +72,6 @@ const getMyScheduleResponseMock: GetMyScheduleResponse = [
     id: "5",
     subject: {
       name: "Condução em rodovias",
-      icon: "🛣️",
     },
     date: new Date("2026-01-12T14:30:00"),
     startTime: "14:30",
@@ -80,6 +79,7 @@ const getMyScheduleResponseMock: GetMyScheduleResponse = [
     instructor: {
       name: "Pedro Lima",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Pedro",
+      credits: 100,
     },
     startsInDays: 3,
     hasMaterial: true,
@@ -88,7 +88,6 @@ const getMyScheduleResponseMock: GetMyScheduleResponse = [
     id: "6",
     subject: {
       name: "Direção em chuva",
-      icon: "🌧️",
     },
     date: new Date("2026-01-15T10:00:00"),
     startTime: "10:00",
@@ -96,6 +95,7 @@ const getMyScheduleResponseMock: GetMyScheduleResponse = [
     instructor: {
       name: "Sofia Mendes",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sofia",
+      credits: 110,
     },
     startsInDays: 6,
     hasMaterial: true,
@@ -104,7 +104,6 @@ const getMyScheduleResponseMock: GetMyScheduleResponse = [
     id: "7",
     subject: {
       name: "Revisão para prova",
-      icon: "📝",
     },
     date: new Date("2026-01-18T08:00:00"),
     startTime: "08:00",
@@ -112,6 +111,7 @@ const getMyScheduleResponseMock: GetMyScheduleResponse = [
     instructor: {
       name: "Carlos Silva",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos",
+      credits: 150,
     },
     startsInDays: 9,
     hasMaterial: true,
@@ -119,7 +119,7 @@ const getMyScheduleResponseMock: GetMyScheduleResponse = [
 ];
 
 export const getMySchedule = async (): Promise<GetMyScheduleResponse> => {
-    return await fakePromises(() => {
-        return getMyScheduleResponseMock;
-    });
+  return await fakePromises(() => {
+    return getMyScheduleResponseMock;
+  });
 };
