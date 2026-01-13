@@ -91,7 +91,7 @@ export function ScheduleClassTab({
         <div className="border-t-2 border-border my-6" />
 
         {/* Credits Section */}
-        <CreditsSection groupCredits={2} individualCredits={0} />
+        <CreditsSection />
       </Card>
 
       {/* Scheduled Classes Section */}
