@@ -1,12 +1,13 @@
 "use client";
 
 import { Button } from "@/components/retroui/Button";
-import { ShoppingCart, User, MapPin } from "lucide-react";
+import { User, MapPin } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { Menu } from "@/components/retroui/Menu";
 import { useAuth } from "@/providers/auth/AuthProvider";
 import { useRouter } from "next/navigation";
+import { ShoppingCart } from "@/components/blocks/ShoppingCart/ShoppingCart";
 
 const navItems = [
   { name: "Início", href: "/" },
@@ -36,48 +37,51 @@ function Header() {
           </div>
 
           <div className="flex items-center gap-3">
-            <a href="#" className="relative" aria-label="Carrinho">
-              <ShoppingCart className="h-5 w-5" />
-              <span className="font-medium text-[10px] text-white bg-black rounded-full h-[12px] w-[12px] flex items-center justify-center absolute -top-1 -right-1">
-                3
-              </span>
-            </a>
-            {isAuthenticated ? (
-              <Menu>
-                <Menu.Trigger asChild>
-                  <a
-                    href="#"
-                    aria-label="Menu do usuário"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    <User className="h-5 w-5" />
-                  </a>
-                </Menu.Trigger>
-                <Menu.Content>
-                  <Menu.Item
-                    onSelect={(e) => {
-                      e.preventDefault();
-                      router.push("/profile");
-                    }}
-                  >
-                    Perfil
-                  </Menu.Item>
-                  <Menu.Item
-                    onSelect={async (e) => {
-                      e.preventDefault();
-                      await signOut();
-                      router.push("/auth/login");
-                    }}
-                  >
-                    Deslogar
-                  </Menu.Item>
-                </Menu.Content>
-              </Menu>
-            ) : (
-              <Button asChild size="sm" variant="secondary">
-                <Link href="/auth/login">Login</Link>
-              </Button>
-            )}
+            <ShoppingCart />
+
+            <Menu>
+              <Menu.Trigger asChild>
+                <a
+                  href="#"
+                  aria-label="Menu do usuário"
+                  onClick={(e) => e.preventDefault()}
+                >
+                  <User className="h-5 w-5" />
+                </a>
+              </Menu.Trigger>
+              <Menu.Content>
+                {isAuthenticated ? (
+                  <>
+                    <Menu.Item
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        router.push("/profile");
+                      }}
+                    >
+                      Perfil
+                    </Menu.Item>
+                    <Menu.Item
+                      onSelect={async (e) => {
+                        e.preventDefault();
+                        await signOut();
+                        router.push("/auth/login");
+                      }}
+                    >
+                      Deslogar
+                    </Menu.Item>
+                  </>
+                ) : (
+                  <>
+                    <Menu.Item>
+                      <Link href="/auth/login">Login</Link>
+                    </Menu.Item>
+                    <Menu.Item>
+                      <Link href="/auth/sign-up">Crie sua conta</Link>
+                    </Menu.Item>
+                  </>
+                )}
+              </Menu.Content>
+            </Menu>
           </div>
         </div>
       </div>

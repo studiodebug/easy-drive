@@ -6,6 +6,9 @@ import type { DaySchedule } from "@/types/instructor";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Button } from "@/components/retroui/Button";
+import { useCartProvider } from "@/providers/cart/CartProvider";
+import { Schedule } from "@/types/cart";
+import { toast } from "sonner";
 
 interface WeeklyScheduleProps {
   schedule: DaySchedule[];
@@ -21,21 +24,12 @@ interface SelectedSlot {
 export function WeeklySchedule({ schedule }: WeeklyScheduleProps) {
   const [selectedSlots, setSelectedSlots] = useState<SelectedSlot[]>([]);
   const [weekOffset, setWeekOffset] = useState(0);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
-
+  const { addToCart } = useCartProvider();
   useEffect(() => {
     setIsMounted(true);
-    const check = async () => {
-      try {
-        const res = await fetch("/api/auth/session");
-        setIsAuthenticated(res.ok);
-      } catch {
-        setIsAuthenticated(false);
-      }
-    };
-    void check();
   }, []);
 
   const formatTime = (hour: number, minute: number) => {
@@ -117,20 +111,25 @@ export function WeeklySchedule({ schedule }: WeeklyScheduleProps) {
     if (selectedSlots.length === 0) return;
 
     try {
-      const res = await fetch("/api/auth/session");
-      if (!res.ok) {
-        router.push("/auth/login");
-        return;
-      }
+      const schedule: Schedule[] = selectedSlots.map((slot) => ({
+        date: slot.date,
+        startTime: slot.time,
+        endTime: slot.time,
+      }));
 
-      const slotsInfo = selectedSlots.map(
-        (slot) => `${slot.date.getDate()}/${slot.date.getMonth() + 1} às ${slot.time}`
-      ).join(", ");
-      
-      alert(`Horários adicionados ao carrinho: ${slotsInfo}`);
+      addToCart({
+        schedule,
+        value: 0,
+        instructor: {
+          name: "Test",
+          avatar: "https://test.com/avatar.png",
+          id: "123",
+        },
+        identifier: crypto.randomUUID().toString(),
+      });
+      toast.success("Horarios adicionados ao carrinho");
     } catch (error) {
-      console.error("Error scheduling:", error);
-      router.push("/auth/login");
+      toast.error("Erro ao agendar horário");
     }
   };
 
