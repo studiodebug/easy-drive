@@ -96,26 +96,29 @@ export function AddCreditsModal({ isOpen, onClose }: AddCreditsModalProps) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <Dialog.Content className="sm:max-w-3xl bg-white border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-0 gap-0 overflow-hidden rounded-none">
         {/* Header Section */}
-        <div className="p-8 border-b-2 border-black bg-primary/20">
-          <Dialog.Header>
+        <div>
+          <Dialog.Header className="p-6">
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-3">
                 <div className="bg-primary border-2 border-black p-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                   <Plus className="w-6 h-6 text-black" strokeWidth={3} />
                 </div>
-                <Text className="text-3xl font-black uppercase tracking-tighter transform -skew-x-6">
+                <div>
+
+                <Text variant="h4">
                   Adicionar Créditos
                 </Text>
-              </div>
-              <Dialog.Description className="text-base font-medium text-muted-foreground ml-14">
+              <Dialog.Description className="text-base font-medium text-muted-foreground">
                 Turbine seu aprendizado. Escolha um pacote ou defina um valor.
               </Dialog.Description>
+                </div>
+              </div>
             </div>
           </Dialog.Header>
         </div>
 
         {/* Content */}
-        <div className="p-8 overflow-y-auto max-h-[60vh] bg-[url('/assets/box_bg.svg')]">
+        <div className="p-8 overflow-y-auto max-h-[60vh]">
           {/* Preset Plans */}
           <div className="mb-6">
             <Text className="text-lg font-bold mb-3 uppercase tracking-tight">
