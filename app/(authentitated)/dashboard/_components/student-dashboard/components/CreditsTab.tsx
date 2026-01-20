@@ -6,12 +6,41 @@ import { Card } from "@/components/retroui/Card";
 import { Text } from "@/components/retroui/Text";
 import { useGetCredits } from "@/queries/dashboard/credits.query";
 import { Plus } from "lucide-react";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { AddCreditsModal } from "./AddCreditsModal";
 import { CreditsHistoryList } from "./CreditsHistoryList";
+import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { setCreditsBalance } from "@/server/contracts/dashboard/credits";
 
 export function CreditsTab() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
+  const [highlightBalance, setHighlightBalance] = useState(false);
+
+  useEffect(() => {
+    const creditsAdded = searchParams.get("creditsAdded");
+    if (!creditsAdded) return;
+
+    const value = Number(creditsAdded);
+    if (!Number.isFinite(value)) return;
+
+    const current = queryClient.getQueryData<{ availableCredits: number }>([
+      "credits",
+    ])?.availableCredits;
+    const nextBalance = (current ?? 2) + value;
+    setCreditsBalance(nextBalance);
+
+    queryClient.invalidateQueries({ queryKey: ["credits"] });
+    queryClient.invalidateQueries({ queryKey: ["credits-history"] });
+
+    setHighlightBalance(true);
+    toast.success("Créditos adicionados com sucesso!");
+    const timeout = window.setTimeout(() => setHighlightBalance(false), 3500);
+    return () => window.clearTimeout(timeout);
+  }, [queryClient, searchParams]);
 
   return (
     <div className="space-y-8 w-full max-w-4xl mx-auto">
@@ -20,7 +49,7 @@ export function CreditsTab() {
           <Text variant="h3" className="font-bold mb-1">
             Carteira de Créditos
           </Text>
-          <Text className="text-muted-foreground">
+          <Text>
             Gerencie seus créditos e visualize seu histórico de transações.
           </Text>
         </div>
@@ -32,13 +61,17 @@ export function CreditsTab() {
 
       <div className="grid gap-6 md:grid-cols-3">
         {/* Balance Card */}
-        <Card className="md:col-span-1 p-6 bg-black text-white border-2 border-black shadow-[8px_8px_0px_0px_rgba(100,100,100,0.5)]">
-            <Text className="text-gray-300 text-sm font-medium mb-2">Saldo Atual</Text>
+        <Card
+          className={`md:col-span-1 p-6 ${
+            highlightBalance ? "ring-4 ring-primary/60" : ""
+          }`}
+        >
+            <Text className="font-medium mb-2">Saldo Atual</Text>
             <Suspense fallback={<div className="h-10 w-20 bg-gray-800 animate-pulse rounded"/>}>
                 <BalanceDisplay />
             </Suspense>
             <div className="mt-4 pt-4 border-t border-gray-800">
-                <Text className="text-xs text-gray-400">
+                <Text variant="bodySm">
                     Use seus créditos para agendar novas aulas com nossos instrutores.
                 </Text>
             </div>
@@ -67,8 +100,8 @@ function BalanceDisplay() {
     const { data } = useGetCredits();
     return (
         <div className="flex items-baseline gap-1">
-            <span className="text-4xl font-bold">{data.availableCredits}</span>
-            <span className="text-lg text-gray-400">créditos</span>
+            <Text variant="h2">{data.availableCredits}</Text>
+            <Text>créditos</Text>
         </div>
     )
 }

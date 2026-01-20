@@ -1,30 +1,37 @@
-import { fakePromises } from "@/lib/utils";
-import { CreditPlan } from "@/server/contracts/dashboard/credits-types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  createCreditsCheckout,
+  getCreditsCheckoutStatus,
+  getCreditsQuote,
+  type CreditsCheckoutResult,
+  type CreditsCheckoutStatus,
+  type CreditsQuote,
+  type CreditsQuoteInput,
+} from "@/server/contracts/billing/credits";
+import { CREDIT_PLANS } from "@/server/contracts/dashboard/credits-plans";
 
-export const CREDIT_PLANS: CreditPlan[] = [
-  { id: "plan-1", credits: 50, price: 50.00, label: "Básico" },
-  { id: "plan-2", credits: 250, price: 250.00, label: "Intermediário" },
-  { id: "plan-3", credits: 500, price: 500.00, label: "Completo", popular: true },
-];
+export { CREDIT_PLANS };
 
-const purchaseCredits = (planId: string): Promise<{ success: boolean; newBalance: number }> => {
-    return fakePromises(() => {
-        if (Math.random() < 0.05) {
-            throw new Error("Payment failed");
-        }
-        return { success: true, newBalance: 100 };
-    }); // Fake return
-}
+export const useQuoteCredits = () => {
+  return useMutation<CreditsQuote, Error, CreditsQuoteInput>({
+    mutationFn: getCreditsQuote,
+  });
+};
 
-export const usePurchaseCredits = () => {
-    const queryClient = useQueryClient();
+export const useCreateCreditsCheckout = () => {
+  return useMutation<CreditsCheckoutResult, Error, { quoteId: string }>({
+    mutationFn: ({ quoteId }) => createCreditsCheckout(quoteId),
+  });
+};
 
-    return useMutation({
-        mutationFn: purchaseCredits,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["credits"] });
-            queryClient.invalidateQueries({ queryKey: ["credits-history"] });
-        }
-    });
-}
+export const useCheckoutStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<CreditsCheckoutStatus, Error, { sessionId: string }>({
+    mutationFn: ({ sessionId }) => getCreditsCheckoutStatus(sessionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["credits"] });
+      queryClient.invalidateQueries({ queryKey: ["credits-history"] });
+    },
+  });
+};
