@@ -7,7 +7,10 @@ import Link from "next/link";
 import { Menu } from "@/components/retroui/Menu";
 import { useAuth } from "@/providers/auth/AuthProvider";
 import { useRouter } from "next/navigation";
-import { ShoppingCart } from "@/components/blocks/ShoppingCart/ShoppingCart";
+import {
+  BookingSummaryEntry,
+  BookingSummarySheet,
+} from "@/components/blocks/BookingSummary/BookingSummarySheet";
 
 const navItems = [
   { name: "Início", href: "/" },
@@ -37,7 +40,7 @@ function Header() {
           </div>
 
           <div className="flex items-center gap-3">
-            <ShoppingCart />
+            <BookingSummaryEntry />
 
             <Menu>
               <Menu.Trigger asChild>
@@ -161,6 +164,7 @@ function Header() {
           </div>
         )}
       </nav>
+      <BookingSummarySheet />
     </div>
   );
 }

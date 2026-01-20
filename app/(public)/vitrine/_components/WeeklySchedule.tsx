@@ -1,17 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import type { DaySchedule } from "@/types/instructor";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Button } from "@/components/retroui/Button";
-import { useCartProvider } from "@/providers/cart/CartProvider";
-import { Schedule } from "@/types/cart";
+import { useBookingDraft } from "@/providers/booking/BookingDraftProvider";
+import type { BookingSlot } from "@/types/booking";
 import { toast } from "sonner";
 
 interface WeeklyScheduleProps {
   schedule: DaySchedule[];
+  instructorId: string;
+  instructorName: string;
+  instructorAvatar: string;
+  creditsPerLesson: number;
 }
 
 interface SelectedSlot {
@@ -21,16 +24,40 @@ interface SelectedSlot {
   time: string;
 }
 
-export function WeeklySchedule({ schedule }: WeeklyScheduleProps) {
+export function WeeklySchedule({
+  schedule,
+  instructorId,
+  instructorName,
+  instructorAvatar,
+  creditsPerLesson,
+}: WeeklyScheduleProps) {
   const [selectedSlots, setSelectedSlots] = useState<SelectedSlot[]>([]);
   const [weekOffset, setWeekOffset] = useState(0);
 
   const [isMounted, setIsMounted] = useState(false);
-  const router = useRouter();
-  const { addToCart } = useCartProvider();
+  const { draft, setSlots, openSummary } = useBookingDraft();
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!draft || draft.instructorId !== instructorId) {
+      setSelectedSlots([]);
+      return;
+    }
+
+    const draftSlots: SelectedSlot[] = draft.slots.map((slot) => {
+      const date = new Date(slot.date);
+      return {
+        dateKey: `${date.getDay()}-${date.getDate()}-${date.getMonth()}`,
+        dayNumber: date.getDay(),
+        date,
+        time: slot.startTime,
+      };
+    });
+
+    setSelectedSlots(draftSlots);
+  }, [draft, instructorId]);
 
   const formatTime = (hour: number, minute: number) => {
     return `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
@@ -73,6 +100,37 @@ export function WeeklySchedule({ schedule }: WeeklyScheduleProps) {
     return months[date.getMonth()];
   };
 
+  const updateDraftSlots = (nextSlots: SelectedSlot[]) => {
+    setSelectedSlots(nextSlots);
+
+    const bookingSlots: BookingSlot[] = nextSlots.map((slot) => {
+      // Calculate end time (assuming 50 min duration for now)
+      const [hours, minutes] = slot.time.split(":").map(Number);
+      const endDate = new Date(slot.date);
+      endDate.setHours(hours, minutes + 50);
+      const endTime = endDate.toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      return {
+        date: slot.date.toISOString(),
+        startTime: slot.time,
+        endTime,
+      };
+    });
+
+    setSlots(
+      {
+        instructorId,
+        instructorName,
+        instructorAvatar,
+        creditsPerLesson,
+      },
+      bookingSlots
+    );
+  };
+
   const handleTimeSelect = (dayNumber: number, time: string) => {
     const date = getDateForDay(dayNumber);
     const dateKey = `${dayNumber}-${date.getDate()}-${date.getMonth()}`;
@@ -83,11 +141,12 @@ export function WeeklySchedule({ schedule }: WeeklyScheduleProps) {
     );
 
     if (isAlreadySelected) {
-      setSelectedSlots(selectedSlots.filter(
+      const nextSlots = selectedSlots.filter(
         (slot) => `${slot.dateKey}-${slot.time}` !== slotKey
-      ));
+      );
+      updateDraftSlots(nextSlots);
     } else {
-      setSelectedSlots([
+      const nextSlots = [
         ...selectedSlots,
         {
           dateKey,
@@ -95,39 +154,25 @@ export function WeeklySchedule({ schedule }: WeeklyScheduleProps) {
           date,
           time,
         },
-      ]);
+      ];
+      updateDraftSlots(nextSlots);
     }
   };
 
   const removeSlot = (slotToRemove: SelectedSlot) => {
-    setSelectedSlots(
-      selectedSlots.filter(
-        (slot) => `${slot.dateKey}-${slot.time}` !== `${slotToRemove.dateKey}-${slotToRemove.time}`
-      )
+    const nextSlots = selectedSlots.filter(
+      (slot) =>
+        `${slot.dateKey}-${slot.time}` !== `${slotToRemove.dateKey}-${slotToRemove.time}`
     );
+    updateDraftSlots(nextSlots);
   };
 
   const handleSchedule = async () => {
     if (selectedSlots.length === 0) return;
 
     try {
-      const schedule: Schedule[] = selectedSlots.map((slot) => ({
-        date: slot.date,
-        startTime: slot.time,
-        endTime: slot.time,
-      }));
-
-      addToCart({
-        schedule,
-        value: 0,
-        instructor: {
-          name: "Test",
-          avatar: "https://test.com/avatar.png",
-          id: "123",
-        },
-        identifier: crypto.randomUUID().toString(),
-      });
-      toast.success("Horarios adicionados ao carrinho");
+      openSummary();
+      toast.success("Resumo do agendamento atualizado");
     } catch (error) {
       toast.error("Erro ao agendar horário");
     }
@@ -286,7 +331,7 @@ export function WeeklySchedule({ schedule }: WeeklyScheduleProps) {
           <div className="flex gap-2">
             {selectedSlots.length > 0 && (
               <Button
-                onClick={() => setSelectedSlots([])}
+                onClick={() => updateDraftSlots([])}
                 variant="outline"
                 size="sm"
                 className="font-bold border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-y-px active:translate-x-px transition-all"
@@ -299,7 +344,7 @@ export function WeeklySchedule({ schedule }: WeeklyScheduleProps) {
               disabled={selectedSlots.length === 0}
               className="font-bold border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-y-px active:translate-x-px transition-all bg-yellow-200 text-black hover:bg-yellow-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] disabled:hover:translate-y-0 disabled:hover:translate-x-0"
             >
-              Agendar {selectedSlots.length > 0 && `(${selectedSlots.length})`}
+              Revisar agendamento {selectedSlots.length > 0 && `(${selectedSlots.length})`}
             </Button>
           </div>
         </div>

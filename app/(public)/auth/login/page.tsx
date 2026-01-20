@@ -7,7 +7,7 @@ import { Input } from "@/components/retroui/Input";
 import { Label } from "@/components/retroui/Label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, EyeClosed } from "lucide-react";
 import { useAuth } from "@/providers/auth/AuthProvider";
 
@@ -18,6 +18,12 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const [nextPath, setNextPath] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setNextPath(params.get("next"));
+  }, []);
   const { signIn } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -29,7 +35,7 @@ export default function Page() {
     try {
       // Server sets HttpOnly cookies; client never touches tokens.
       await signIn(email, password);
-      router.push("/dashboard");
+      router.push(nextPath || "/dashboard");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "Email ou senha inválidos");
     } finally {

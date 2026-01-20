@@ -5,7 +5,7 @@ import React, { createContext, useState } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './auth/AuthProvider';
 import { queryClientInstance } from '@/lib/queryClient';
-import { CartProvider } from './cart/CartProvider';
+import { BookingDraftProvider } from './booking/BookingDraftProvider';
 
 interface RootProviderProps {
   children: React.ReactNode;
@@ -20,7 +20,7 @@ export function RootProvider({ children }: RootProviderProps) {
     <QueryClientProvider client={queryClient}>
       <RootContext.Provider value={{}}>
         <AuthProvider>
-          <CartProvider>{children}</CartProvider>
+          <BookingDraftProvider>{children}</BookingDraftProvider>
         </AuthProvider>
       </RootContext.Provider>
     </QueryClientProvider>

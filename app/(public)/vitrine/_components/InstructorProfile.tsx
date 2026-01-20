@@ -142,12 +142,7 @@ export function InstructorProfile({ instructor }: InstructorProfileProps) {
           {/* Left Column (Details) */}
           <div className="lg:col-span-2 flex flex-col gap-8">
             {/* Weekly Schedule (prioridade) */}
-            <Card
-              id="agenda"
-              className={`p-8 ${
-                !isLoggedIn ? "opacity-95 grayscale-[0.3]" : ""
-              }`}
-            >
+            <Card id="agenda" className="p-8">
               <div className="flex items-center justify-between mb-6">
                 <Text
                   as="h3"
@@ -158,25 +153,20 @@ export function InstructorProfile({ instructor }: InstructorProfileProps) {
                 </Text>
               </div>
 
-              {isLoggedIn ? (
-                <WeeklySchedule schedule={instructor.schedule} />
-              ) : (
-                <div className="flex-1 flex flex-col items-center justify-center pt-10 pb-4 px-4 text-center border-2 border-dashed border-black bg-white">
-                  <div className="mb-4 bg-white p-4 rounded-full border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
-                    <Calendar className="h-8 w-8 text-black/60" />
-                  </div>
-                  <h3 className="font-black text-lg mb-2 uppercase">
-                    Agenda Disponível
-                  </h3>
-                  <p className="text-muted-foreground mb-6 max-w-[220px]">
-                    Faça login para ver os horários disponíveis e agendar sua
-                    aula.
-                  </p>
-                  <Button className="w-full mt-auto" asChild>
-                    <Link href="/auth/login">Fazer Login</Link>
-                  </Button>
+              {!isLoggedIn && (
+                <div className="mb-4 border-2 border-black bg-white p-3 text-sm font-medium">
+                  Voce pode selecionar horarios, mas precisa entrar para confirmar
+                  o agendamento.
                 </div>
               )}
+
+              <WeeklySchedule
+                schedule={instructor.schedule}
+                instructorId={instructor.id}
+                instructorName={instructor.name}
+                instructorAvatar={instructor.avatar}
+                creditsPerLesson={instructor.credits}
+              />
             </Card>
 
             {/* Car Gallery */}
