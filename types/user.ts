@@ -12,8 +12,8 @@ export type User = {
     id: string;
     email: string;
     name: string;
-    avatar_url: string;
-    address: Address;
+    avatar_url: string | null;
+    address?: Address;
 };
 
 export type AuthUser = {

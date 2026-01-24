@@ -31,7 +31,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-      if (!res.ok) throw new Error('Email ou senha inválidos');
+      if (!res.ok) {
+        const errorData = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(errorData.error || 'Email ou senha inválidos');
+      }
       const data = (await res.json()) as { user?: User };
       setUser(data.user ?? null);
     } finally {
@@ -80,7 +83,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const refreshSession = useCallback(async () => {
     const refreshRes = await fetch('/api/auth/refresh', { method: 'POST' });
-    if (!refreshRes.ok) throw new Error('Failed to refresh session');
+    if (!refreshRes.ok) {
+      const errorData = (await refreshRes.json().catch(() => ({}))) as { error?: string };
+      throw new Error(errorData.error || 'Failed to refresh session');
+    }
     await loadSession();
   }, [loadSession]);
 

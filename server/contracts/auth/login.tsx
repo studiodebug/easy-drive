@@ -12,25 +12,32 @@ export type LoginResponse = {
     id: string;
     email: string;
     name: string;
-    avatar_url: string;
+    avatar_url: string | null;
   };
 };
 
-const signInResponseMock: LoginResponse = {
-    access_token: '123',
-    refresh_token: '123',
-    user: {
-        id: '123',
-        email: 'test@test.com',
-        name: 'Test',
-        avatar_url: 'https://test.com/avatar.png',
-    },
-};
+export const signIn = async (req: LoginRequest): Promise<LoginResponse> => {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3333";
+  const url = `${backendUrl}/users/login`;
 
-export const signIn = async (req: LoginRequest) => {
-    return await fakePromises(() => {
-        return signInResponseMock;
-    });
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email: req.email,
+      password: req.password,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ message: "Failed to authenticate" }));
+    throw new Error(errorData.message || "Email ou senha inválidos");
+  }
+
+  const data = await response.json();
+  return data;
 };
 
 export type RefreshRequest = {
@@ -39,30 +46,31 @@ export type RefreshRequest = {
 
 export type RefreshResponse = LoginResponse;
 
-export const refresh = async (req: RefreshRequest) => {
-    return await fakePromises(() => {
-        // Mock validation: in a real backend you'd verify/rotate refresh tokens.
-        if (!req.refresh_token) {
-            throw new Error("Missing refresh_token");
-        }
+export const refresh = async (req: RefreshRequest): Promise<RefreshResponse> => {
+  if (!req.refresh_token) {
+    throw new Error("Missing refresh_token");
+  }
 
-        // Rotate tokens on refresh to mimic real-world behavior.
-        const access_token =
-            typeof crypto !== "undefined" && "randomUUID" in crypto
-                ? crypto.randomUUID()
-                : `${Date.now()}-access`;
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3333";
+  const url = `${backendUrl}/users/refresh-token`;
 
-        const refresh_token =
-            typeof crypto !== "undefined" && "randomUUID" in crypto
-                ? crypto.randomUUID()
-                : `${Date.now()}-refresh`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      refresh_token: req.refresh_token,
+    }),
+  });
 
-        return {
-            access_token,
-            refresh_token,
-            user: signInResponseMock.user,
-        };
-    });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ message: "Failed to refresh token" }));
+    throw new Error(errorData.message || "Invalid refresh token");
+  }
+
+  const data = await response.json();
+  return data;
 };
 
 export type SignUpRequest = {

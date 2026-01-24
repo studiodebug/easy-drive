@@ -10,33 +10,38 @@ import {
 } from "../_cookies";
 
 export async function POST(req: NextRequest) {
-  const refresh_token = req.cookies.get(COOKIE_REFRESH_TOKEN)?.value ?? "";
+  try {
+    const refresh_token = req.cookies.get(COOKIE_REFRESH_TOKEN)?.value ?? "";
 
-  if (!refresh_token) {
-    return NextResponse.json({ error: "Missing refresh token" }, { status: 401 });
+    if (!refresh_token) {
+      return NextResponse.json({ error: "Missing refresh token" }, { status: 401 });
+    }
+
+    const auth = await refresh({ refresh_token });
+
+    const res = NextResponse.json({ user: auth.user });
+    const base = getBaseCookieOptions();
+
+    res.cookies.set(COOKIE_ACCESS_TOKEN, auth.access_token, {
+      ...base,
+      maxAge: ACCESS_TOKEN_MAX_AGE_SECONDS,
+    });
+
+    res.cookies.set(COOKIE_REFRESH_TOKEN, auth.refresh_token, {
+      ...base,
+      maxAge: REFRESH_TOKEN_MAX_AGE_SECONDS,
+    });
+
+    res.cookies.set(COOKIE_USER_JSON, JSON.stringify(auth.user), {
+      ...base,
+      maxAge: REFRESH_TOKEN_MAX_AGE_SECONDS,
+    });
+
+    return res;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Invalid refresh token";
+    return NextResponse.json({ error: message }, { status: 401 });
   }
-
-  const auth = await refresh({ refresh_token });
-
-  const res = NextResponse.json({ user: auth.user });
-  const base = getBaseCookieOptions();
-
-  res.cookies.set(COOKIE_ACCESS_TOKEN, auth.access_token, {
-    ...base,
-    maxAge: ACCESS_TOKEN_MAX_AGE_SECONDS,
-  });
-
-  res.cookies.set(COOKIE_REFRESH_TOKEN, auth.refresh_token, {
-    ...base,
-    maxAge: REFRESH_TOKEN_MAX_AGE_SECONDS,
-  });
-
-  res.cookies.set(COOKIE_USER_JSON, JSON.stringify(auth.user), {
-    ...base,
-    maxAge: REFRESH_TOKEN_MAX_AGE_SECONDS,
-  });
-
-  return res;
 }
 
 

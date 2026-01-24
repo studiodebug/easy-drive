@@ -7,6 +7,7 @@ import { Camera, Loader2 } from "lucide-react";
 import { useUploadAvatar } from "@/queries/user/avatar.query";
 import { useState } from "react";
 import type { ProfileData } from "@/server/contracts/user/profile";
+import { useAuth } from "@/providers/auth/AuthProvider";
 
 interface ProfileAvatarProps {
   profile: ProfileData;
@@ -15,6 +16,7 @@ interface ProfileAvatarProps {
 export function ProfileAvatar({ profile }: ProfileAvatarProps) {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(profile.photoUrl);
   const uploadAvatarMutation = useUploadAvatar();
+  const {user} = useAuth();
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -65,12 +67,21 @@ export function ProfileAvatar({ profile }: ProfileAvatarProps) {
 
           <div className="flex items-center gap-6">
             <div className="relative">
-              <Avatar
-                size="lg"
-                name={profile.name || "User"}
-                src={avatarPreview || undefined}
-                alt={profile.name || "Profile"}
-              />
+              {user?.avatar_url ? (
+                <Avatar
+                  size="lg"
+                  name={user?.email || "User"}
+                  src={user?.avatar_url}
+                  alt={user?.email || "Profile"}
+                />
+              ) : (
+                <Avatar
+                  size="lg"
+                  name={user?.email || "User"}
+                  src={avatarPreview || undefined}
+                  alt={user?.email || "Profile"}
+                />
+              )}
               <label
                 htmlFor="avatar-upload"
                 className="absolute bottom-0 right-0 p-2 bg-primary border-2 border-black rounded cursor-pointer shadow-md hover:shadow-xs transition-shadow"

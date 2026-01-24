@@ -63,8 +63,6 @@ export const updateProfile = async (
   data: UpdateProfileRequest
 ): Promise<UpdateProfileResponse> => {
   return await fakePromises(() => {
-    // In a real implementation, you would update the database
-    // For now, return updated mock data
     return {
       ...profileDataMock,
       name: data.name,
