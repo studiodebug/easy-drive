@@ -253,3 +253,8 @@ body {
   background-color: #fefce8;
   background-image: url("/assets/box_bg.svg");
 }
+
+.bg-asset-box {
+  background-color: #fefce8;
+  background-image: url("/assets/box_bg.svg");
+}

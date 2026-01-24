@@ -9,7 +9,7 @@ import {
   TabsTriggerList,
 } from "@/components/retroui/Tab";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { HistoryTab } from "./components/HistoryTab";
 import { MyScheduleTab } from "./components/MyScheduleTab";
 import { ScheduleClassTab } from "./components/ScheduleClassTab";
@@ -36,6 +36,11 @@ export function StudentDashboard() {
     setSelectedTab(4); // Switch to Credits tab (index 4)
   };
 
+  useEffect(() => {
+    const tab = queryParams.get("tab");
+    setSelectedTab(tab ? parseInt(tab) : 0);
+  }, [queryParams]);
+
   return (
     <div className="w-full">
       <Tabs
@@ -43,7 +48,7 @@ export function StudentDashboard() {
         onChange={handleSelectTab}
         className="w-full"
       >
-        <TabsTriggerList className="w-full items-center justify-center mb-8">
+        <TabsTriggerList className="w-full items-center justify-center mb-8 hidden">
           <TabsTrigger>Início</TabsTrigger>
           <TabsTrigger>Agendar aula</TabsTrigger>
           <TabsTrigger>Minha agenda</TabsTrigger>

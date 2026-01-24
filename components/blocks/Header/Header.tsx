@@ -1,10 +1,22 @@
 "use client";
 
 import { Button } from "@/components/retroui/Button";
-import { User, MapPin } from "lucide-react";
+import {
+  User,
+  MapPin,
+  LogOut,
+  UserCircle,
+  Calendar,
+  CalendarClock,
+  History,
+  Coins,
+  Search,
+  LogIn,
+  UserPlus,
+} from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
-import { Menu } from "@/components/retroui/Menu";
+import { Popover } from "@/components/retroui/Popover";
 import { useAuth } from "@/providers/auth/AuthProvider";
 import { useRouter } from "next/navigation";
 import {
@@ -12,18 +24,47 @@ import {
   BookingSummarySheet,
 } from "@/components/blocks/BookingSummary/BookingSummarySheet";
 
-const navItems = [
-  { name: "Início", href: "/" },
-  { name: "Vitrine", href: "/vitrine" },
-  { name: "Locais", href: "#" },
-  { name: "Blog", href: "#" },
-  { name: "Contato", href: "#" },
+const getNavItems = (isAuthenticated: boolean) => [
+  {
+    name: "Encontrar instrutores",
+    href: "/vitrine",
+    icon: Search,
+  },
+  {
+    name: "Calendário de aulas",
+    href: "/dashboard?tab=0",
+    hidden: !isAuthenticated,
+    icon: Calendar,
+  },
+  {
+    name: "Minhas aulas",
+    href: "/dashboard?tab=2",
+    hidden: !isAuthenticated,
+    icon: CalendarClock,
+  },
+  {
+    name: "Histórico de aulas",
+    href: "/dashboard?tab=3",
+    hidden: !isAuthenticated,
+    icon: History,
+  },
+  {
+    name: "Créditos disponíveis",
+    href: "/dashboard?tab=4",
+    hidden: !isAuthenticated,
+    icon: Coins,
+  },
 ];
 
 function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const router = useRouter();
   const { isAuthenticated, signOut } = useAuth();
+
+  const navItems = getNavItems(isAuthenticated);
+
+  const filteredNavItems = navItems.filter((item) => !item.hidden);
 
   return (
     <div className="w-full">
@@ -42,49 +83,71 @@ function Header() {
           <div className="flex items-center gap-3">
             <BookingSummaryEntry />
 
-            <Menu>
-              <Menu.Trigger asChild>
-                <a
-                  href="#"
+            <Popover open={isUserMenuOpen} onOpenChange={setIsUserMenuOpen}>
+              <Popover.Trigger asChild>
+                <button
+                  type="button"
                   aria-label="Menu do usuário"
-                  onClick={(e) => e.preventDefault()}
+                  className="cursor-pointer"
                 >
                   <User className="h-5 w-5" />
-                </a>
-              </Menu.Trigger>
-              <Menu.Content>
+                </button>
+              </Popover.Trigger>
+              <Popover.Content align="end" className="w-48 p-2">
                 {isAuthenticated ? (
-                  <>
-                    <Menu.Item
-                      onSelect={(e) => {
-                        e.preventDefault();
+                  <div className="flex flex-col gap-1">
+                    <button
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
                         router.push("/profile");
                       }}
+                      className="relative text-black flex cursor-pointer select-none items-center rounded-xs px-2 py-1.5 text-sm outline-none transition-colors hover:bg-primary focus:bg-primary"
                     >
-                      Perfil
-                    </Menu.Item>
-                    <Menu.Item
-                      onSelect={async (e) => {
-                        e.preventDefault();
+                      <div className="flex items-center gap-2">
+                        <UserCircle className="h-4 w-4" />
+                        <span>Meu perfil</span>
+                      </div>
+                    </button>
+                    <button
+                      onClick={async () => {
+                        setIsUserMenuOpen(false);
                         await signOut();
                         router.push("/auth/login");
                       }}
+                      className="relative text-black flex cursor-pointer select-none items-center rounded-xs px-2 py-1.5 text-sm outline-none transition-colors hover:bg-primary focus:bg-primary"
                     >
-                      Deslogar
-                    </Menu.Item>
-                  </>
+                      <div className="flex items-center gap-2">
+                        <LogOut className="h-4 w-4" />
+                        <span>Sair da conta</span>
+                      </div>
+                    </button>
+                  </div>
                 ) : (
-                  <>
-                    <Menu.Item>
-                      <Link href="/auth/login">Login</Link>
-                    </Menu.Item>
-                    <Menu.Item>
-                      <Link href="/auth/sign-up">Crie sua conta</Link>
-                    </Menu.Item>
-                  </>
+                  <div className="flex flex-col gap-1">
+                    <Link
+                      href="/auth/login"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      className="relative text-black flex cursor-pointer select-none items-center rounded-xs px-2 py-1.5 text-sm outline-none transition-colors hover:bg-primary focus:bg-primary"
+                    >
+                      <div className="flex items-center gap-2">
+                        <LogIn className="h-4 w-4" />
+                        <span>Entrar</span>
+                      </div>
+                    </Link>
+                    <Link
+                      href="/auth/sign-up"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      className="relative text-black flex cursor-pointer select-none items-center rounded-xs px-2 py-1.5 text-sm outline-none transition-colors hover:bg-primary focus:bg-primary"
+                    >
+                      <div className="flex items-center gap-2">
+                        <UserPlus className="h-4 w-4" />
+                        <span>Criar conta grátis</span>
+                      </div>
+                    </Link>
+                  </div>
                 )}
-              </Menu.Content>
-            </Menu>
+              </Popover.Content>
+            </Popover>
           </div>
         </div>
       </div>
@@ -97,25 +160,29 @@ function Header() {
           </Link>
 
           <div className="hidden md:flex items-center gap-8 font-medium">
-            {navItems.map((item, index) => (
-              <Link
-                key={index}
-                href={item.href}
-                className="hover:underline underline-offset-4 decoration-primary decoration-2"
-              >
-                {item.name}
-              </Link>
-            ))}
+            {filteredNavItems.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={index}
+                  href={item.href}
+                  className="flex items-center gap-2 hover:underline underline-offset-4 decoration-primary decoration-2 transition-colors"
+                >
+                  {Icon && <Icon className="h-4 w-4" />}
+                  <span>{item.name}</span>
+                </Link>
+              );
+            })}
           </div>
           <div className="flex items-center gap-4">
             <div className="items-center">
               {isAuthenticated ? (
-                <Button size="sm" variant="secondary">
-                  Comece a dirigir
+                <Button asChild size="sm" variant="secondary">
+                  <Link href="/dashboard?tab=1">Agendar aula</Link>
                 </Button>
               ) : (
                 <Button asChild size="sm" variant="secondary">
-                  <Link href="/auth/sign-up">Crie sua conta</Link>
+                  <Link href="/auth/sign-up">Começar grátis</Link>
                 </Button>
               )}
             </div>
@@ -150,16 +217,23 @@ function Header() {
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
           <div className="md:hidden border-t-2 border-black bg-white animate-in fade-in duration-300">
-            <div className="px-4 py-4 flex flex-col gap-4">
-              {navItems.map((item, index) => (
-                <Link
-                  key={index}
-                  href={item.href}
-                  className="text-lg font-medium hover:underline underline-offset-4 decoration-primary decoration-2"
-                >
-                  {item.name}
-                </Link>
-              ))}
+            <div className="px-4 py-4 flex flex-col gap-3">
+              {navItems
+                .filter((item) => !item.hidden)
+                .map((item, index) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={index}
+                      href={item.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center gap-3 text-lg font-medium hover:underline underline-offset-4 decoration-primary decoration-2 py-2 transition-colors"
+                    >
+                      {Icon && <Icon className="h-5 w-5" />}
+                      <span>{item.name}</span>
+                    </Link>
+                  );
+                })}
             </div>
           </div>
         )}
