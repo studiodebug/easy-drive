@@ -3,25 +3,21 @@
 import { Button } from "@/components/retroui/Button";
 import { Avatar } from "@/components/retroui/Avatar";
 import { Text } from "@/components/retroui/Text";
-import { Camera, Loader2 } from "lucide-react";
+import { Camera } from "lucide-react";
 import { toast } from "sonner";
-import { useUploadAvatar } from "@/queries/user/avatar.query";
-import { useState } from "react";
 import type { ProfileData } from "@/server/contracts/user/profile";
 import { useAuth } from "@/providers/auth/AuthProvider";
 
 interface ProfileAvatarProps {
   profile: ProfileData;
+  onPhotoChange: (file: File | null) => void;
+  photoPreview: string | null;
 }
 
-export function ProfileAvatar({ profile }: ProfileAvatarProps) {
+export function ProfileAvatar({ profile, onPhotoChange, photoPreview }: ProfileAvatarProps) {
   const { user } = useAuth();
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(
-    profile.photoUrl ?? user?.avatar_url ?? null
-  );
-  const uploadAvatarMutation = useUploadAvatar();
 
-  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -34,25 +30,7 @@ export function ProfileAvatar({ profile }: ProfileAvatarProps) {
       return;
     }
 
-    const fallbackUrl = profile.photoUrl ?? user?.avatar_url ?? null;
-
-    // Create preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setAvatarPreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-
-    // Upload image to backend
-    try {
-      const result = await uploadAvatarMutation.mutateAsync({
-        file,
-        userId: user?.id,
-      });
-      setAvatarPreview(result.photoUrl);
-    } catch {
-      setAvatarPreview(fallbackUrl);
-    }
+    onPhotoChange(file);
   };
 
   return (
@@ -76,7 +54,7 @@ export function ProfileAvatar({ profile }: ProfileAvatarProps) {
               <Avatar
                 size="lg"
                 name={user?.email || "User"}
-                src={avatarPreview ?? user?.avatar_url ?? undefined}
+                src={photoPreview ?? user?.avatar_url ?? undefined}
                 alt={user?.email || "Profile"}
               />
               <label
@@ -91,7 +69,6 @@ export function ProfileAvatar({ profile }: ProfileAvatarProps) {
                   accept="image/*"
                   className="hidden"
                   onChange={handleAvatarChange}
-                  disabled={uploadAvatarMutation.isPending}
                 />
               </label>
             </div>
@@ -100,17 +77,9 @@ export function ProfileAvatar({ profile }: ProfileAvatarProps) {
                 type="button"
                 className="max-w-fit"
                 asChild
-                disabled={uploadAvatarMutation.isPending}
               >
                 <label htmlFor="avatar-upload" className="cursor-pointer">
-                  {uploadAvatarMutation.isPending ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Enviando...
-                    </>
-                  ) : (
-                    "Alterar Foto"
-                  )}
+                  Alterar Foto
                 </label>
               </Button>
               <Text variant="caption" className="block mt-2">

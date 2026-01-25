@@ -5,12 +5,13 @@ import { Label } from "@/components/retroui/Label";
 import { Select } from "@/components/retroui/Select";
 import { Text } from "@/components/retroui/Text";
 import { brazilStates } from "@/app/(public)/vitrine/_components/brazil-locations";
-import { useAuth } from "@/providers/auth/AuthProvider";
+import { ProfileData } from "@/server/contracts/user/profile";
 
 interface ProfileAddressProps {
   formData: {
     street: string;
     number: string;
+    complement: string;
     neighborhood: string;
     zipcode: string;
     city: string;
@@ -23,9 +24,11 @@ interface ProfileAddressProps {
   onStateChange: (stateCode: string) => void;
   onCityChange: (cityName: string) => void;
   disabled?: boolean;
+  profile: ProfileData;
 }
 
 export function ProfileAddress({
+  profile,
   formData,
   selectedState,
   selectedCity,
@@ -36,7 +39,7 @@ export function ProfileAddress({
 }: ProfileAddressProps) {
   const selectedStateData = brazilStates.find((s) => s.code === selectedState);
   const availableCities = selectedStateData?.cities || [];
-  const {user} = useAuth();
+
   return (
     <div className="relative">
       <div
@@ -77,6 +80,22 @@ export function ProfileAddress({
                 value={formData.number}
                 onChange={onInputChange}
                 placeholder="123"
+                disabled={disabled}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="complement" className="block font-medium">
+                Complemento
+              </Label>
+              <Input
+                id="complement"
+                name="complement"
+                value={formData.complement}
+                onChange={onInputChange}
+                placeholder="Apartamento, bloco, etc."
                 disabled={disabled}
               />
             </div>
@@ -130,7 +149,7 @@ export function ProfileAddress({
                 Estado *
               </Label>
               <Select
-                value={selectedState}
+                value={selectedState || profile.address?.state || ""}
                 onValueChange={onStateChange}
                 disabled={disabled}
               >
@@ -151,8 +170,10 @@ export function ProfileAddress({
               <Label htmlFor="city" className="block font-medium">
                 Cidade *
               </Label>
+              
               <Select
-                value={selectedCity}
+                key={selectedState} 
+                value={selectedCity || profile.address?.city || ""}
                 onValueChange={onCityChange}
                 disabled={disabled || !selectedState}
               >
