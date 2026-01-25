@@ -1,0 +1,48 @@
+import { NextResponse } from "next/server";
+import { signUp } from "@/server/contracts/auth/login";
+import {
+  ACCESS_TOKEN_MAX_AGE_SECONDS,
+  COOKIE_ACCESS_TOKEN,
+  COOKIE_REFRESH_TOKEN,
+  COOKIE_USER_JSON,
+  getBaseCookieOptions,
+  REFRESH_TOKEN_MAX_AGE_SECONDS,
+} from "../_cookies";
+
+export async function POST(req: Request) {
+  try {
+    const body = (await req.json().catch(() => null)) as
+      | { name?: string; email?: string; password?: string }
+      | null;
+
+    if (!body?.name || !body?.email || !body?.password) {
+      return NextResponse.json({ error: "Missing name/email/password" }, { status: 400 });
+    }
+
+    const auth = await signUp({ name: body.name, email: body.email, password: body.password });
+
+    const res = NextResponse.json({ user: auth.user });
+    const base = getBaseCookieOptions();
+
+    res.cookies.set(COOKIE_ACCESS_TOKEN, auth.access_token, {
+      ...base,
+      maxAge: ACCESS_TOKEN_MAX_AGE_SECONDS,
+    });
+
+    res.cookies.set(COOKIE_REFRESH_TOKEN, auth.refresh_token, {
+      ...base,
+      maxAge: REFRESH_TOKEN_MAX_AGE_SECONDS,
+    });
+
+    // Store user payload server-side as well (HttpOnly) so server components can render user info safely.
+    res.cookies.set(COOKIE_USER_JSON, JSON.stringify(auth.user), {
+      ...base,
+      maxAge: REFRESH_TOKEN_MAX_AGE_SECONDS,
+    });
+
+    return res;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Erro ao criar conta";
+    return NextResponse.json({ error: message }, { status: 400 });
+  }
+}

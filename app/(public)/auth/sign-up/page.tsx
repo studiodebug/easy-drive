@@ -9,9 +9,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Eye, EyeClosed } from "lucide-react";
-import { signUp } from "@/server/contracts/auth/login";
+import { useAuth } from "@/providers/auth/AuthProvider";
 
 export default function Page() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -19,6 +20,7 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { signUp } = useAuth();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,10 +34,9 @@ export default function Page() {
     }
 
     try {
-      // old supabase request:
-      // await supabase.auth.signUp({ email, password, options: { emailRedirectTo: ... } })
-      await signUp({ name: "", email, password });
-      router.push("/auth/sign-up-success");
+      // Server sets HttpOnly cookies; client never touches tokens.
+      await signUp(name, email, password);
+      router.push("/vitrine");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
@@ -53,6 +54,17 @@ export default function Page() {
         <Card.Content>
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-6">
+              <div className="grid gap-2">
+                <Label htmlFor="name">Nome</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Seu nome completo"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input

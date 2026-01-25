@@ -80,21 +80,50 @@ export type SignUpRequest = {
   };
 
 export type SignUpResponse = {
-    id: string;
-    email: string;
-    name: string;
+    access_token: string;
+    refresh_token: string;
+    user: {
+        id: string;
+        email: string;
+        name: string;
+        avatar_url: string | null;
+    };
 };
-const signUpResponseMock: SignUpResponse = {
-    id: '123',
-    email: 'test@test.com',
-    name: 'Test',
 
-};
+export const signUp = async (req: SignUpRequest): Promise<SignUpResponse> => {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3333";
+  const url = `${backendUrl}/users/signup`;
 
-export const signUp = async (req: SignUpRequest) => {
-    return await fakePromises(() => {
-        return signUpResponseMock;
-    });
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: req.name,
+      email: req.email,
+      password: req.password,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ message: "Failed to create account" }));
+    throw new Error(errorData.message || "Erro ao criar conta");
+  }
+
+  const data = await response.json();
+  
+  // Transform backend response to match SignUpResponse type (id: number -> id: string)
+  return {
+    access_token: data.access_token,
+    refresh_token: data.refresh_token,
+    user: {
+      id: data.user.id.toString(),
+      email: data.user.email,
+      name: data.user.name,
+      avatar_url: data.user.avatar_url,
+    },
+  };
 }
 
 export type confirmEmailRequest = {

@@ -8,6 +8,7 @@ export type AuthContextValue = {
   isAuthenticated: boolean;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
+  signUp: (name: string, email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   refreshSession: () => Promise<void>;
 };
@@ -34,6 +35,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (!res.ok) {
         const errorData = (await res.json().catch(() => ({}))) as { error?: string };
         throw new Error(errorData.error || 'Email ou senha inválidos');
+      }
+      const data = (await res.json()) as { user?: User };
+      setUser(data.user ?? null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const signUp = useCallback(async (name: string, email: string, password: string) => {
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password }),
+      });
+      if (!res.ok) {
+        const errorData = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(errorData.error || 'Erro ao criar conta');
       }
       const data = (await res.json()) as { user?: User };
       setUser(data.user ?? null);
@@ -102,10 +122,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
       isAuthenticated: Boolean(user),
       isLoading,
       signIn,
+      signUp,
       signOut,
       refreshSession,
     };
-  }, [user, isLoading, signIn, signOut, refreshSession]);
+  }, [user, isLoading, signIn, signUp, signOut, refreshSession]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
