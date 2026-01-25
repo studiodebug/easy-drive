@@ -6,6 +6,7 @@ import {
   COOKIE_REFRESH_TOKEN,
   COOKIE_USER_JSON,
   getBaseCookieOptions,
+  getAccessTokenCookieOptions,
   REFRESH_TOKEN_MAX_AGE_SECONDS,
 } from "../_cookies";
 
@@ -21,9 +22,10 @@ export async function GET(req: NextRequest) {
 
   const res = NextResponse.redirect(new URL(next, req.url));
   const base = getBaseCookieOptions();
+  const accessTokenOptions = getAccessTokenCookieOptions();
 
   res.cookies.set(COOKIE_ACCESS_TOKEN, auth.access_token, {
-    ...base,
+    ...accessTokenOptions,
     maxAge: ACCESS_TOKEN_MAX_AGE_SECONDS,
   });
   res.cookies.set(COOKIE_REFRESH_TOKEN, auth.refresh_token, {

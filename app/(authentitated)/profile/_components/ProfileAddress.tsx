@@ -5,6 +5,7 @@ import { Label } from "@/components/retroui/Label";
 import { Select } from "@/components/retroui/Select";
 import { Text } from "@/components/retroui/Text";
 import { brazilStates } from "@/app/(public)/vitrine/_components/brazil-locations";
+import { useAuth } from "@/providers/auth/AuthProvider";
 
 interface ProfileAddressProps {
   formData: {
@@ -35,7 +36,7 @@ export function ProfileAddress({
 }: ProfileAddressProps) {
   const selectedStateData = brazilStates.find((s) => s.code === selectedState);
   const availableCities = selectedStateData?.cities || [];
-
+  const {user} = useAuth();
   return (
     <div className="relative">
       <div

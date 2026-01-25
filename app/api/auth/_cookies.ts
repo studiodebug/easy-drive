@@ -23,4 +23,13 @@ export function getBaseCookieOptions(): CookieOptions {
   };
 }
 
+export function getAccessTokenCookieOptions(): CookieOptions {
+  return {
+    httpOnly: false, // Allow client-side reading for API calls
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+  };
+}
+
 

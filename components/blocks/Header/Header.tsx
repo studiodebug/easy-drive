@@ -75,7 +75,7 @@ function Header() {
             <div className="flex items-center gap-2">
               <a href="#" className="flex items-center gap-2">
                 <MapPin className="h-5 w-5" />
-                <span className="hidden md:inline">Iquexique, Bahia</span>
+                <span className="inline">Iquexique, Bahia</span>
               </a>
             </div>
           </div>

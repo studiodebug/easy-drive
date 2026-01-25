@@ -4,6 +4,7 @@ import { Button } from "@/components/retroui/Button";
 import { Avatar } from "@/components/retroui/Avatar";
 import { Text } from "@/components/retroui/Text";
 import { Camera, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { useUploadAvatar } from "@/queries/user/avatar.query";
 import { useState } from "react";
 import type { ProfileData } from "@/server/contracts/user/profile";
@@ -14,23 +15,26 @@ interface ProfileAvatarProps {
 }
 
 export function ProfileAvatar({ profile }: ProfileAvatarProps) {
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(profile.photoUrl);
+  const { user } = useAuth();
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(
+    profile.photoUrl ?? user?.avatar_url ?? null
+  );
   const uploadAvatarMutation = useUploadAvatar();
-  const {user} = useAuth();
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith("image/")) {
+      toast.error("Selecione uma imagem (JPG, PNG, GIF ou WebP)");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("A imagem deve ter no máximo 5MB");
       return;
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      return;
-    }
+    const fallbackUrl = profile.photoUrl ?? user?.avatar_url ?? null;
 
     // Create preview
     const reader = new FileReader();
@@ -39,13 +43,15 @@ export function ProfileAvatar({ profile }: ProfileAvatarProps) {
     };
     reader.readAsDataURL(file);
 
-    // Upload image
+    // Upload image to backend
     try {
-      const result = await uploadAvatarMutation.mutateAsync({ file });
+      const result = await uploadAvatarMutation.mutateAsync({
+        file,
+        userId: user?.id,
+      });
       setAvatarPreview(result.photoUrl);
-    } catch (error) {
-      // Error is handled by the mutation's onError
-      setAvatarPreview(profile.photoUrl);
+    } catch {
+      setAvatarPreview(fallbackUrl);
     }
   };
 
@@ -61,27 +67,18 @@ export function ProfileAvatar({ profile }: ProfileAvatarProps) {
               Foto de Perfil
             </Text>
             <Text variant="caption" className="text-muted-foreground">
-              Atualize sua foto de perfil. Formatos aceitos: JPG, PNG, GIF. Tamanho máximo: 5MB
+              Atualize sua foto de perfil. Formatos aceitos: JPG, PNG, GIF, WebP. Tamanho máximo: 5MB
             </Text>
           </div>
 
           <div className="flex items-center gap-6">
             <div className="relative">
-              {user?.avatar_url ? (
-                <Avatar
-                  size="lg"
-                  name={user?.email || "User"}
-                  src={user?.avatar_url}
-                  alt={user?.email || "Profile"}
-                />
-              ) : (
-                <Avatar
-                  size="lg"
-                  name={user?.email || "User"}
-                  src={avatarPreview || undefined}
-                  alt={user?.email || "Profile"}
-                />
-              )}
+              <Avatar
+                size="lg"
+                name={user?.email || "User"}
+                src={avatarPreview ?? user?.avatar_url ?? undefined}
+                alt={user?.email || "Profile"}
+              />
               <label
                 htmlFor="avatar-upload"
                 className="absolute bottom-0 right-0 p-2 bg-primary border-2 border-black rounded cursor-pointer shadow-md hover:shadow-xs transition-shadow"

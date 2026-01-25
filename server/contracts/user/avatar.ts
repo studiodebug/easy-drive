@@ -1,7 +1,8 @@
-import { fakePromises } from "@/lib/utils";
+import { apiInstance } from "@/lib/api";
 
 export interface UploadAvatarRequest {
   file: File;
+  userId?: string;
 }
 
 export interface UploadAvatarResponse {
@@ -12,19 +13,33 @@ export interface UploadAvatarResponse {
 export const uploadAvatar = async (
   data: UploadAvatarRequest
 ): Promise<UploadAvatarResponse> => {
-  return await fakePromises(() => {
-    // In a real implementation, you would:
-    // 1) Upload file to storage (Supabase Storage, S3, etc.)
-    // 2) Get public URL
-    // 3) Update user record with photo_url
-    // 4) Return the public URL
-    
-    // For now, return a mock URL
-    const mockPhotoUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${Date.now()}`;
-    
-    return {
-      photoUrl: mockPhotoUrl,
-      message: "Foto de perfil atualizada com sucesso",
-    };
-  });
+  const url = "/files/images/upload";
+
+  const formData = new FormData();
+  formData.append("file", data.file);
+  if (data.userId != null && data.userId !== "") {
+    formData.append("userId", data.userId);
+  }
+
+  const response = await apiInstance.post(url, formData);
+  if (!response.ok) throw new Error("Erro ao fazer upload da foto");
+
+  const result = (await response.json()) as {
+    optimizedUrl?: string;
+    thumbnailUrl?: string;
+    secureUrl?: string;
+    url?: string;
+  };
+
+  const photoUrl =
+    result.thumbnailUrl ?? result.optimizedUrl ?? result.secureUrl ?? result.url ?? "";
+
+  if (!photoUrl) {
+    throw new Error("Resposta do servidor não contém URL da imagem");
+  }
+
+  return {
+    photoUrl,
+    message: "Foto de perfil atualizada com sucesso",
+  };
 };
