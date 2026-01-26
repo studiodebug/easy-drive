@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCityAutocomplete, type CitySuggestion } from "./vitrine/_components/useCityAutocomplete";
+import { Logo } from "@/components/logo";
+import Link from "next/link";
 
 export type HomePageProps = {
   className?: string;
@@ -55,6 +57,20 @@ export default function HomePage({ className }: HomePageProps) {
 
   return (
     <div className={cn("min-h-screen bg-white", className)}>
+
+      <header className="border-b-2 border-black bg-white sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+          <Link href="/" className="flex items-center">
+            <Logo className="h-8 md:h-10" />
+          </Link>
+          <div className="flex items-center gap-4">
+            <Button asChild size="sm" variant="secondary">
+              <Link href="/auth/sign-up">Começar grátis</Link>
+            </Button>
+          </div>
+        </div>
+      </header>
+
       <main>
         <section className="bg-white py-20 lg:py-32">
           <div className="max-w-6xl mx-auto px-4 lg:px-8">
@@ -417,20 +433,27 @@ export default function HomePage({ className }: HomePageProps) {
 
         <footer className="border-t-4 border-black py-12 bg-muted/30">
           <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-              <Text as="p" className="text-sm text-muted-foreground font-semibold">
-                © 2026 EasyDrive. Todos os direitos reservados.
-              </Text>
-              <div className="flex gap-6">
-                <Text as="a" href="#" className="text-sm hover:underline font-semibold border-b-2 border-transparent hover:border-black transition-colors">
-                  Privacidade
+            <div className="flex flex-col gap-6">
+              <div className="flex justify-center md:justify-start">
+                <Link href="/" className="flex items-center">
+                  <Logo className="h-8" />
+                </Link>
+              </div>
+              <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                <Text as="p" className="text-sm text-muted-foreground font-semibold">
+                  © 2026 EasyDrive. Todos os direitos reservados.
                 </Text>
-                <Text as="a" href="#" className="text-sm hover:underline font-semibold border-b-2 border-transparent hover:border-black transition-colors">
-                  Termos
-                </Text>
-                <Text as="a" href="#" className="text-sm hover:underline font-semibold border-b-2 border-transparent hover:border-black transition-colors">
-                  Contato
-                </Text>
+                <div className="flex gap-6">
+                  <Text as="a" href="#" className="text-sm hover:underline font-semibold border-b-2 border-transparent hover:border-black transition-colors">
+                    Privacidade
+                  </Text>
+                  <Text as="a" href="#" className="text-sm hover:underline font-semibold border-b-2 border-transparent hover:border-black transition-colors">
+                    Termos
+                  </Text>
+                  <Text as="a" href="#" className="text-sm hover:underline font-semibold border-b-2 border-transparent hover:border-black transition-colors">
+                    Contato
+                  </Text>
+                </div>
               </div>
             </div>
           </div>

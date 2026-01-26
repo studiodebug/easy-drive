@@ -23,33 +23,34 @@ import {
   BookingSummaryEntry,
   BookingSummarySheet,
 } from "@/components/blocks/BookingSummary/BookingSummarySheet";
+import { Logo } from "@/components/logo";
 
 const getNavItems = (isAuthenticated: boolean) => [
   {
-    name: "Encontrar instrutores",
+    name: "Instrutores",
     href: "/vitrine",
     icon: Search,
   },
   {
-    name: "Calendário de aulas",
+    name: "Calendário",
     href: "/dashboard?tab=0",
     hidden: !isAuthenticated,
     icon: Calendar,
   },
   {
-    name: "Minhas aulas",
+    name: "Aulas",
     href: "/dashboard?tab=2",
     hidden: !isAuthenticated,
     icon: CalendarClock,
   },
   {
-    name: "Histórico de aulas",
+    name: "Histórico",
     href: "/dashboard?tab=3",
     hidden: !isAuthenticated,
     icon: History,
   },
   {
-    name: "Créditos disponíveis",
+    name: "Créditos",
     href: "/dashboard?tab=4",
     hidden: !isAuthenticated,
     icon: Coins,
@@ -155,8 +156,8 @@ function Header() {
       {/* Main navigation */}
       <nav className="border-b-2 border-black bg-white">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-head font-bold">
-            LOGO
+          <Link href="/" className="text-2xl font-head font-bold ">
+            <Logo className="max-h-10" />
           </Link>
 
           <div className="hidden md:flex items-center gap-8 font-medium">
