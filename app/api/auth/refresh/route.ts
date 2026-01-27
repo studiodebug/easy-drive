@@ -15,7 +15,10 @@ export async function POST(req: NextRequest) {
     const refresh_token = req.cookies.get(COOKIE_REFRESH_TOKEN)?.value ?? "";
 
     if (!refresh_token) {
-      return NextResponse.json({ error: "Missing refresh token" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Missing refresh token" },
+        { status: 401 },
+      );
     }
 
     const auth = await refresh({ refresh_token });
@@ -41,9 +44,8 @@ export async function POST(req: NextRequest) {
 
     return res;
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Invalid refresh token";
+    const message =
+      error instanceof Error ? error.message : "Invalid refresh token";
     return NextResponse.json({ error: message }, { status: 401 });
   }
 }
-
-
