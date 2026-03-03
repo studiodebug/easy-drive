@@ -6,21 +6,27 @@ import {
   type CreditsCheckoutResult,
   type CreditsCheckoutStatus,
   type CreditsQuote,
-  type CreditsQuoteInput,
+  type CreditsQuoteRequest,
+  type CreditsCheckoutRequest,
 } from "@/server/contracts/billing/credits";
 import { CREDIT_PLANS } from "@/server/contracts/dashboard/credits-plans";
 
 export { CREDIT_PLANS };
 
 export const useQuoteCredits = () => {
-  return useMutation<CreditsQuote, Error, CreditsQuoteInput>({
+  return useMutation<CreditsQuote, Error, CreditsQuoteRequest>({
     mutationFn: getCreditsQuote,
   });
 };
 
 export const useCreateCreditsCheckout = () => {
-  return useMutation<CreditsCheckoutResult, Error, { quoteId: string }>({
-    mutationFn: ({ quoteId }) => createCreditsCheckout(quoteId),
+  const queryClient = useQueryClient();
+
+  return useMutation<CreditsCheckoutResult, Error, CreditsCheckoutRequest>({
+    mutationFn: createCreditsCheckout,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["credits"] });
+    },
   });
 };
 

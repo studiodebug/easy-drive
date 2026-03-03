@@ -10,6 +10,7 @@ import {
   useCreateCreditsCheckout,
   useQuoteCredits,
 } from "@/mutations/dashboard/credits.mutation";
+import type { CreditsQuote } from "@/server/contracts/billing/credits";
 import {
   AlertCircle,
   ExternalLink,
@@ -33,14 +34,15 @@ export function AddCreditsModal({ isOpen, onClose }: AddCreditsModalProps) {
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const [customAmount, setCustomAmount] = useState<string>("");
   const [step, setStep] = useState<Step>("selection");
-  const [quoteId, setQuoteId] = useState<string | null>(null);
-  const [quotedCredits, setQuotedCredits] = useState<number>(0);
-  const [quotedBonusCredits, setQuotedBonusCredits] = useState<number>(0);
-  const [quotedTotalPrice, setQuotedTotalPrice] = useState<number>(0);
+  const [activeQuote, setActiveQuote] = useState<CreditsQuote | null>(null);
 
   const { mutate: quoteCredits, isPending: isQuotePending } = useQuoteCredits();
   const { mutate: createCheckout, isPending: isCheckoutPending } =
     useCreateCreditsCheckout();
+
+  const quotedCredits = activeQuote?.credits ?? 0;
+  const quotedBonusCredits = activeQuote?.bonusCredits ?? 0;
+  const quotedTotalPrice = activeQuote?.total ?? 0;
 
   const selectedPlan = CREDIT_PLANS.find((p) => p.id === selectedPlanId);
 
@@ -76,10 +78,7 @@ export function AddCreditsModal({ isOpen, onClose }: AddCreditsModalProps) {
     setSelectedPlanId(null);
     setCustomAmount("");
     setStep("selection");
-    setQuoteId(null);
-    setQuotedCredits(0);
-    setQuotedBonusCredits(0);
-    setQuotedTotalPrice(0);
+    setActiveQuote(null);
   };
 
   useEffect(() => {
@@ -88,20 +87,24 @@ export function AddCreditsModal({ isOpen, onClose }: AddCreditsModalProps) {
     }
   }, [isOpen]);
 
+  const getSelectedCredits = (): number => {
+    if (selectedPlanId) {
+      return CREDIT_PLANS.find((p) => p.id === selectedPlanId)?.credits ?? 0;
+    }
+    if (isCustomValid) return customValue;
+    return 0;
+  };
+
   const handleContinue = () => {
     if (!isValidSelection) return;
+    const credits = getSelectedCredits();
+    if (!credits) return;
 
     quoteCredits(
-      {
-        planId: selectedPlanId ?? undefined,
-        customAmount: !selectedPlanId && isCustomValid ? customValue : undefined,
-      },
+      { credits },
       {
         onSuccess: (quote) => {
-          setQuoteId(quote.quoteId);
-          setQuotedCredits(quote.credits);
-          setQuotedBonusCredits(quote.bonusCredits);
-          setQuotedTotalPrice(quote.totalPrice);
+          setActiveQuote(quote);
           setStep("review");
         },
         onError: () => {
@@ -112,10 +115,11 @@ export function AddCreditsModal({ isOpen, onClose }: AddCreditsModalProps) {
   };
 
   const handleCheckout = () => {
-    if (!quoteId) return;
+    const credits = activeQuote?.credits ?? getSelectedCredits();
+    if (!credits) return;
 
     createCheckout(
-      { quoteId },
+      { credits, provider: "mock" },
       {
         onSuccess: (checkout) => {
           window.location.assign(checkout.checkoutUrl);

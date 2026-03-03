@@ -8,6 +8,8 @@ import { Button } from "@/components/retroui/Button";
 import { useBookingDraft } from "@/providers/booking/BookingDraftProvider";
 import type { BookingSlot } from "@/types/booking";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { getInstructorAvailability } from "@/server/contracts/booking/availability";
 
 interface WeeklyScheduleProps {
   schedule: DaySchedule[];
@@ -22,6 +24,7 @@ interface SelectedSlot {
   dayNumber: number;
   date: Date;
   time: string;
+  slotId?: number;
 }
 
 export function WeeklySchedule({
@@ -36,6 +39,48 @@ export function WeeklySchedule({
 
   const [isMounted, setIsMounted] = useState(false);
   const { draft, setSlots, openSummary } = useBookingDraft();
+
+  const { data: availabilityData } = useQuery({
+    queryKey: ["instructor-availability", instructorId],
+    queryFn: () => getInstructorAvailability(instructorId),
+    enabled: Boolean(instructorId),
+  });
+
+  const backendSchedule: DaySchedule[] | null = availabilityData
+    ? (() => {
+        const dayNames = [
+          "Domingo",
+          "Segunda-feira",
+          "Terça-feira",
+          "Quarta-feira",
+          "Quinta-feira",
+          "Sexta-feira",
+          "Sábado",
+        ];
+
+        const days = dayNames.map((day, dayNumber) => ({
+          day,
+          dayNumber,
+          slots: [] as DaySchedule["slots"],
+        }));
+
+        for (const item of availabilityData.items) {
+          const start = new Date(item.startAt);
+          const dayNumber = start.getDay();
+          days[dayNumber].slots.push({
+            id: item.slotId,
+            slotId: item.slotId,
+            hour: start.getHours(),
+            minute: start.getMinutes(),
+            available: item.available,
+          });
+        }
+
+        return days;
+      })()
+    : null;
+
+  const effectiveSchedule = backendSchedule ?? schedule;
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -53,6 +98,7 @@ export function WeeklySchedule({
         dayNumber: date.getDay(),
         date,
         time: slot.startTime,
+        slotId: slot.slotId,
       };
     });
 
@@ -117,6 +163,7 @@ export function WeeklySchedule({
         date: slot.date.toISOString(),
         startTime: slot.time,
         endTime,
+        slotId: slot.slotId,
       };
     });
 
@@ -131,7 +178,7 @@ export function WeeklySchedule({
     );
   };
 
-  const handleTimeSelect = (dayNumber: number, time: string) => {
+  const handleTimeSelect = (dayNumber: number, time: string, slotId?: number) => {
     const date = getDateForDay(dayNumber);
     const dateKey = `${dayNumber}-${date.getDate()}-${date.getMonth()}`;
     const slotKey = `${dateKey}-${time}`;
@@ -153,6 +200,7 @@ export function WeeklySchedule({
           dayNumber,
           date,
           time,
+          slotId,
         },
       ];
       updateDraftSlots(nextSlots);
@@ -184,7 +232,7 @@ export function WeeklySchedule({
     return `${day}/${month}`;
   };
 
-  const weekdays = schedule.filter((day) => day.dayNumber >= 1 && day.dayNumber <= 6);
+  const weekdays = effectiveSchedule.filter((day) => day.dayNumber >= 1 && day.dayNumber <= 6);
 
   // Don't render date-dependent content until mounted
   if (!isMounted) {
@@ -268,7 +316,13 @@ export function WeeklySchedule({
                       return (
                         <button
                           key={index}
-                          onClick={() => handleTimeSelect(daySchedule.dayNumber, timeStr)}
+                          onClick={() =>
+                            handleTimeSelect(
+                              daySchedule.dayNumber,
+                              timeStr,
+                              slot.slotId ?? slot.id
+                            )
+                          }
                           className={cn(
                             "w-full py-3 px-4 text-base font-bold border-2 rounded-lg transition-all min-h-[44px] flex items-center justify-center relative",
                             isTimeSelected

@@ -12,7 +12,6 @@ import { CreditsHistoryList } from "./CreditsHistoryList";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
-import { setCreditsBalance } from "@/server/contracts/dashboard/credits";
 
 export function CreditsTab() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -31,7 +30,7 @@ export function CreditsTab() {
       "credits",
     ])?.availableCredits;
     const nextBalance = (current ?? 2) + value;
-    setCreditsBalance(nextBalance);
+    queryClient.setQueryData(["credits"], { availableCredits: nextBalance });
 
     queryClient.invalidateQueries({ queryKey: ["credits"] });
     queryClient.invalidateQueries({ queryKey: ["credits-history"] });

@@ -1,5 +1,3 @@
-import { fakePromises } from "@/lib/utils";
-
 export type LoginRequest = {
   email: string;
   password: string;
@@ -126,52 +124,110 @@ export const signUp = async (req: SignUpRequest): Promise<SignUpResponse> => {
   };
 }
 
-export type confirmEmailRequest = {
-    token_hash: string;
+export type ConfirmEmailRequest = {
+  token: string;
 };
 
-export type confirmEmailResponse = {
-    user: {
-        id: string;
-        email: string;
-        name: string;
-        avatar_url: string;
-    };
-    access_token: string;
-    refresh_token: string;
+export type ConfirmEmailResponse = {
+  user: {
+    id: number;
+    uuid: string;
+    email: string;
+    name: string;
+    avatar_url: string | null;
+  };
+  access_token: string;
+  refresh_token: string;
 };
 
-const confirmEmailResponseMock: confirmEmailResponse = {
-    user: {
-        id: '123',
-        email: 'test@test.com',
-        name: 'Test',
-        avatar_url: 'https://test.com/avatar.png',
-    },
-    access_token: '123',
-    refresh_token: '123',
+export const confirmEmail = async (req: ConfirmEmailRequest): Promise<ConfirmEmailResponse> => {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3333";
+  const url = `${backendUrl}/users/confirm-email`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token: req.token }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ message: "Link de confirmação inválido ou expirado" }));
+    throw new Error(errorData.message || "Link de confirmação inválido ou expirado");
+  }
+
+  return response.json();
 };
 
-export const confirmEmail = async (req: confirmEmailRequest) => {
-    return await fakePromises(() => {
-        return confirmEmailResponseMock;
-    });
-}
+export type RequestPasswordResetRequest = {
+  email: string;
+};
+
+export type RequestPasswordResetResponse = {
+  message: string;
+};
+
+export const requestPasswordReset = async (req: RequestPasswordResetRequest): Promise<RequestPasswordResetResponse> => {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3333";
+  const url = `${backendUrl}/users/forgot-password`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: req.email }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ message: "Não foi possível enviar o email" }));
+    throw new Error(errorData.message || "Não foi possível enviar o email");
+  }
+
+  return response.json();
+};
+
+export type ResetPasswordRequest = {
+  token: string;
+  password: string;
+};
+
+export type ResetPasswordResponse = {
+  message: string;
+};
+
+export const resetPassword = async (req: ResetPasswordRequest): Promise<ResetPasswordResponse> => {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3333";
+  const url = `${backendUrl}/users/reset-password`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token: req.token, password: req.password }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ message: "Link de redefinição inválido ou expirado" }));
+    throw new Error(errorData.message || "Link de redefinição inválido ou expirado");
+  }
+
+  return response.json();
+};
 
 export type signOutRequest = {
-    access_token: string;
+  access_token: string;
 };
 
 export type signOutResponse = {
-    message: string;
+  message: string;
 };
 
-const signOutResponseMock: signOutResponse = {
-    message: 'Signed out successfully',
+/**
+ * Sign-out is handled entirely client-side by clearing auth cookies via the
+ * Next.js /api/auth/logout BFF route. The backend does not expose a dedicated
+ * logout endpoint, so this function delegates to that route.
+ */
+export const signOut = async (_req: signOutRequest): Promise<signOutResponse> => {
+  const response = await fetch("/api/auth/logout", { method: "POST" });
+  if (!response.ok) {
+    return { message: "Signed out" };
+  }
+  return { message: "Signed out successfully" };
 };
-
-export const signOut = async (req: signOutRequest) => {
-    return await fakePromises(() => {
-        return signOutResponseMock;
-    });
-}

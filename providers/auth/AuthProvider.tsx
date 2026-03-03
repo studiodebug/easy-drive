@@ -15,6 +15,7 @@ export type AuthContextValue = {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  signUp: (name: string, email: string, password: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   refreshSession: () => Promise<void>;
@@ -30,6 +31,28 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const refreshInFlight = useRef(false);
+
+  const signUp = useCallback(
+    async (name: string, email: string, password: string) => {
+      setIsLoading(true);
+      try {
+        const res = await fetch("/api/auth/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password }),
+        });
+        if (!res.ok) {
+          const data = (await res.json().catch(() => null)) as { error?: string } | null;
+          throw new Error(data?.error ?? "Erro ao criar conta");
+        }
+        const data = (await res.json()) as { user?: User };
+        setUser(data.user ?? null);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
 
   const signIn = useCallback(async (email: string, password: string) => {
     setIsLoading(true);
@@ -50,7 +73,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const signOut = useCallback(async () => {
     setIsLoading(true);
     try {
-      await fetch("/api/auth/logout", { method: "POST" });
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+        cache: "no-store",
+      });
     } finally {
       setUser(null);
       setIsLoading(false);
@@ -116,11 +143,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       user,
       isAuthenticated: Boolean(user),
       isLoading,
+      signUp,
       signIn,
       signOut,
       refreshSession,
     };
-  }, [user, isLoading, signIn, signOut, refreshSession]);
+  }, [user, isLoading, signUp, signIn, signOut, refreshSession]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

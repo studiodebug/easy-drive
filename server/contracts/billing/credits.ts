@@ -1,108 +1,75 @@
-import { fakePromises } from "@/lib/utils";
-import { CREDIT_PLANS } from "@/server/contracts/dashboard/credits-plans";
+import { apiInstance } from "@/lib/api";
 
-export type CreditsQuoteInput = {
-  planId?: string;
-  customAmount?: number;
+export type CreditsQuoteRequest = {
+  credits: number;
 };
 
 export type CreditsQuote = {
   quoteId: string;
   credits: number;
   bonusCredits: number;
-  totalCredits: number;
-  totalPrice: number;
+  unitPrice: number;
+  subtotal: number;
+  fees: number;
+  total: number;
+  expiresAt: string;
+};
+
+export type CreditsCheckoutRequest = {
+  credits: number;
+  provider?: "stripe" | "mercadopago" | "mock";
 };
 
 export type CreditsCheckoutResult = {
-  checkoutUrl: string;
   sessionId: string;
-  creditsAdded: number;
+  status: string;
+  credits: number;
+  checkoutUrl: string;
 };
 
 export type CreditsCheckoutStatus = {
-  status: "succeeded" | "failed" | "canceled";
-  creditsAdded: number;
+  sessionId: string;
+  status: "PENDING" | "COMPLETED" | "FAILED" | "CANCELLED";
 };
 
-const quotes = new Map<string, CreditsQuote>();
+export const getCreditsQuote = async (input: CreditsQuoteRequest): Promise<CreditsQuote> => {
+  const response = await apiInstance.post("/billing/credits/quote", {
+    credits: input.credits,
+  });
 
-const buildQuoteFromPlan = (planId: string) => {
-  const plan = CREDIT_PLANS.find((item) => item.id === planId);
-  if (!plan) {
-    throw new Error("Plan not found");
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ message: "Erro ao calcular cotação" }));
+    throw new Error(error.message || "Erro ao calcular cotação");
   }
 
-  const bonusCredits = plan.bonusCredits ?? 0;
-  const totalCredits = plan.credits + bonusCredits;
-
-  return {
-    credits: plan.credits,
-    bonusCredits,
-    totalCredits,
-    totalPrice: plan.price,
-  };
+  return response.json();
 };
 
-const buildQuoteFromCustomAmount = (customAmount: number) => {
-  const credits = customAmount;
-  const bonusCredits = customAmount >= 500 ? Math.floor(customAmount * 0.05) : 0;
-  const totalCredits = credits + bonusCredits;
+export const createCreditsCheckout = async (
+  input: CreditsCheckoutRequest
+): Promise<CreditsCheckoutResult> => {
+  const response = await apiInstance.post("/billing/credits/checkout", {
+    credits: input.credits,
+    provider: input.provider ?? "mock",
+  });
 
-  return {
-    credits,
-    bonusCredits,
-    totalCredits,
-    totalPrice: customAmount,
-  };
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ message: "Erro ao iniciar pagamento" }));
+    throw new Error(error.message || "Erro ao iniciar pagamento");
+  }
+
+  return response.json();
 };
 
-export const getCreditsQuote = async (input: CreditsQuoteInput): Promise<CreditsQuote> => {
-  return await fakePromises(() => {
-    const quoteId = crypto.randomUUID();
+export const getCreditsCheckoutStatus = async (
+  sessionId: string
+): Promise<CreditsCheckoutStatus> => {
+  const response = await apiInstance.get(`/billing/credits/checkout/${sessionId}/status`);
 
-    if (input.planId) {
-      const quote = buildQuoteFromPlan(input.planId);
-      const payload: CreditsQuote = { quoteId, ...quote };
-      quotes.set(quoteId, payload);
-      return payload;
-    }
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ message: "Erro ao verificar status" }));
+    throw new Error(error.message || "Erro ao verificar status");
+  }
 
-    if (input.customAmount && input.customAmount >= 10) {
-      const quote = buildQuoteFromCustomAmount(input.customAmount);
-      const payload: CreditsQuote = { quoteId, ...quote };
-      quotes.set(quoteId, payload);
-      return payload;
-    }
-
-    throw new Error("Invalid quote input");
-  }, 500);
-};
-
-export const createCreditsCheckout = async (quoteId: string): Promise<CreditsCheckoutResult> => {
-  return await fakePromises(() => {
-    const quote = quotes.get(quoteId);
-    if (!quote) {
-      throw new Error("Quote not found");
-    }
-
-    const sessionId = crypto.randomUUID();
-    const checkoutUrl = `/dashboard?tab=4&payment=success&creditsAdded=${quote.totalCredits}`;
-
-    return {
-      checkoutUrl,
-      sessionId,
-      creditsAdded: quote.totalCredits,
-    };
-  }, 700);
-};
-
-export const getCreditsCheckoutStatus = async (sessionId: string): Promise<CreditsCheckoutStatus> => {
-  return await fakePromises(() => {
-    if (!sessionId) {
-      return { status: "failed", creditsAdded: 0 };
-    }
-
-    return { status: "succeeded", creditsAdded: 0 };
-  }, 400);
+  return response.json();
 };

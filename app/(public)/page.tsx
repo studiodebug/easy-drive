@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation";
 import { useCityAutocomplete, type CitySuggestion } from "./vitrine/_components/useCityAutocomplete";
 import { Logo } from "@/components/logo";
 import Link from "next/link";
+import { useState } from "react";
+import { WaitlistModal } from "@/components/blocks/WaitlistModal/WaitlistModal";
 
 export type HomePageProps = {
   className?: string;
@@ -18,7 +20,8 @@ export type HomePageProps = {
 
 export default function HomePage({ className }: HomePageProps) {
   const router = useRouter();
-  
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
+
   const {
     searchCity,
     showSuggestions,
@@ -315,10 +318,17 @@ export default function HomePage({ className }: HomePageProps) {
                     Estamos lançando cidade por cidade. Entre na lista de espera
                     para ser o primeiro.
                   </Text>
-                  <Button variant="secondary" type="button" className="w-full" size="lg">
+                  <Button
+                    variant="secondary"
+                    type="button"
+                    className="w-full"
+                    size="lg"
+                    onClick={() => setWaitlistOpen(true)}
+                  >
                     Entrar na lista de espera
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
+                  <WaitlistModal open={waitlistOpen} onOpenChange={setWaitlistOpen} />
                 </Card.Content>
               </Card>
 

@@ -1,34 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useController, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Text } from "@/components/retroui/Text";
 import { Button } from "@/components/retroui/Button";
 import { Textarea } from "@/components/retroui/Textarea";
 import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { reviewSchema, type ReviewFormValues } from "@/mutations/booking/booking-review.mutation";
+import { useState } from "react";
 
 interface ReviewFormProps {
-  onSubmit: (rating: number, comment: string) => void;
+  onSubmit: (values: ReviewFormValues) => void;
   isSubmitting?: boolean;
 }
 
-export function ReviewForm({
-  onSubmit,
-  isSubmitting = false,
-}: ReviewFormProps) {
-  const [rating, setRating] = useState<number>(0);
+export function ReviewForm({ onSubmit, isSubmitting = false }: ReviewFormProps) {
   const [hoveredRating, setHoveredRating] = useState<number>(0);
-  const [comment, setComment] = useState<string>("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (rating > 0) {
-      onSubmit(rating, comment);
-    }
-  };
+  const {
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors },
+  } = useForm<ReviewFormValues>({
+    resolver: zodResolver(reviewSchema),
+    defaultValues: { rating: 0, comment: "" },
+  });
+
+  const { field: ratingField } = useController({ name: "rating", control });
+  const { field: commentField } = useController({ name: "comment", control });
+  const comment = watch("comment") ?? "";
+  const rating = watch("rating");
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-6">
         <div>
           <Text variant="label">Avaliação</Text>
@@ -42,7 +48,7 @@ export function ReviewForm({
               <button
                 key={star}
                 type="button"
-                onClick={() => setRating(star)}
+                onClick={() => ratingField.onChange(star)}
                 onMouseEnter={() => setHoveredRating(star)}
                 onMouseLeave={() => setHoveredRating(0)}
                 className="transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary rounded"
@@ -61,6 +67,11 @@ export function ReviewForm({
             ))}
           </div>
           {rating > 0 && <Text variant="h5">{rating}.0</Text>}
+          {errors.rating && (
+            <Text variant="caption" className="text-red-500">
+              {errors.rating.message}
+            </Text>
+          )}
         </div>
 
         {/* Comment */}
@@ -71,13 +82,19 @@ export function ReviewForm({
           <Textarea
             id="review-comment"
             placeholder="Conte-nos sobre sua experiência nesta aula..."
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            maxLength={500}
+            maxLength={1000}
             disabled={isSubmitting}
+            aria-invalid={!!errors.comment}
+            {...commentField}
+            value={commentField.value ?? ""}
           />
+          {errors.comment && (
+            <Text variant="caption" className="text-red-500">
+              {errors.comment.message}
+            </Text>
+          )}
           <div className="text-right">
-            <Text variant="caption">{comment.length}/500 caracteres</Text>
+            <Text variant="caption">{comment.length}/1000 caracteres</Text>
           </div>
         </div>
       </div>

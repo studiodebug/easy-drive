@@ -79,6 +79,7 @@ export function useBookingSummary() {
           closeSummary();
         },
         onError: (error) => {
+          console.log(error);
           if (error.code === "AUTH_REQUIRED") {
             markBookingResume();
             router.push(`/auth/login?next=${encodeURIComponent(pathname)}`);

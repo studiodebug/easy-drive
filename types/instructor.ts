@@ -1,6 +1,8 @@
 import { Address } from "./user";
 
 export interface TimeSlot {
+  id?: number;
+  slotId?: number;
   hour: number;
   minute: number;
   available: boolean;

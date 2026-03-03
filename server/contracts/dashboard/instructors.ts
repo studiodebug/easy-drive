@@ -1,4 +1,5 @@
 import { fakePromises } from "@/lib/utils";
+import { apiInstance } from "@/lib/api";
 import type { Instructor, TimeSlot, DaySchedule, Review } from "@/types/instructor";
 
 export type GetInstructorsResponse = Instructor[];
@@ -555,8 +556,36 @@ const getInstructorsResponseMock: GetInstructorsResponse = [
   },
 ];
 
+/**
+ * Returns the full rich Instructor list used by the vitrine and booking schedule flow.
+ * This uses local mock data until a public instructor listing endpoint is available.
+ */
 export const getInstructors = async (): Promise<GetInstructorsResponse> => {
-    return await fakePromises(() => {
-        return getInstructorsResponseMock;
-    });
+  return await fakePromises(() => {
+    return getInstructorsResponseMock;
+  });
+};
+
+export type DashboardInstructor = {
+  id: string;
+  name: string;
+  rating: number;
+  carModel: string;
+};
+
+export type GetDashboardInstructorsResponse = {
+  items: DashboardInstructor[];
+};
+
+/**
+ * Returns the simplified instructor list from the protected dashboard endpoint.
+ * Used for dashboard-specific instructor listings only.
+ */
+export const getDashboardInstructors = async (): Promise<GetDashboardInstructorsResponse> => {
+  const response = await apiInstance.get("/dashboard/instructors");
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ message: "Erro ao buscar instrutores" }));
+    throw new Error(error.message || "Erro ao buscar instrutores");
+  }
+  return response.json();
 };

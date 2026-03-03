@@ -10,36 +10,39 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Eye, EyeClosed } from "lucide-react";
 import { useAuth } from "@/providers/auth/AuthProvider";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema, type LoginFormValues } from "@/lib/schemas/auth.schema";
 
 export default function Page() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
   const router = useRouter();
   const [nextPath, setNextPath] = useState<string | null>(null);
+  const { signIn } = useAuth();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setNextPath(params.get("next"));
   }, []);
-  const { signIn } = useAuth();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+  });
 
-    setIsLoading(true);
-    setError(null);
-
+  const onSubmit = async (data: LoginFormValues) => {
+    setServerError(null);
     try {
-      // Server sets HttpOnly cookies; client never touches tokens.
-      await signIn(email, password);
+      await signIn(data.email, data.password);
       router.push(nextPath || "/dashboard");
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "Email ou senha inválidos");
-    } finally {
-      setIsLoading(false);
+      setServerError(
+        error instanceof Error ? error.message : "Email ou senha inválidos"
+      );
     }
   };
 
@@ -51,7 +54,7 @@ export default function Page() {
           <Card.Description>Insira seu email e senha.</Card.Description>
         </Card.Header>
         <Card.Content>
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
@@ -59,10 +62,12 @@ export default function Page() {
                   id="email"
                   type="email"
                   placeholder="m@example.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  aria-invalid={!!errors.email}
+                  {...register("email")}
                 />
+                {errors.email && (
+                  <p className="text-sm text-red-500">{errors.email.message}</p>
+                )}
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
@@ -78,9 +83,8 @@ export default function Page() {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    aria-invalid={!!errors.password}
+                    {...register("password")}
                   />
                   <button
                     type="button"
@@ -90,10 +94,15 @@ export default function Page() {
                     {showPassword ? <EyeClosed /> : <Eye />}
                   </button>
                 </div>
+                {errors.password && (
+                  <p className="text-sm text-red-500">{errors.password.message}</p>
+                )}
               </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Entrando..." : "Entrar"}
+              {serverError && (
+                <p className="text-sm text-red-500">{serverError}</p>
+              )}
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting ? "Entrando..." : "Entrar"}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">

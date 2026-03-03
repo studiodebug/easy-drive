@@ -7,6 +7,8 @@ import { Text } from "@/components/retroui/Text";
 import type { ScheduledClass } from "@/types/scheduled-class";
 import { useGetInstructors } from "@/queries/dashboard/instructors.query";
 import { useCancellationPolicy } from "./hooks/useCancellationPolicy";
+import { useCancelBooking } from "@/mutations/booking/booking-cancel.mutation";
+import { toast } from "sonner";
 import {
   ClassInformation,
   InstructorDetails,
@@ -26,13 +28,12 @@ export function ScheduledClassDetailsModal({
 }: ScheduledClassDetailsModalProps) {
   const { data: instructors } = useGetInstructors();
   const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
-  const [isCanceling, setIsCanceling] = useState(false);
+  const cancelMutation = useCancelBooking();
 
   // Reset cancellation state when modal opens/closes
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen) {
       setShowCancelConfirmation(false);
-      setIsCanceling(false);
     }
     onOpenChange(newOpen);
   };
@@ -48,14 +49,20 @@ export function ScheduledClassDetailsModal({
   const canCancel = scheduledClass.status !== "cancelada";
   const isUrgent = scheduledClass.startsInDays <= 1 && canCancel;
 
-  const handleCancelClass = async () => {
-    setIsCanceling(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsCanceling(false);
-    setShowCancelConfirmation(false);
-    onOpenChange(false);
-    // TODO: Implement actual cancellation logic with policy
+  const handleCancelClass = () => {
+    cancelMutation.mutate(
+      { bookingId: scheduledClass.id, applyRefund: true },
+      {
+        onSuccess: () => {
+          toast.success("Aula cancelada com sucesso.");
+          setShowCancelConfirmation(false);
+          onOpenChange(false);
+        },
+        onError: (error) => {
+          toast.error(error.message || "Não foi possível cancelar a aula.");
+        },
+      }
+    );
   };
 
   return (
@@ -113,7 +120,7 @@ export function ScheduledClassDetailsModal({
             classSubject={scheduledClass.subject}
             policy={cancellationPolicy}
             isUrgent={isUrgent}
-            isCanceling={isCanceling}
+            isCanceling={cancelMutation.isPending}
             onBack={() => setShowCancelConfirmation(false)}
             onConfirm={handleCancelClass}
           />

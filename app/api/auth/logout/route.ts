@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { signOut } from "@/server/contracts/auth/login";
 import {
   COOKIE_ACCESS_TOKEN,
   COOKIE_REFRESH_TOKEN,
@@ -8,13 +7,6 @@ import {
 } from "../_cookies";
 
 export async function POST(req: NextRequest) {
-  const access_token = req.cookies.get(COOKIE_ACCESS_TOKEN)?.value ?? "";
-
-  // Call mocked signOut endpoint (optional, but keeps parity with real backend flow).
-  if (access_token) {
-    await signOut({ access_token });
-  }
-
   const res = NextResponse.json({ ok: true });
   const base = getBaseCookieOptions();
 

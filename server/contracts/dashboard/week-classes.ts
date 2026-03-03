@@ -1,86 +1,80 @@
-import { fakePromises } from "@/lib/utils";
+import { apiInstance } from "@/lib/api";
 import type { WeekClass } from "@/types/week-class";
 
 export type GetWeekClassesResponse = WeekClass[];
 
-/**
- * Mock data for classes scheduled on specific dates
- * This simulates an API response that returns classes for a given week
- */
-const getWeekClassesResponseMock: GetWeekClassesResponse = [
-  // Friday, January 10, 2026 - 3 classes
-  {
-    id: "1",
-    date: "2026-01-10",
-    time: "09:00",
-    subject: "Direção defensiva em vias urbanas",
-    instructor: {
-      name: "Carlos Silva",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos",
-    },
-    status: "confirmada",
-  },
-  {
-    id: "2",
-    date: "2026-01-10",
-    time: "14:00",
-    subject: "Práticas de baliza e estacionamento",
-    instructor: {
-      name: "Mariana Oliveira",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Mariana",
-    },
-    status: "confirmada",
-  },
-  {
-    id: "3",
-    date: "2026-01-10",
-    time: "16:30",
-    subject: "Direção em rodovias",
-    instructor: {
-      name: "Roberto Santos",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Roberto",
-    },
-    status: "pendente",
-  },
-  // Wednesday, January 8, 2026 - 1 class
-  {
-    id: "4",
-    date: "2026-01-08",
-    time: "10:00",
-    subject: "Conversão e manobras",
-    instructor: {
-      name: "Ana Paula Costa",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ana",
-    },
-    status: "confirmada",
-  },
-  // Tuesday, January 7, 2026 - 2 classes
-  {
-    id: "5",
-    date: "2026-01-07",
-    time: "08:00",
-    subject: "Primeira aula prática",
-    instructor: {
-      name: "Juliana Pereira",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Juliana",
-    },
-    status: "confirmada",
-  },
-  {
-    id: "6",
-    date: "2026-01-07",
-    time: "15:00",
-    subject: "Direção noturna",
-    instructor: {
-      name: "Fernando Lima",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Fernando",
-    },
-    status: "confirmada",
-  },
-];
+type BackendWeekDay = {
+  day: string;
+  total: number;
+  date?: string;
+  classes?: Array<{
+    id?: string;
+    time?: string;
+    subject?: string;
+    status?: string;
+    instructor?: { name?: string; avatarUrl?: string };
+  }>;
+};
+
+type BackendWeekClassesResponse = {
+  week: string;
+  classes: BackendWeekDay[];
+};
+
+const DAY_NAMES: Record<string, number> = {
+  Sunday: 0, Monday: 1, Tuesday: 2, Wednesday: 3,
+  Thursday: 4, Friday: 5, Saturday: 6,
+};
+
+const getDateForDay = (dayName: string): string => {
+  const today = new Date();
+  const todayDay = today.getDay();
+  const targetDay = DAY_NAMES[dayName] ?? 0;
+  const diff = targetDay - todayDay;
+  const target = new Date(today);
+  target.setDate(today.getDate() + diff);
+  return target.toISOString().split("T")[0];
+};
+
+const mapToWeekClasses = (dayData: BackendWeekDay): WeekClass[] => {
+  const date = dayData.date ?? getDateForDay(dayData.day);
+
+  if (dayData.classes && dayData.classes.length > 0) {
+    return dayData.classes.map((cls, idx) => ({
+      id: cls.id ?? `${date}-${idx}`,
+      date,
+      time: cls.time ?? "00:00",
+      subject: cls.subject ?? "Aula prática",
+      instructor: {
+        name: cls.instructor?.name ?? "Instrutor",
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${cls.instructor?.name ?? "instructor"}`,
+      },
+      status: (cls.status === "CONFIRMED"
+        ? "confirmada"
+        : cls.status === "CANCELLED"
+        ? "cancelada"
+        : "pendente") as "confirmada" | "pendente" | "cancelada",
+    }));
+  }
+
+  // Backend returned aggregated totals only — generate placeholder entries so
+  // the existing count utilities continue to work correctly.
+  return Array.from({ length: dayData.total }, (_, idx) => ({
+    id: `${date}-placeholder-${idx}`,
+    date,
+    time: "00:00",
+    subject: "Aula prática",
+    instructor: { name: "Instrutor", avatar: "" },
+    status: "confirmada" as const,
+  }));
+};
 
 export const getWeekClasses = async (): Promise<GetWeekClassesResponse> => {
-    return await fakePromises(() => {
-        return getWeekClassesResponseMock;
-    });
+  const response = await apiInstance.get("/dashboard/week-classes");
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ message: "Erro ao buscar aulas da semana" }));
+    throw new Error(error.message || "Erro ao buscar aulas da semana");
+  }
+  const data: BackendWeekClassesResponse = await response.json();
+  return (data.classes ?? []).flatMap(mapToWeekClasses);
 };

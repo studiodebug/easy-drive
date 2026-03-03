@@ -7,29 +7,42 @@ import { Input } from "@/components/retroui/Input";
 import { Label } from "@/components/retroui/Label";
 import Link from "next/link";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  forgotPasswordSchema,
+  type ForgotPasswordFormValues,
+} from "@/lib/schemas/auth.schema";
 
 export default function Page() {
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleForgotPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ForgotPasswordFormValues>({
+    resolver: zodResolver(forgotPasswordSchema),
+  });
 
+  const onSubmit = async (data: ForgotPasswordFormValues) => {
+    setServerError(null);
     try {
-      // old supabase request:
-      // await supabase.auth.resetPasswordForEmail(email, { redirectTo: ... })
-      //
-      // placeholder request: integrate with your backend reset-password endpoint.
-      // await fetch("/api/auth/forgot-password", { method: "POST", body: JSON.stringify({ email }) })
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: data.email }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || "Não foi possível enviar o email");
+      }
       setSuccess(true);
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
-    } finally {
-      setIsLoading(false);
+      setServerError(
+        error instanceof Error ? error.message : "Ocorreu um erro"
+      );
     }
   };
 
@@ -59,7 +72,7 @@ export default function Page() {
             </Card.Description>
           </Card.Header>
           <Card.Content>
-            <form onSubmit={handleForgotPassword}>
+            <form onSubmit={handleSubmit(onSubmit)}>
               <div className="flex flex-col gap-6">
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
@@ -67,14 +80,18 @@ export default function Page() {
                     id="email"
                     type="email"
                     placeholder="m@example.com"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    aria-invalid={!!errors.email}
+                    {...register("email")}
                   />
+                  {errors.email && (
+                    <p className="text-sm text-red-500">{errors.email.message}</p>
+                  )}
                 </div>
-                {error && <p className="text-sm text-red-500">{error}</p>}
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Enviando..." : "Enviar email de redefinição"}
+                {serverError && (
+                  <p className="text-sm text-red-500">{serverError}</p>
+                )}
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? "Enviando..." : "Enviar email de redefinição"}
                 </Button>
               </div>
               <div className="mt-4 text-center text-sm">

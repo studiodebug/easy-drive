@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import { Dialog } from "@/components/retroui/Dialog";
-import { Button } from "@/components/retroui/Button";
 import { Text } from "@/components/retroui/Text";
 import { Avatar } from "@/components/retroui/Avatar";
 import { Calendar, Clock } from "lucide-react";
@@ -10,6 +8,8 @@ import type { HistoryClass } from "@/types/history";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ReviewForm } from "./ReviewForm";
+import { useCreateBookingReview, type ReviewFormValues } from "@/mutations/booking/booking-review.mutation";
+import { toast } from "sonner";
 
 interface RateClassModalProps {
   historyClass: HistoryClass;
@@ -24,26 +24,29 @@ export function RateClassModal({
   onOpenChange,
   onSubmitSuccess,
 }: RateClassModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { mutate: submitReview, isPending } = useCreateBookingReview();
 
   const formattedDate = format(
     historyClass.date,
     "EEEE, dd 'de' MMMM 'de' yyyy",
-    {
-      locale: ptBR,
-    }
+    { locale: ptBR }
   );
   const timeRange = `${historyClass.startTime} - ${historyClass.endTime}`;
 
-  const handleReviewSubmit = async (rating: number, comment: string) => {
-    setIsSubmitting(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    console.log("Review submitted:", { rating, comment });
-    setIsSubmitting(false);
-    onOpenChange(false);
-    onSubmitSuccess?.();
-    // TODO: Implement actual review submission logic
+  const handleReviewSubmit = (values: ReviewFormValues) => {
+    submitReview(
+      { bookingId: historyClass.id, ...values },
+      {
+        onSuccess: () => {
+          toast.success("Avaliação enviada com sucesso!");
+          onOpenChange(false);
+          onSubmitSuccess?.();
+        },
+        onError: (error) => {
+          toast.error(error.message || "Não foi possível enviar a avaliação.");
+        },
+      }
+    );
   };
 
   return (
@@ -98,7 +101,7 @@ export function RateClassModal({
           {/* Review Form */}
           <ReviewForm
             onSubmit={handleReviewSubmit}
-            isSubmitting={isSubmitting}
+            isSubmitting={isPending}
           />
         </div>
       </Dialog.Content>

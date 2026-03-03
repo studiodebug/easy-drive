@@ -1,6 +1,6 @@
-import { useMutation } from "@tanstack/react-query";
-import { fakePromises } from "@/lib/utils";
-import type { BookingDraft, BookingSlot } from "@/types/booking";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { confirmBooking } from "@/server/contracts/booking/booking";
+import type { BookingDraft } from "@/types/booking";
 
 export type BookingConfirmErrorCode =
   | "AUTH_REQUIRED"
@@ -9,8 +9,8 @@ export type BookingConfirmErrorCode =
 
 export type BookingConfirmError = {
   code: BookingConfirmErrorCode;
+  message?: string;
   missingCredits?: number;
-  unavailableSlots?: BookingSlot[];
 };
 
 export type ConfirmBookingInput = {
@@ -25,32 +25,46 @@ export type ConfirmBookingResult = {
   bookingIds: string[];
 };
 
-const confirmBooking = async (input: ConfirmBookingInput): Promise<ConfirmBookingResult> => {
-  return await fakePromises(() => {
-    if (!input.isAuthenticated) {
-      const error: BookingConfirmError = { code: "AUTH_REQUIRED" };
-      throw error;
-    }
-
-    if (input.availableCredits < input.requiredCredits) {
-      const error: BookingConfirmError = {
-        code: "INSUFFICIENT_CREDITS",
-        missingCredits: input.requiredCredits - input.availableCredits,
-      };
-      throw error;
-    }
-
-    // Placeholder: add availability checks here.
-    return {
-      success: true,
-      bookingIds: input.draft.slots.map(() => crypto.randomUUID()),
-    };
-  }, 600);
-};
-
 export const useConfirmBooking = () => {
+  const queryClient = useQueryClient();
+
   return useMutation<ConfirmBookingResult, BookingConfirmError, ConfirmBookingInput>({
-    mutationFn: confirmBooking,
+    mutationFn: async (input) => {
+      if (!input.isAuthenticated) {
+        throw { code: "AUTH_REQUIRED" } satisfies BookingConfirmError;
+      }
+
+      if (input.availableCredits < input.requiredCredits) {
+        throw {
+          code: "INSUFFICIENT_CREDITS",
+          missingCredits: input.requiredCredits - input.availableCredits,
+        } satisfies BookingConfirmError;
+      }
+
+      const bookingIds: string[] = [];
+      for (const slot of input.draft.slots) {
+        if (slot.slotId === undefined) {
+          throw {
+            code: "SLOT_UNAVAILABLE",
+            message: "Slot ID não disponível. Selecione um horário válido.",
+          } satisfies BookingConfirmError;
+        }
+
+        const creditsPerSlot = Math.round(input.requiredCredits / input.draft.slots.length);
+        const result = await confirmBooking({
+          slotId: slot.slotId,
+          creditsRequired: creditsPerSlot,
+        });
+
+        bookingIds.push(result.bookingId);
+      }
+
+      return { success: true, bookingIds };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["credits"] });
+      queryClient.invalidateQueries({ queryKey: ["scheduled-classes"] });
+      queryClient.invalidateQueries({ queryKey: ["my-schedule"] });
+    },
   });
 };
-
