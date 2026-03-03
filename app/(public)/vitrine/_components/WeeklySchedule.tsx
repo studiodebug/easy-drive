@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import type { DaySchedule } from "@/types/instructor";
+import { useState, useEffect, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Button } from "@/components/retroui/Button";
@@ -9,10 +8,10 @@ import { useBookingDraft } from "@/providers/booking/BookingDraftProvider";
 import type { BookingSlot } from "@/types/booking";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
+import { getInstructorSchedule } from "@/server/contracts/booking/schedule";
 import { getInstructorAvailability } from "@/server/contracts/booking/availability";
 
 interface WeeklyScheduleProps {
-  schedule: DaySchedule[];
   instructorId: string;
   instructorName: string;
   instructorAvatar: string;
@@ -24,11 +23,37 @@ interface SelectedSlot {
   dayNumber: number;
   date: Date;
   time: string;
-  slotId?: number;
+}
+
+const DAY_ABBREVIATIONS: Record<number, string> = {
+  0: "DOM",
+  1: "SEG",
+  2: "TER",
+  3: "QUA",
+  4: "QUI",
+  5: "SEX",
+  6: "SÁB",
+};
+
+const MONTHS = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
+
+function getWeekMonday(offset: number): Date {
+  const today = new Date();
+  const day = today.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  const monday = new Date(today);
+  monday.setHours(0, 0, 0, 0);
+  monday.setDate(today.getDate() + diff + offset * 7);
+  return monday;
+}
+
+function getWeekSunday(monday: Date): Date {
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 7);
+  return sunday;
 }
 
 export function WeeklySchedule({
-  schedule,
   instructorId,
   instructorName,
   instructorAvatar,
@@ -36,61 +61,54 @@ export function WeeklySchedule({
 }: WeeklyScheduleProps) {
   const [selectedSlots, setSelectedSlots] = useState<SelectedSlot[]>([]);
   const [weekOffset, setWeekOffset] = useState(0);
-
   const [isMounted, setIsMounted] = useState(false);
   const { draft, setSlots, openSummary } = useBookingDraft();
 
-  const { data: availabilityData } = useQuery({
-    queryKey: ["instructor-availability", instructorId],
-    queryFn: () => getInstructorAvailability(instructorId),
-    enabled: Boolean(instructorId),
-  });
-
-  const backendSchedule: DaySchedule[] | null = availabilityData
-    ? (() => {
-        const dayNames = [
-          "Domingo",
-          "Segunda-feira",
-          "Terça-feira",
-          "Quarta-feira",
-          "Quinta-feira",
-          "Sexta-feira",
-          "Sábado",
-        ];
-
-        const days = dayNames.map((day, dayNumber) => ({
-          day,
-          dayNumber,
-          slots: [] as DaySchedule["slots"],
-        }));
-
-        for (const item of availabilityData.items) {
-          const start = new Date(item.startAt);
-          const dayNumber = start.getDay();
-          days[dayNumber].slots.push({
-            id: item.slotId,
-            slotId: item.slotId,
-            hour: start.getHours(),
-            minute: start.getMinutes(),
-            available: item.available,
-          });
-        }
-
-        return days;
-      })()
-    : null;
-
-  const effectiveSchedule = backendSchedule ?? schedule;
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  const { data: scheduleData } = useQuery({
+    queryKey: ["instructor-schedule", instructorId],
+    queryFn: () => getInstructorSchedule(instructorId),
+    enabled: Boolean(instructorId),
+  });
+
+  const weekMonday = useMemo(() => (isMounted ? getWeekMonday(weekOffset) : null), [weekOffset, isMounted]);
+  const weekEnd = useMemo(() => (weekMonday ? getWeekSunday(weekMonday) : null), [weekMonday]);
+
+  const { data: bookedData } = useQuery({
+    queryKey: ["instructor-availability", instructorId, weekMonday?.toISOString(), weekEnd?.toISOString()],
+    queryFn: () => getInstructorAvailability(instructorId, weekMonday!.toISOString(), weekEnd!.toISOString()),
+    enabled: Boolean(instructorId) && Boolean(weekMonday) && Boolean(weekEnd),
+  });
+
+  const bookedKeys = useMemo(() => {
+    const keys = new Set<string>();
+    if (!bookedData?.items) return keys;
+    for (const item of bookedData.items) {
+      const d = new Date(item.startAt);
+      keys.add(`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}-${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`);
+    }
+    return keys;
+  }, [bookedData]);
+
+  const scheduleByDay = useMemo(() => {
+    const map = new Map<number, { startTime: string; endTime: string }[]>();
+    if (!scheduleData?.items) return map;
+    for (const item of scheduleData.items) {
+      const existing = map.get(item.dayOfWeek) ?? [];
+      existing.push({ startTime: item.startTime, endTime: item.endTime });
+      map.set(item.dayOfWeek, existing);
+    }
+    return map;
+  }, [scheduleData]);
 
   useEffect(() => {
     if (!draft || draft.instructorId !== instructorId) {
       setSelectedSlots([]);
       return;
     }
-
     const draftSlots: SelectedSlot[] = draft.slots.map((slot) => {
       const date = new Date(slot.date);
       return {
@@ -98,130 +116,60 @@ export function WeeklySchedule({
         dayNumber: date.getDay(),
         date,
         time: slot.startTime,
-        slotId: slot.slotId,
       };
     });
-
     setSelectedSlots(draftSlots);
   }, [draft, instructorId]);
 
-  const formatTime = (hour: number, minute: number) => {
-    return `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
-  };
-
-  const getDayAbbreviation = (dayName: string) => {
-    const abbreviations: Record<string, string> = {
-      "Domingo": "DOM",
-      "Segunda-feira": "SEG",
-      "Terça-feira": "TER",
-      "Quarta-feira": "QUA",
-      "Quinta-feira": "QUI",
-      "Sexta-feira": "SEX",
-      "Sábado": "SÁB",
-    };
-    return abbreviations[dayName] || dayName.substring(0, 3).toUpperCase();
-  };
-
-  const getCurrentDate = () => {
-    // Only calculate date after component mounts to avoid prerendering issues
-    if (!isMounted) {
-      return new Date(0); // Return a placeholder date during SSR
-    }
-    const today = new Date();
-    today.setDate(today.getDate() + weekOffset * 7);
-    return today;
-  };
-
   const getDateForDay = (dayNumber: number) => {
-    const currentDate = getCurrentDate();
-    const currentDay = currentDate.getDay();
-    const diff = dayNumber - currentDay;
-    const targetDate = new Date(currentDate);
-    targetDate.setDate(currentDate.getDate() + diff);
-    return targetDate;
-  };
-
-  const getMonthAbbreviation = (date: Date) => {
-    const months = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
-    return months[date.getMonth()];
+    if (!weekMonday) return new Date(0);
+    const offsetFromMonday = dayNumber === 0 ? 6 : dayNumber - 1;
+    const target = new Date(weekMonday);
+    target.setDate(weekMonday.getDate() + offsetFromMonday);
+    return target;
   };
 
   const updateDraftSlots = (nextSlots: SelectedSlot[]) => {
     setSelectedSlots(nextSlots);
-
     const bookingSlots: BookingSlot[] = nextSlots.map((slot) => {
-      // Calculate end time (assuming 50 min duration for now)
       const [hours, minutes] = slot.time.split(":").map(Number);
       const endDate = new Date(slot.date);
-      endDate.setHours(hours, minutes + 50);
-      const endTime = endDate.toLocaleTimeString("pt-BR", {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-
+      endDate.setHours(hours + 1, minutes);
+      const endTime = `${String(endDate.getHours()).padStart(2, "0")}:${String(endDate.getMinutes()).padStart(2, "0")}`;
       return {
         date: slot.date.toISOString(),
         startTime: slot.time,
         endTime,
-        slotId: slot.slotId,
       };
     });
-
-    setSlots(
-      {
-        instructorId,
-        instructorName,
-        instructorAvatar,
-        creditsPerLesson,
-      },
-      bookingSlots
-    );
+    setSlots({ instructorId, instructorName, instructorAvatar, creditsPerLesson }, bookingSlots);
   };
 
-  const handleTimeSelect = (dayNumber: number, time: string, slotId?: number) => {
+  const handleTimeSelect = (dayNumber: number, time: string) => {
     const date = getDateForDay(dayNumber);
     const dateKey = `${dayNumber}-${date.getDate()}-${date.getMonth()}`;
     const slotKey = `${dateKey}-${time}`;
-
-    const isAlreadySelected = selectedSlots.some(
-      (slot) => `${slot.dateKey}-${slot.time}` === slotKey
-    );
+    const isAlreadySelected = selectedSlots.some((s) => `${s.dateKey}-${s.time}` === slotKey);
 
     if (isAlreadySelected) {
-      const nextSlots = selectedSlots.filter(
-        (slot) => `${slot.dateKey}-${slot.time}` !== slotKey
-      );
-      updateDraftSlots(nextSlots);
+      updateDraftSlots(selectedSlots.filter((s) => `${s.dateKey}-${s.time}` !== slotKey));
     } else {
-      const nextSlots = [
-        ...selectedSlots,
-        {
-          dateKey,
-          dayNumber,
-          date,
-          time,
-          slotId,
-        },
-      ];
-      updateDraftSlots(nextSlots);
+      updateDraftSlots([...selectedSlots, { dateKey, dayNumber, date, time }]);
     }
   };
 
   const removeSlot = (slotToRemove: SelectedSlot) => {
-    const nextSlots = selectedSlots.filter(
-      (slot) =>
-        `${slot.dateKey}-${slot.time}` !== `${slotToRemove.dateKey}-${slotToRemove.time}`
+    updateDraftSlots(
+      selectedSlots.filter((s) => `${s.dateKey}-${s.time}` !== `${slotToRemove.dateKey}-${slotToRemove.time}`)
     );
-    updateDraftSlots(nextSlots);
   };
 
   const handleSchedule = async () => {
     if (selectedSlots.length === 0) return;
-
     try {
       openSummary();
       toast.success("Resumo do agendamento atualizado");
-    } catch (error) {
+    } catch {
       toast.error("Erro ao agendar horário");
     }
   };
@@ -232,9 +180,9 @@ export function WeeklySchedule({
     return `${day}/${month}`;
   };
 
-  const weekdays = effectiveSchedule.filter((day) => day.dayNumber >= 1 && day.dayNumber <= 6);
+  // Mon(1) through Sat(6) for display
+  const weekdays = [1, 2, 3, 4, 5, 6];
 
-  // Don't render date-dependent content until mounted
   if (!isMounted) {
     return (
       <div className="w-full">
@@ -267,13 +215,14 @@ export function WeeklySchedule({
       </div>
 
       <div className="grid grid-cols-6 gap-2 mb-4 overflow-x-auto">
-        {weekdays.map((daySchedule) => {
-          const date = getDateForDay(daySchedule.dayNumber);
-          const dateKey = `${daySchedule.dayNumber}-${date.getDate()}-${date.getMonth()}`;
+        {weekdays.map((dayNumber) => {
+          const date = getDateForDay(dayNumber);
+          const dateKey = `${dayNumber}-${date.getDate()}-${date.getMonth()}`;
           const hasSelectedSlots = selectedSlots.some((slot) => slot.dateKey === dateKey);
+          const daySlots = scheduleByDay.get(dayNumber) ?? [];
 
           return (
-            <div key={daySchedule.dayNumber} className="flex flex-col">
+            <div key={dayNumber} className="flex flex-col">
               <div
                 className={cn(
                   "border-2 border-black p-3 text-center bg-white rounded-t-lg",
@@ -281,62 +230,57 @@ export function WeeklySchedule({
                 )}
               >
                 <div className="text-xs text-muted-foreground font-medium">
-                  {getDayAbbreviation(daySchedule.day)}
+                  {DAY_ABBREVIATIONS[dayNumber]}
                 </div>
                 <div className="text-xl font-black text-black">
                   {date.getDate().toString().padStart(2, "0")}
                 </div>
                 <div className="text-xs text-muted-foreground font-medium">
-                  {getMonthAbbreviation(date)}
+                  {MONTHS[date.getMonth()]}
                 </div>
               </div>
 
               <div className="border-2 border-t-0 border-black p-3 bg-white rounded-b-lg h-80 overflow-y-auto">
                 <div className="space-y-2">
-                  {daySchedule.slots
-                    .filter((slot) => slot.minute === 0)
-                    .map((slot, index) => {
-                      const timeStr = formatTime(slot.hour, slot.minute);
-                      const slotKey = `${dateKey}-${timeStr}`;
-                      const isTimeSelected = selectedSlots.some(
-                        (s) => `${s.dateKey}-${s.time}` === slotKey
-                      );
+                  {daySlots.map((slot) => {
+                    const timeStr = slot.startTime;
+                    const slotKey = `${dateKey}-${timeStr}`;
+                    const isTimeSelected = selectedSlots.some(
+                      (s) => `${s.dateKey}-${s.time}` === slotKey
+                    );
+                    const [h, m] = timeStr.split(":").map(Number);
+                    const lookupKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}-${h}:${String(m).padStart(2, "0")}`;
+                    const isBooked = bookedKeys.has(lookupKey);
 
-                      if (!slot.available) {
-                        return (
-                          <div
-                            key={index}
-                            className="text-center text-base text-gray-400 font-medium py-3"
-                          >
-                            -
-                          </div>
-                        );
-                      }
-
+                    if (isBooked) {
                       return (
-                        <button
-                          key={index}
-                          onClick={() =>
-                            handleTimeSelect(
-                              daySchedule.dayNumber,
-                              timeStr,
-                              slot.slotId ?? slot.id
-                            )
-                          }
-                          className={cn(
-                            "w-full py-3 px-4 text-base font-bold border-2 rounded-lg transition-all min-h-[44px] flex items-center justify-center relative",
-                            isTimeSelected
-                              ? "bg-primary text-black border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-                              : "bg-white text-black border-black hover:bg-purple-100 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-y-px active:translate-x-px"
-                          )}
+                        <div
+                          key={timeStr}
+                          className="text-center text-base text-gray-400 font-medium py-3"
                         >
-                          {timeStr}
-                          {isTimeSelected && (
-                            <span className="absolute top-1 right-1 text-xs">✓</span>
-                          )}
-                        </button>
+                          -
+                        </div>
                       );
-                    })}
+                    }
+
+                    return (
+                      <button
+                        key={timeStr}
+                        onClick={() => handleTimeSelect(dayNumber, timeStr)}
+                        className={cn(
+                          "w-full py-3 px-4 text-base font-bold border-2 rounded-lg transition-all min-h-[44px] flex items-center justify-center relative",
+                          isTimeSelected
+                            ? "bg-primary text-black border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                            : "bg-white text-black border-black hover:bg-purple-100 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-y-px active:translate-x-px"
+                        )}
+                      >
+                        {timeStr}
+                        {isTimeSelected && (
+                          <span className="absolute top-1 right-1 text-xs">✓</span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>

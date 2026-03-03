@@ -4,7 +4,7 @@ export type InstructorAvailabilityItem = {
   slotId: number;
   startAt: string;
   endAt: string;
-  available: boolean;
+  status: string;
 };
 
 export type GetInstructorAvailabilityResponse = {
@@ -12,9 +12,14 @@ export type GetInstructorAvailabilityResponse = {
 };
 
 export const getInstructorAvailability = async (
-  instructorId: string
+  instructorId: string,
+  weekStart: string,
+  weekEnd: string
 ): Promise<GetInstructorAvailabilityResponse> => {
-  const response = await apiInstance.get(`/instructors/${instructorId}/availability`);
+  const params = new URLSearchParams({ weekStart, weekEnd });
+  const response = await apiInstance.get(
+    `/instructors/${instructorId}/availability?${params}`
+  );
   if (!response.ok) {
     const error = await response
       .json()

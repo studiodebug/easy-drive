@@ -85,7 +85,6 @@ export function BookingDraftProvider({ children }: BookingDraftProviderProps) {
       date: slot.date,
       startTime: slot.startTime,
       endTime: slot.endTime,
-      slotId: slot.slotId,
     }));
 
     if (!normalizedSlots.length) {

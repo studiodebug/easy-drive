@@ -2,8 +2,6 @@ export type BookingSlot = {
   date: string;
   startTime: string;
   endTime: string;
-  /** Backend database slot ID — required for confirm/cancel API calls */
-  slotId?: number;
 };
 
 export type BookingDraft = {
@@ -16,4 +14,3 @@ export type BookingDraft = {
   createdAt: string;
   updatedAt: string;
 };
-

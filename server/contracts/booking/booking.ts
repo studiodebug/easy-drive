@@ -29,7 +29,10 @@ export const getBookingQuote = async (
 // ---------- Confirm ----------
 
 export type BookingConfirmRequest = {
-  slotId: number;
+  instructorId: string;
+  date: string;
+  startTime: string;
+  endTime: string;
   creditsRequired: number;
 };
 
@@ -47,7 +50,10 @@ export const confirmBooking = async (
   input: BookingConfirmRequest
 ): Promise<BookingConfirmResponse> => {
   const response = await apiInstance.post("/bookings/confirm", {
-    slotId: input.slotId,
+    instructorId: input.instructorId,
+    date: input.date,
+    startTime: input.startTime,
+    endTime: input.endTime,
     creditsRequired: input.creditsRequired,
   });
 

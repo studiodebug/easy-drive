@@ -1,35 +1,8 @@
 import { fakePromises } from "@/lib/utils";
 import { apiInstance } from "@/lib/api";
-import type { Instructor, TimeSlot, DaySchedule, Review } from "@/types/instructor";
+import type { Instructor, Review } from "@/types/instructor";
 
 export type GetInstructorsResponse = Instructor[];
-
-// Helper function to generate schedule
-function generateSchedule(): DaySchedule[] {
-  const days = [
-    { name: "Domingo", number: 0 },
-    { name: "Segunda-feira", number: 1 },
-    { name: "Terça-feira", number: 2 },
-    { name: "Quarta-feira", number: 3 },
-    { name: "Quinta-feira", number: 4 },
-    { name: "Sexta-feira", number: 5 },
-    { name: "Sábado", number: 6 },
-  ];
-
-  return days.map((day) => {
-    const slots: TimeSlot[] = [];
-    // Generate slots from 6h to 22h (every hour)
-    for (let hour = 6; hour <= 22; hour++) {
-      // Some random availability
-      const available = Math.random() > 0.3; // 70% chance of being available
-      slots.push({ hour, minute: 0, available });
-      if (hour < 22) {
-        slots.push({ hour, minute: 30, available });
-      }
-    }
-    return { day: day.name, dayNumber: day.number, slots };
-  });
-}
 
 // Helper function to generate reviews
 function generateReviews(instructorId: string): Review[] {
@@ -307,7 +280,6 @@ const getInstructorsResponseMock: GetInstructorsResponse = [
     carModel: "Chevrolet Onix",
     carYear: 2020,
     carTransmission: "manual",
-    schedule: generateSchedule(),
     phone: "(71) 98765-4321",
     email: "carlos.silva@example.com",
     address: {
@@ -343,7 +315,6 @@ const getInstructorsResponseMock: GetInstructorsResponse = [
     carModel: "Fiat Uno",
     carYear: 2019,
     carTransmission: "manual",
-    schedule: generateSchedule(),
     phone: "(75) 99876-5432",
     email: "ana.costa@example.com",
     address: {
@@ -375,7 +346,6 @@ const getInstructorsResponseMock: GetInstructorsResponse = [
     carModel: "Volkswagen Gol",
     carYear: 2021,
     carTransmission: "manual",
-    schedule: generateSchedule(),
     phone: "(11) 98765-4321",
     email: "roberto.santos@example.com",
     address: {
@@ -407,7 +377,6 @@ const getInstructorsResponseMock: GetInstructorsResponse = [
     carModel: "Renault Kwid",
     carYear: 2022,
     carTransmission: "automatico",
-    schedule: generateSchedule(),
     phone: "(21) 98765-4321",
     email: "mariana.oliveira@example.com",
     address: {
@@ -442,7 +411,6 @@ const getInstructorsResponseMock: GetInstructorsResponse = [
     carModel: "Fiat Mobi",
     carYear: 2020,
     carTransmission: "manual",
-    schedule: generateSchedule(),
     phone: "(31) 98765-4321",
     email: "fernando.lima@example.com",
     address: {
@@ -478,7 +446,6 @@ const getInstructorsResponseMock: GetInstructorsResponse = [
     carModel: "Chevrolet Onix",
     carYear: 2021,
     carTransmission: "automatico",
-    schedule: generateSchedule(),
     phone: "(75) 99876-5432",
     email: "juliana.pereira@example.com",
     address: {
@@ -510,7 +477,6 @@ const getInstructorsResponseMock: GetInstructorsResponse = [
     carModel: "Honda Civic",
     carYear: 2023,
     carTransmission: "manual",
-    schedule: generateSchedule(),
     phone: "(41) 98765-4321",
     email: "paulo.henrique@example.com",
     address: {
@@ -540,7 +506,6 @@ const getInstructorsResponseMock: GetInstructorsResponse = [
     carModel: "Hyundai HB20",
     carYear: 2020,
     carTransmission: "manual",
-    schedule: generateSchedule(),
     phone: "(82) 98765-4321",
     email: "camila.rodrigues@example.com",
     address: {

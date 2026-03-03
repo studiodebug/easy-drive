@@ -43,16 +43,16 @@ export const useConfirmBooking = () => {
 
       const bookingIds: string[] = [];
       for (const slot of input.draft.slots) {
-        if (slot.slotId === undefined) {
-          throw {
-            code: "SLOT_UNAVAILABLE",
-            message: "Slot ID não disponível. Selecione um horário válido.",
-          } satisfies BookingConfirmError;
-        }
-
         const creditsPerSlot = Math.round(input.requiredCredits / input.draft.slots.length);
+
+        const slotDate = new Date(slot.date);
+        const dateStr = `${slotDate.getFullYear()}-${String(slotDate.getMonth() + 1).padStart(2, "0")}-${String(slotDate.getDate()).padStart(2, "0")}`;
+
         const result = await confirmBooking({
-          slotId: slot.slotId,
+          instructorId: input.draft.instructorId,
+          date: dateStr,
+          startTime: slot.startTime,
+          endTime: slot.endTime,
           creditsRequired: creditsPerSlot,
         });
 
@@ -65,6 +65,7 @@ export const useConfirmBooking = () => {
       queryClient.invalidateQueries({ queryKey: ["credits"] });
       queryClient.invalidateQueries({ queryKey: ["scheduled-classes"] });
       queryClient.invalidateQueries({ queryKey: ["my-schedule"] });
+      queryClient.invalidateQueries({ queryKey: ["instructor-availability"] });
     },
   });
 };

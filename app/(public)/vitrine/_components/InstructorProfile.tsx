@@ -161,7 +161,6 @@ export function InstructorProfile({ instructor }: InstructorProfileProps) {
               )}
 
               <WeeklySchedule
-                schedule={instructor.schedule}
                 instructorId={instructor.id}
                 instructorName={instructor.name}
                 instructorAvatar={instructor.avatar}
