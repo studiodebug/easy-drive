@@ -1,4 +1,6 @@
 {
+  "name": "easy-drive",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "NEXT_DISABLE_TURBOPACK=1 next dev",

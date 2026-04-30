@@ -1,5 +1,7 @@
 # Easy Drive
 
+**Versão: 1.0.0**
+
 Uma plataforma de agendamento de aulas de direção desenvolvida com Next.js 16, integrada com Supabase para autenticação e gestão de dados.
 
 ## 📋 Descrição do Projeto
